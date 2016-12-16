@@ -10,7 +10,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "co": "^4.6.0",
     "hapi": "^16.0.1",
-    "mongodb": "^2.2.16"
+    "joi": "^10.0.6",
+    "mongodb": "^2.2.16",
+    "mongorito": "^2.2.0"
   }
 }
