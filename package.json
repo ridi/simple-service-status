@@ -12,8 +12,10 @@
   "dependencies": {
     "co": "^4.6.0",
     "hapi": "^16.0.1",
+    "hapi-auth-cookie": "^6.1.1",
     "joi": "^10.0.6",
     "mongodb": "^2.2.16",
-    "mongorito": "^2.2.0"
+    "mongorito": "^2.2.0",
+    "uuid": "^3.0.1"
   }
 }
