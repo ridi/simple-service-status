@@ -1,19 +1,21 @@
+/**
+ * Service API router
+ *
+ * @since 1.0.0
+ */
 
 'use strict';
 
 const Hapi = require('hapi');
 const Joi = require('joi');
-const co = require('co');
 const Status = require('./lib/Status');
-const mongorito = require('mongorito');
 
 const server = new Hapi.Server();
-server.connection({ port: ~~process.env.PORT || 8000 });
+server.connection({ port: process.env.PORT || 8080 });
 
 let handlers = {
     getStatus: (request, reply) => {
-        Status
-            .get(request.params.deviceType, request.params.deviceVersion, request.params.appVersion)
+        Status.find(request.query.deviceType, request.query.deviceVersion, request.query.appVersion)
             .then(function (result) {
                 console.log(result);
                 reply(result);
@@ -22,8 +24,7 @@ let handlers = {
             });
     },
     addStatus: (request, reply) => {
-        Status
-            .save(request.params)
+        Status.save(request.params)
             .then(function (result) {
                 reply(result);
             }).catch(function (err) {
@@ -31,8 +32,7 @@ let handlers = {
             });
     },
     test: (request, reply) => {
-        Status
-            .test()
+        Status.test()
             .then(function (result) {
                 reply(result);
             }).catch(function (err) {
