@@ -1,2 +1,2 @@
-web: node server.js
-webDebug: node --debug server.js
+web: node index.js
+webDebug: node --debug index.js
