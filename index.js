@@ -2,4 +2,6 @@
  * Entry point
  */
 
-require('./lib/server');
+const server = require('./lib/server');
+
+server.start();

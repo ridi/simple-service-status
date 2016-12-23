@@ -5,7 +5,6 @@ const ControlLabel = require('react-bootstrap/lib/ControlLabel');
 const FormControl = require('react-bootstrap/lib/FormControl');
 const HelpBlock = require('react-bootstrap/lib/HelpBlock');
 const Button = require('react-bootstrap/lib/Button');
-const Col = require('react-bootstrap/lib/Col');
 
 class Login extends React.Component {
   constructor(props) {
@@ -19,24 +18,18 @@ class Login extends React.Component {
   render() {
     return (
       <div>
-        <div>{this.props.errorMessage}</div>
-        <Form horizontal method="post" action="/login">
+        <h1>{this.props.errorMessage}</h1>
+        <Form method="post" action="/login">
           <FormGroup controlId="username">
-            <Col componentClass={ControlLabel} sm={2}>Username</Col>
-            <Col sm={10}>
-              <FormControl type="text" name="username" value={this.state.username} placeholder="Username" />
-            </Col>
+            <ControlLabel>Username</ControlLabel>
+            <FormControl type="text" name="username" value={this.state.username} placeholder="Username" />
           </FormGroup>
           <FormGroup controlId="password">
-            <Col componentClass={ControlLabel} sm={2}>Password</Col>
-            <Col sm={10}>
-              <FormControl type="password" name="password" value={this.state.password} placeholder="Password" />
-            </Col>
+            <ControlLabel>Password</ControlLabel>
+            <FormControl type="password" name="password" value={this.state.password} placeholder="Password" />
           </FormGroup>
           <FormGroup>
-            <Col smOffset={2} sm={10}>
-              <Button type="submit">Submit</Button>
-            </Col>
+            <Button type="submit">Submit</Button>
           </FormGroup>
         </Form>
       </div>
