@@ -1,45 +1,45 @@
 const path = require('path');
-const webpack = require('webpack');
+const Webpack = require('webpack');
+const AssetsWebpackPlugin = require('assets-webpack-plugin');
+
+const WEBPACK_HOT_ENTRY = 'webpack-hot-middleware/client?path=http://0.0.0.0:3000/__webpack_hmr&timeout=10000';
 
 module.exports = {
-  entry: [
-    //'webpack-dev-server/client?http://localhost:8080/',
-    //'webpack/hot/only-dev-server',
-    'webpack-hot-middleware/client',
-    './lib/client.js',
-  ],
-
-  resolve: {
-    extensions: ['', '.js', '.jsx'],
+  entry: {
+    app: [
+      './lib/client.js',
+      WEBPACK_HOT_ENTRY,
+    ],
   },
-
+  devtool: 'cheap-module-eval-source-map',
   output: {
     path: path.join(__dirname, '/public'),
     filename: 'client.bundle.js',
-    publicPath: '/public/',
+    publicPath: '/public/build/',
   },
-
-  devtool: 'cheap-eval-source-map',
-
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.DefinePlugin({
+    new Webpack.optimize.OccurenceOrderPlugin(),
+    new Webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('development'),
       },
     }),
+    new AssetsWebpackPlugin({
+      filename: 'webpack-assets.json',
+      path: './',
+      prettyPrint: true,
+    }),
+    new Webpack.HotModuleReplacementPlugin(),
+    new Webpack.NoErrorsPlugin(),
   ],
-
+  resolve: {
+    extensions: ['', '.js', '.jsx'],
+  },
   module: {
     loaders: [{
-      test: /\.jsx$/,
-      loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015'],
+      test: /\.(js|jsx)$/,
+      loaders: ['react-hot', 'babel-loader'],
       exclude: /node_modules/,
     }],
-  },
-
-  hot: {
-    dynamicPublicPath: true,
-    reload: true,
   },
 };

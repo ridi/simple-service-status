@@ -2,59 +2,48 @@
  * Entry point for development
  */
 
+// Load local environments
 require('node-env-file')(`${__dirname}/.env`);
 
 const path = require('path');
-const server = require('./lib/server');
-const Hapi = require('hapi');
+const appServer = require('./lib/server');
+
+const express = require('express');
+
 const Webpack = require('webpack');
-const HapiWebpackPlugin = require('hapi-webpack-plugin');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+const AssetsWebpackPlugin = require('assets-webpack-plugin');
 
-const webpackServer = new Hapi.Server();
-webpackServer.connection({ port: 3000 });
+const webpackConfig = require('./webpack.dev.config');
 
-const compiler = new Webpack({
-  entry: './lib/client.js',
-  output: {
-    path: path.join(__dirname, '/public'),
-    filename: 'client.bundle.js',
-    publicPath: '/public/',
-  },
-  devtool: 'cheap-eval-source-map',
-  plugins: [
-    new Webpack.HotModuleReplacementPlugin(),
-    new Webpack.NoErrorsPlugin(),
-    new Webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('development'),
-      },
-    }),
-  ],
-  resolve: {
-    extensions: ['', '.js', '.jsx'],
-  },
-  module: {
-    loaders: [{
-      test: /\.jsx$/,
-      loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015'],
-      exclude: /node_modules/,
-    }],
-  },
-});
+const H2O2 = require('h2o2');
 
-webpackServer.register([{
-  register: HapiWebpackPlugin,
-  options: { compiler, assets: {}, hot: { dynamicPublicPath: true } },
-}], (error) => {
-  if (error) {
-    return console.error(error);
+const webpackServer = express();
+
+const compiler = new Webpack(webpackConfig);
+
+webpackServer.use(webpackDevMiddleware(compiler, {
+  publicPath: 'http://localhost:8080/public/build',
+  noInfo: false,
+  quite: false,
+  stats: {
+    colors: true,
+  },
+}));
+
+webpackServer.use(webpackHotMiddleware(compiler));
+
+webpackServer.listen(3000, (err) => {
+  if (err) {
+    console.error(err);
+    return;
   }
-  return webpackServer.start((serverErr) => {
-    if (serverErr) {
-      throw serverErr;
-    }
-    console.log('Server running at:', webpackServer.info.uri);
-  });
-});
+  console.log('Webpack dev server listening at localhost:3000');
 
-server.start();
+  appServer.addPlugin({ register: H2O2 });
+
+  appServer.start([
+    { method: 'GET', path: '/public/build/{path*}', handler: { proxy: { host: 'localhost', port: 3000, passThrough: true } } },
+  ]);
+});
