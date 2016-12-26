@@ -41,5 +41,5 @@ module.exports = {
   hot: {
     dynamicPublicPath: true,
     reload: true,
-  }
+  },
 };
