@@ -3,7 +3,6 @@ const Form = require('react-bootstrap/lib/Form');
 const FormGroup = require('react-bootstrap/lib/FormGroup');
 const ControlLabel = require('react-bootstrap/lib/ControlLabel');
 const FormControl = require('react-bootstrap/lib/FormControl');
-const HelpBlock = require('react-bootstrap/lib/HelpBlock');
 const Button = require('react-bootstrap/lib/Button');
 
 class Login extends React.Component {

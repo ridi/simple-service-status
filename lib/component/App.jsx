@@ -1,12 +1,13 @@
 const React = require('react');
+const Layout = require('./Layout');
 const StatusList = require('./StatusList');
 
 class App extends React.Component {
   render() {
     return (
-      <div>
+      <Layout>
         <StatusList items={this.props.items} columns={this.props.columns} />
-      </div>
+      </Layout>
     );
   }
 }
