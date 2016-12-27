@@ -7,7 +7,7 @@ const WEBPACK_HOT_ENTRY = 'webpack-hot-middleware/client?path=http://0.0.0.0:300
 module.exports = {
   entry: {
     app: [
-      './lib/client.js',
+      './src/client.js',
       WEBPACK_HOT_ENTRY,
     ],
   },

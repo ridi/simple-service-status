@@ -6,7 +6,7 @@
 require('node-env-file')(`${__dirname}/.env`);
 
 const path = require('path');
-const appServer = require('./lib/server');
+const appServer = require('./src/server');
 
 const express = require('express');
 
