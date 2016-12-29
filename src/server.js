@@ -52,10 +52,9 @@ exports.start = (extraRoutes) => {
     server.auth.strategy('jwt', 'jwt', {
       key: process.env.SECRET_KEY || 'secretkey',
       validateFunc(decoded, request, callback) {
-        if (!User.find(decoded.username)) {
-          return callback(null, false);
-        }
-        return callback(null, true);
+        User.find(decoded.username)
+          .then(account => callback(null, !!account))
+          .catch(() => callback(null, false));
       },
       verifyOptions: { algorithms: ['HS256'] },
     });
@@ -77,6 +76,9 @@ exports.start = (extraRoutes) => {
           path: 'public',
           listing: false,
         },
+      },
+      config: {
+        auth: false,
       },
     });
     server.route(apiRouter);

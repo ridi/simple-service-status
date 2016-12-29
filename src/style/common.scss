@@ -1,0 +1,35 @@
+@import '../../node_modules/react-selectize/themes/index.css';
+@import '../../node_modules/react-datetime/css/react-datetime.css';
+
+// Bootstrap Override
+.row {
+  div ~ div {
+    padding-left: 0;
+  }
+  .help-block {
+    padding: 0 17px;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    color: #697fb5;
+  }
+}
+
+// React Selectize
+.react-selectize {
+  &.root-node {
+    width: auto;
+    .react-selectize-control {
+      padding: 0;
+      background-color: #fff;
+      background-image: none;
+    }
+  }
+  &.multi-select.default.root-node {
+    .simple-value {
+      background: #ebecf1;
+      border: 1px solid #6b81b6;
+      color: #6b81b6;
+    }
+  }
+}

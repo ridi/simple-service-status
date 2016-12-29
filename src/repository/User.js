@@ -11,7 +11,7 @@ const users = {
 
 class User extends Model {
   find(username) {
-    return users[username];
+    return Promise.resolve(users[username]);
   }
 
   save(user) {

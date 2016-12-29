@@ -85,7 +85,7 @@ class Status extends Model {
 
   _toView(model) {
     return {
-      deviceType: model.deviceType.join(', '),
+      deviceType: model.deviceType,
       deviceVersion: model.deviceVersion.join(' ').replace(/([\d]+)\s([\d]+)/g, '$1.$2'),
       appVersion: model.appVersion.join(' ').replace(/([\d]+)\s([\d]+)/g, '$1.$2'),
       startTime: model.startTime,

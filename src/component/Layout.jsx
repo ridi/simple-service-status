@@ -12,7 +12,7 @@ class Layout extends React.Component {
   render() {
     let button;
     if (this.props.auth && this.props.auth.isAuthenticated) {
-      button = <NavItem href="/logout">Logout {this.props.auth.credentials.username}</NavItem>;
+      button = <NavItem href="/logout">Logout {this.props.auth.username}</NavItem>;
     } else {
       button = <NavItem href="/login">Login</NavItem>;
     }
@@ -21,7 +21,7 @@ class Layout extends React.Component {
         <head>
           <title>{this.props.title}</title>
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-          <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css" />
+          <link rel="stylesheet" href="/public/assets/client.bundle.css" />
         </head>
         <body>
           <Navbar>
@@ -37,9 +37,7 @@ class Layout extends React.Component {
             </Navbar.Collapse>
           </Navbar>
           <Grid>
-            <Row>
-              {this.props.children}
-            </Row>
+            <Row id="app-main" />
           </Grid>
           <script id="app-state" dangerouslySetInnerHTML={{ __html: this.props.state }} />
           <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" />
@@ -48,10 +46,6 @@ class Layout extends React.Component {
           <script src="https://unpkg.com/react-dom@15.4.1/dist/react-dom.min.js" />
 
           <script src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.30.7/react-bootstrap.min.js" />
-
-          <script src="https://unpkg.com/classnames/index.js" />
-          <script src="https://unpkg.com/react-input-autosize/dist/react-input-autosize.js" />
-          <script src="https://unpkg.com/react-select/dist/react-select.js" />
 
           <script src="/public/assets/client.bundle.js" />
         </body>

@@ -1,14 +1,15 @@
 const React = require('react');
+const Layout = require('./Layout');
 
 class Error extends React.Component {
   render() {
     console.log(this.props);
     return (
-      <div>
+      <Layout>
         <div>{this.props.statusCode}</div>
         <div>{this.props.errorTitle}</div>
         <div>{this.props.errorMessage}</div>
-      </div>
+      </Layout>
     );
   }
 }
