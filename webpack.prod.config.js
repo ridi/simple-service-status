@@ -1,20 +1,14 @@
 const path = require('path');
 const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-  entry: './lib/client.js',
-
-  resolve: {
-    extensions: ['', '.js', '.jsx'],
-  },
-
+  entry: './src/client.js',
+  devtool: 'source-map',
   output: {
     path: path.join(__dirname, '/public'),
     filename: 'client.bundle.js',
   },
-
-  devtool: 'source-map',
-
   plugins: [
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
@@ -28,16 +22,22 @@ module.exports = {
         NODE_ENV: JSON.stringify('production'),
       },
     }),
+    new ExtractTextPlugin('client.bundle.css', { allChunks: true }),
   ],
-
+  resolve: {
+    extensions: ['', '.js', '.jsx'],
+  },
   module: {
-    loaders: [{
-      test: /\.jsx$/,
-      loader: 'babel',
-      exclude: /node_modules/,
-      query: {
-        presets: ['react', 'es2015'],
+    loaders: [
+      {
+        test: /\.(js|jsx)$/,
+        loaders: ['react-hot', 'babel-loader'],
+        exclude: /node_modules/,
       },
-    }],
+      {
+        test: /(\.scss|\.css)$/,
+        loader: ExtractTextPlugin.extract('style', 'css?sourceMap!sass?sourceMap'),
+      }
+    ],
   },
 };
