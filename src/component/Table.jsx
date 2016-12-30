@@ -3,22 +3,21 @@ const BSTable = require('react-bootstrap/lib/Table');
 const Checkbox = require('react-bootstrap/lib/Checkbox');
 
 class Column extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      content: props.options.key ? props.item[props.options.key] : '',
-    };
-    if (typeof props.options.display === 'function') {
-      const displayResult = props.options.display(props.item);
+  render() {
+    let content = this.props.options.key ? this.props.item[this.props.options.key] : '';
+    if (typeof this.props.options.display === 'function') {
+      const displayResult = this.props.options.display(this.props.item);
       if (displayResult instanceof Promise) {
-        displayResult.then(content => this.setState({ content })).catch(error => this.setState({ content: error.message }));
+        displayResult.then((content) => {
+          React.Children.map(this.props.children, (child => React.cloneElement(child, {}, content)));
+        }).catch((error) => {
+          React.Children.map(this.props.children, (child => React.cloneElement(child, {}, error.message)));
+        });
       } else {
-        this.state.content = displayResult;
+        content = displayResult;
       }
     }
-  }
-  render() {
-    return <td>{this.state.content}</td>;
+    return <td>{content}</td>;
   }
 }
 Column.propTypes = {
@@ -27,15 +26,7 @@ Column.propTypes = {
 };
 
 class Row extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      checked: props.checked,
-    };
-  }
-
   onCheckboxChanged(e) {
-    //this.setState({ checked: !this.props.checked });
     this.props.onCheckboxChange(e.target.checked, this.props.item);
   }
 
@@ -51,6 +42,8 @@ class Row extends React.Component {
 Row.propTypes = {
   item: React.PropTypes.object.isRequired,
   columns: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
+  checked: React.PropTypes.bool,
+  onCheckboxChange: React.PropTypes.func,
 };
 
 class ChildRow extends React.Component {
@@ -64,9 +57,9 @@ class ChildRow extends React.Component {
               <col />
             </colgroup>
             <tbody>
-            {this.props.columns.map((col, idx) => {
-              return <tr key={idx}><th>{col.title}</th><Column item={this.props.item} options={col} /></tr>;
-            })}
+              {this.props.columns.map((col, idx) => {
+                return <tr key={idx}><th>{col.title}</th><Column item={this.props.item} options={col} /></tr>;
+              })}
             </tbody>
           </BSTable>
         </td>
@@ -77,6 +70,7 @@ class ChildRow extends React.Component {
 ChildRow.propTypes = {
   item: React.PropTypes.object.isRequired,
   columns: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
+  colSpan: React.PropTypes.number,
 };
 
 
@@ -149,6 +143,7 @@ class Table extends React.Component {
 Table.propTypes = {
   items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
   columns: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
+  onCheckboxChange: React.PropTypes.func,
 };
 
 module.exports = Table;

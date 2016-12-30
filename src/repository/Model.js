@@ -10,6 +10,7 @@ const url = process.env.MONGODB_URI || 'mongodb://localhost';
 const co = require('co');
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
+const ObjectID = mongodb.ObjectID;
 
 /**
  * @class
@@ -44,7 +45,10 @@ class Model {
   }
 
   save(model) {
-    return this.runQuery(collection => collection.insertOne(model));
+    if (model._id) {
+      model._id = ObjectID(model._id);
+    }
+    return this.runQuery(collection => collection.save(model));
   }
 }
 

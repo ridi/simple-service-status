@@ -31,10 +31,16 @@ class StatusList extends React.Component {
     this.columns = [
       {
         title: '디바이스 타입',
-        display: row => row.deviceType ? row.deviceType.join(', ') : '',
+        display: row => row.deviceType ? <span>{row.deviceType.join(', ')}</span> : '',
       },
-      { title: '디바이스 버전', key: 'deviceVersion' },
-      { title: '앱 버전', key: 'appVersion' },
+      {
+        title: '디바이스 버전',
+        display: row => <span>{`${row.deviceVersion[0]} ${row.deviceVersion.length > 1 ? row.deviceVersion.slice(1).join('.') : ''}`}</span>,
+      },
+      {
+        title: '앱 버전',
+        display: row => <span>{`${row.appVersion[0]} ${row.appVersion.length > 1 ? row.appVersion.slice(1).join('.') : ''}`}</span>,
+      },
       {
         title: '기간',
         display: (row) => {
@@ -72,16 +78,14 @@ class StatusList extends React.Component {
       },
       {
         title: '활성화',
-        display: (row) => {
-          return <Label bsStyle={row.isActivated ? 'success' : 'default'}>{row.isActivated ? 'ON' : 'OFF'}</Label>;
-        },
+        display: row => <Label bsStyle={row.isActivated ? 'success' : 'default'}>{row.isActivated ? 'ON' : 'OFF'}</Label>,
       },
     ];
   }
 
   refresh() {
     axios.get('/api/v1/status')
-      .then(items => this.setState({ items, error: null }))
+      .then(response => this.setState({ items: response.data, error: null }))
       .catch(error => this.setState({ error }));
   }
 
@@ -96,28 +100,34 @@ class StatusList extends React.Component {
     this.setState({ checkedItems });
   }
 
-  onModifyClicked(e) {
-    this.setState({ targetItem: this.state.checkedItems[0] });
-    this.modal.show(e);
+  showModal(mode, data) {
+    this.modal.show(mode, data);
+  }
+
+  activate() {
+    // TODO
+  }
+
+  remove() {
+    // TODO
   }
 
   render() {
     const modal = (
       <CreateModal
-        ref={m => this.modal = m}
+        ref={(m) => { this.modal = m; }}
         statusTypes={this.props.statusTypes}
         onSuccess={() => this.refresh()}
-        initialData={this.state.targetItem}
       />
     );
     return (
       <div>
         <ButtonToolbar pullRight>
-          <Button onClick={e => this.modal.show(e)} bsSize="small" disabled={this.state.buttonDisabled.add}>등록</Button>
-          <Button onClick={e => this.onModifyClicked(e)} bsSize="small" disabled={this.state.buttonDisabled.modify}>수정</Button>
-          <Button onClick={e => this.modal.show(e)} bsSize="small" disabled={this.state.buttonDisabled.clone}>복제</Button>
-          <Button onClick={e => this.modal.show(e)} bsSize="small" disabled={this.state.buttonDisabled.activate}>활성화</Button>
-          <Button onClick={e => this.modal.show(e)} bsSize="small" bsStyle="danger" disabled={this.state.buttonDisabled.remove}>삭제</Button>
+          <Button onClick={() => this.showModal('add')} bsSize="small" disabled={this.state.buttonDisabled.add}>등록</Button>
+          <Button onClick={() => this.showModal('modify', this.state.checkedItems[0])} bsSize="small" disabled={this.state.buttonDisabled.modify}>수정</Button>
+          <Button onClick={() => this.showModal('add', this.state.checkedItems[0])} bsSize="small" disabled={this.state.buttonDisabled.clone}>복제</Button>
+          <Button onClick={() => this.activate()} bsSize="small" disabled={this.state.buttonDisabled.activate}>활성화</Button>
+          <Button onClick={() => this.remove()} bsSize="small" bsStyle="danger" disabled={this.state.buttonDisabled.remove}>삭제</Button>
         </ButtonToolbar>
         <Table items={this.state.items} columns={this.columns} error={this.state.error} onCheckboxChange={(checkedItems => this.onChechboxChanged(checkedItems))} />
         {modal}

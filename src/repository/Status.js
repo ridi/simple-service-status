@@ -10,7 +10,7 @@ const Model = require('./Model');
 class Status extends Model {
 
   findAll(sort) {
-    return super.find({}, sort).then(results => results.map(this._toView));
+    return super.find({}, sort);
   }
 
   find(deviceType, deviceVersion, appVersion) {
@@ -26,7 +26,7 @@ class Status extends Model {
         result.deviceType.includes(deviceType)
         && self._compareVersion(result.deviceVersion, deviceVersion)
         && self._compareVersion(result.appVersion, appVersion)
-      )).map(this._toView)
+      ))
     );
   }
 
@@ -87,7 +87,7 @@ class Status extends Model {
     return {
       _id: model._id,
       deviceType: model.deviceType,
-      deviceVersion: model.deviceVersion.join(' ').replace(/([\d]+)\s([\d]+)/g, '$1.$2'),
+      deviceVersion: model.deviceVersion,
       appVersion: model.appVersion.join(' ').replace(/([\d]+)\s([\d]+)/g, '$1.$2'),
       startTime: model.startTime,
       endTime: model.endTime,

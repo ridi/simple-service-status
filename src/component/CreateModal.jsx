@@ -38,43 +38,58 @@ const options = {
   ],
 };
 
+const defaultData = {
+  type: options.types[0],
+  startTime: moment(),
+  endTime: moment().add(2, 'hours'),
+  deviceType: [],
+  deviceVersionComparator: options.comparators[0],
+  deviceVersion: '',
+  appVersionComparator: options.comparators[0],
+  appVersion: '',
+  contents: '',
+};
+
 class CreateModal extends React.Component {
   constructor(props) {
     super(props);
     const self = this;
 
-    options.types = this.props.statusTypes;
-
-    const defaultData = {
-      type: options.types[0],
-      startTime: moment(),
-      endTime: moment().add(2, 'hours'),
-      deviceType: [],
-      deviceVersionComparator: options.comparators[0],
-      deviceVersion: '',
-      appVersionComparator: options.comparators[0],
-      appVersion: '',
-      contents: '',
-    };
+    options.types = props.statusTypes;
 
     this.state = {
+      title: '새로운 알림 등록',
+      mode: 'add',
       startTimeState: null,
       endTimeState: null,
       deviceVersionDisabled: true,
       appVersionDisabled: true,
     };
 
-    Object.assign(this.state, defaultData, props.initialData || {});
+    Object.assign(this.state, defaultData);
 
-    this.buttons = [
-      { label: '저장', onClick: (e, modal) => self.onSave(false, modal), style: 'primary' },
-      { label: '저장과 함께 활성화', onClick: (e, modal) => self.onSave(true, modal) },
-    ];
+    this.modes = {
+      add: {
+        title: '새로운 알림 등록',
+        buttons: [
+          { label: '저장', onClick: (e, modal) => self.onSave(false, modal), style: 'primary' },
+          { label: '저장과 함께 활성화', onClick: (e, modal) => self.onSave(true, modal) },
+        ],
+      },
+      modify: {
+        title: '알림 업데이트',
+        buttons: [
+          { label: '업데이트', onClick: (e, modal) => self.onSave(false, modal), style: 'primary' },
+          { label: '업데이트와 함께 활성화', onClick: (e, modal) => self.onSave(true, modal) },
+        ],
+      },
+    };
   }
 
   onSave(withActivation, modal) {
     const self = this;
     const data = {
+      _id: this.state._id,
       type: this.state.type.value,
       deviceType: this.state.deviceType.map(dt => dt.value),
       deviceVersion: [this.state.deviceVersionComparator.value]
@@ -87,18 +102,24 @@ class CreateModal extends React.Component {
       isActivated: withActivation,
     };
 
-    console.log(data, modal);
+    const api = (this.state.mode === 'add')
+      ? axios.post('/api/v1/status', data)
+      : axios.put(`/api/v1/status/${data._id}`, data);
 
-    axios.post('/api/v1/status', data).then(response => {
+    api.then((response) => {
       if (typeof self.props.onSuccess === 'function') {
         self.props.onSuccess();
       }
       self.modal.close();
       console.log(`Add Status Success: ${response}`);
-    }).catch(err => self.modal.alert('저장 도중 에러가 발생했습니다. 다시 시도해주세요.', 'warning'));
+    }).catch(() => self.modal.alert('저장 도중 에러가 발생했습니다. 다시 시도해주세요.', 'warning'));
   }
 
-  show() {
+  show(mode, data) {
+    this.setState({ mode });
+    if (data) {
+      this.resolveData(data);
+    }
     this.modal.show();
   }
 
@@ -109,6 +130,24 @@ class CreateModal extends React.Component {
       return;
     }
     this.setState({ endTimeState: null });
+  }
+
+  resolveData(data) {
+    const newData = {
+      _id: data._id,
+      type: options.types.find(o => o.value === data.type),
+      deviceType: options.deviceTypes.filter(o => data.deviceType.includes(o.value)),
+      deviceVersionComparator: options.comparators.find(o => o.value === data.deviceVersion[0]),
+      deviceVersion: data.deviceVersion.length > 1 ? data.deviceVersion.slice(1).join('.') : '',
+      appVersionComparator: options.comparators.find(o => o.value === data.appVersion[0]),
+      appVersion: data.appVersion.length > 1 ? data.appVersion.slice(1).join('.') : '',
+      startTime: moment(data.startTime).utcOffset(9),
+      endTime: moment(data.endTime).utcOffset(9),
+      contents: data.contents,
+      isActivated: data.isActivated,
+    };
+
+    this.setState(newData);
   }
 
   onEndTimeChanged(endTime) {
@@ -133,7 +172,7 @@ class CreateModal extends React.Component {
 
   render() {
     return (
-      <Modal title="새로운 알람 등록" ref={(modal) => { this.modal = modal; }} buttons={this.buttons}>
+      <Modal title={this.modes[this.state.mode].title} ref={(modal) => { this.modal = modal; }} buttons={this.modes[this.state.mode].buttons}>
         <FormGroup controlId="type">
           <ControlLabel>알람 타입</ControlLabel>
           <SimpleSelect value={this.state.type} onValueChange={type => this.setState({ type })} placeholder="알람 타입을 선택하세요" options={options.types} />
@@ -172,7 +211,7 @@ class CreateModal extends React.Component {
         <FormGroup controlId="deviceType">
           <ControlLabel>타겟 디바이스 타입</ControlLabel>
           <MultiSelect
-            value={this.state.deviceType}
+            values={this.state.deviceType}
             onValuesChange={deviceType => this.setState({ deviceType })}
             placeholder="디바이스 타압을 선택하세요"
             options={options.deviceTypes}
