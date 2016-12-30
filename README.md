@@ -4,6 +4,7 @@
 
 ### Prerequisite
 
+- [Node](https://nodejs.org/ko/) v6.9.1 버전 이상 설치
 - [MongoDB](https://www.mongodb.com/) 설치
 
 ### Make .env file
