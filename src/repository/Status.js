@@ -85,6 +85,7 @@ class Status extends Model {
 
   _toView(model) {
     return {
+      _id: model._id,
       deviceType: model.deviceType,
       deviceVersion: model.deviceVersion.join(' ').replace(/([\d]+)\s([\d]+)/g, '$1.$2'),
       appVersion: model.appVersion.join(' ').replace(/([\d]+)\s([\d]+)/g, '$1.$2'),
@@ -92,6 +93,7 @@ class Status extends Model {
       endTime: model.endTime,
       type: model.type,
       contents: model.contents,
+      isActivated: model.isActivated,
     };
   }
 }

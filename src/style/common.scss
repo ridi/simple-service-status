@@ -1,6 +1,108 @@
 @import '../../node_modules/react-selectize/themes/index.css';
 @import '../../node_modules/react-datetime/css/react-datetime.css';
 
+body {
+  font-size: 13px;
+}
+
+p {
+  margin: 0 0 0.2em;
+}
+
+table {
+  border: 0;
+  tbody {
+    tr {
+      &.main-row {
+        background-color: #fbfbfb;
+      }
+    }
+  }
+
+  table { /* inner table */
+    margin-bottom: 0 !important;
+    tbody {
+      tr {
+        th, td {
+          border-top: 0 !important;
+          font-size: 0.85em;
+        }
+      }
+    }
+  }
+}
+
+.btn-toolbar {
+  margin-bottom: 15px;
+  text-align: right;
+}
+.btn-default {
+  color: #333;
+  background-color: #fff;
+  border-color: #e0e0e0;
+}
+.btn-default:hover {
+  background-color: #f3f3f3;
+  border-color: #dcdcdc;
+}
+.btn-danger {
+  color: #fff;
+  background-color: #d26565;
+  border-color: #d45959;
+}
+.btn-danger:hover {
+  background-color: #d25959;
+  border-color: #d04040;
+}
+
+.label-default {
+  background-color: #adadad;
+}
+.label-success {
+  background-color: #85d265;
+}
+.label {
+  display: inline;
+  padding: .2em .6em .3em;
+  font-size: 75%;
+  font-weight: 300;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25em;
+}
+
+  // Forms
+label {
+  color: #4e8bbf;
+  font-weight: 400;
+}
+.form-control {
+  color: #000;
+  font-weight: 300;
+  box-shadow: none;
+  border-radius: 2px;
+  border: 1px solid #cccccc;
+}
+.btn {
+  &.btn-default {
+    color: #5a5a5a;
+  }
+}
+.checkbox, .radio {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.checkbox label, .radio label {
+  min-height: 14px;
+  padding-left: 20px;
+  margin-bottom: 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+
 // Bootstrap Override
 .row {
   div ~ div {
@@ -11,18 +113,59 @@
     margin-top: -10px;
     margin-bottom: 15px;
     font-size: 0.9em;
-    color: #697fb5;
+    color: #cccccc;
+  }
+}
+
+.navbar {
+  &.navbar-default {
+    background-color: #4e8bbf;
+    border-bottom: 0;
+    -webkit-box-shadow: 0px 4px 4px 0px rgba(212,212,212,0.5);
+    -moz-box-shadow: 0px 4px 4px 0px rgba(212,212,212,0.5);
+    box-shadow: 0px 4px 4px 0px rgba(212,212,212,0.5);
+  }
+  .navbar-brand {
+    color: #fff;
+    font-weight: 200;
+    font-size: 20px;
+  }
+  .navbar-nav > li > a {
+    font-weight: 300;
+    color: #fff;
+    &:hover {
+      color: #dedef2;
+    }
+  }
+  @media (min-width: 768px) {
+    border-radius: 0;
   }
 }
 
 // React Selectize
 .react-selectize {
-  &.root-node {
+  &.root-node.default {
     width: auto;
     .react-selectize-control {
       padding: 0;
-      background-color: #fff;
-      background-image: none;
+      background-color: #fff !important;
+      background-image: none !important;
+      font-weight: 300;
+      color: #000 !important;
+      border-radius: 2px !important;
+      border-color: #ccc;
+      .react-selectize-placeholder {
+        color: #aaa;
+        line-height: 32px;
+      }
+      .react-selectize-toggle-button-container {
+        svg {
+          height: 6px !important;
+        }
+      }
+      .react-selectize-search-field-and-selected-values {
+        padding-left: 10px;
+      }
     }
   }
   &.multi-select.default.root-node {
@@ -30,6 +173,11 @@
       background: #ebecf1;
       border: 1px solid #6b81b6;
       color: #6b81b6;
+    }
+    .react-selectize-control {
+      .react-selectize-search-field-and-selected-values {
+        padding-left: 4px;
+      }
     }
   }
 }

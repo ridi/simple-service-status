@@ -25,6 +25,7 @@ require('babel-polyfill');
 const server = new Hapi.Server();
 server.connection({ port: process.env.PORT || 8080 });
 
+// TODO request-error event를 받는 방식으로 변경하기
 const errorConfig = {
   templateName: 'Error',
   statusCodes: {

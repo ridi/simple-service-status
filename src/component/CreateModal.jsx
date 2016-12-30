@@ -45,23 +45,29 @@ class CreateModal extends React.Component {
 
     options.types = this.props.statusTypes;
 
-    this.state = {
+    const defaultData = {
       type: options.types[0],
       startTime: moment(),
       endTime: moment().add(2, 'hours'),
       deviceType: [],
       deviceVersionComparator: options.comparators[0],
+      deviceVersion: '',
       appVersionComparator: options.comparators[0],
+      appVersion: '',
+      contents: '',
+    };
 
+    this.state = {
       startTimeState: null,
       endTimeState: null,
-
       deviceVersionDisabled: true,
       appVersionDisabled: true,
     };
 
+    Object.assign(this.state, defaultData, props.initialData || {});
+
     this.buttons = [
-      { label: '저장', onClick: (e, modal) => self.onSave(false, modal) },
+      { label: '저장', onClick: (e, modal) => self.onSave(false, modal), style: 'primary' },
       { label: '저장과 함께 활성화', onClick: (e, modal) => self.onSave(true, modal) },
     ];
   }
@@ -84,6 +90,9 @@ class CreateModal extends React.Component {
     console.log(data, modal);
 
     axios.post('/api/v1/status', data).then(response => {
+      if (typeof self.props.onSuccess === 'function') {
+        self.props.onSuccess();
+      }
       self.modal.close();
       console.log(`Add Status Success: ${response}`);
     }).catch(err => self.modal.alert('저장 도중 에러가 발생했습니다. 다시 시도해주세요.', 'warning'));

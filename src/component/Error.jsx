@@ -1,15 +1,14 @@
 const React = require('react');
-const Layout = require('./Layout');
+const Col = require('react-bootstrap/lib/Col');
 
 class Error extends React.Component {
   render() {
-    console.log(this.props);
     return (
-      <Layout>
+      <Col xs={10} md={6} xsOffset={1} mdOffset={3}>
         <div>{this.props.statusCode}</div>
         <div>{this.props.errorTitle}</div>
         <div>{this.props.errorMessage}</div>
-      </Layout>
+      </Col>
     );
   }
 }

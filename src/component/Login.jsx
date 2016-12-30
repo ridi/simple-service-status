@@ -18,16 +18,16 @@ class Login extends React.Component {
 
   render() {
     return (
-      <Col xs={10} md={6} xsOffset={1} mdOffset={3}>
+      <Col xxs={10} xxsOffset={1} xs={6} xsOffset={3} md={4} mdOffset={4}>
         <Alert style={{ display: this.props.errorMessage ? 'block' : 'none' }} bsStyle="warning">{this.props.errorMessage}</Alert>
         <Form method="post" action="/login">
           <FormGroup controlId="username">
-            <ControlLabel>Username</ControlLabel>
-            <FormControl type="text" name="username" value={this.state.username} onChange={e => this.setState({ username: e.target.value })} placeholder="Username" />
+            <ControlLabel>사용자 이름</ControlLabel>
+            <FormControl type="text" name="username" value={this.state.username} onChange={e => this.setState({ username: e.target.value })} placeholder="사용자 이름을 입력하세요" />
           </FormGroup>
           <FormGroup controlId="password">
-            <ControlLabel>Password</ControlLabel>
-            <FormControl type="password" name="password" value={this.state.password} onChange={e => this.setState({ password: e.target.value })} placeholder="Password" />
+            <ControlLabel>패스워드</ControlLabel>
+            <FormControl type="password" name="password" value={this.state.password} onChange={e => this.setState({ password: e.target.value })} placeholder="패스워드를 입력하세요" />
           </FormGroup>
           <FormGroup>
             <Button type="submit">Submit</Button>

@@ -1,14 +1,15 @@
 const React = require('react');
 const BSTable = require('react-bootstrap/lib/Table');
+const Checkbox = require('react-bootstrap/lib/Checkbox');
 
 class Column extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      content: this.props.options.key ? this.props.item[this.props.options.key] : '',
+      content: props.options.key ? props.item[props.options.key] : '',
     };
-    if (typeof this.props.options.display === 'function') {
-      const displayResult = this.props.options.display(this.props.item);
+    if (typeof props.options.display === 'function') {
+      const displayResult = props.options.display(props.item);
       if (displayResult instanceof Promise) {
         displayResult.then(content => this.setState({ content })).catch(error => this.setState({ content: error.message }));
       } else {
@@ -26,8 +27,25 @@ Column.propTypes = {
 };
 
 class Row extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      checked: props.checked,
+    };
+  }
+
+  onCheckboxChanged(e) {
+    //this.setState({ checked: !this.props.checked });
+    this.props.onCheckboxChange(e.target.checked, this.props.item);
+  }
+
   render() {
-    return <tr>{this.props.columns.map(col => <Column item={this.props.item} options={col} />)}</tr>;
+    return (
+      <tr className="main-row">
+        <td><Checkbox onChange={e => this.onCheckboxChanged(e)} checked={this.props.checked} /></td>
+        {this.props.columns.map((col, idx) => <Column key={idx} item={this.props.item} options={col} />)}
+      </tr>
+    );
   }
 }
 Row.propTypes = {
@@ -39,11 +57,17 @@ class ChildRow extends React.Component {
   render() {
     return (
       <tr>
-        <td colSpan={this.props.columns.length}>
-          <BSTable responsive>
-            {this.props.columns.map(col => {
-              return <tr><th>{col.label}</th><Column item={this.props.item} options={col} /></tr>;
+        <td colSpan={this.props.colSpan}>
+          <BSTable>
+            <colgroup>
+              <col style={{ width: '100px' }} />
+              <col />
+            </colgroup>
+            <tbody>
+            {this.props.columns.map((col, idx) => {
+              return <tr key={idx}><th>{col.title}</th><Column item={this.props.item} options={col} /></tr>;
             })}
+            </tbody>
           </BSTable>
         </td>
       </tr>
@@ -57,19 +81,67 @@ ChildRow.propTypes = {
 
 
 class Table extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      allChecked: false,
+      checkedItems: [],
+    };
+  }
+
+  onCheckboxChanged(checked, isAll, targetItem) {
+    let checkedItems = this.state.checkedItems;
+    let allChecked = this.state.allChecked;
+    if (isAll) {
+      checkedItems = checked ? this.props.items.slice(0) : [];
+      allChecked = checked;
+    } else {
+      if (checked) {
+        checkedItems = checkedItems.concat(targetItem);
+        if (checkedItems.length === this.props.items.length) {
+          allChecked = true;
+        }
+      } else {
+        const idx = checkedItems.indexOf(targetItem);
+        if (idx > -1) {
+          checkedItems.splice(idx, 1);
+          allChecked = false;
+        }
+      }
+    }
+    this.setState({ checkedItems, allChecked });
+    this.props.onCheckboxChange(checkedItems);
+  }
+
   render() {
+    const self = this;
     const mainCols = this.props.columns.filter(column => !column.isChildRow);
     const childCols = this.props.columns.filter(column => column.isChildRow);
+
+    const rows =  this.props.items.map((item, idx) => {
+      const checked = self.state.checkedItems.includes(item);
+      return [
+        <Row
+          key={idx}
+          item={item}
+          columns={mainCols}
+          onCheckboxChange={(isChecked, targetItem) => this.onCheckboxChanged(isChecked, false, targetItem)}
+          checked={checked}
+        />,
+        <ChildRow item={item} columns={childCols} colSpan={mainCols.length + 1} />,
+      ];
+    });
+
     return (
       <BSTable responsive>
         <thead>
           <tr>
-            {mainCols.map(col => <th>{col.title}</th>)}
+            <th><Checkbox onChange={e => this.onCheckboxChanged(e.target.checked, true)} checked={this.state.allChecked} /></th>
+            {mainCols.map((col, idx) => <th key={idx}>{col.title}</th>)}
           </tr>
         </thead>
-        <tbody>
-          {this.props.items.map(item => (<Row item={item} columns={mainCols} />/*, <ChildRow item={item} columns={childCols} />*/))}
-        </tbody>
+        <tbody>{rows}</tbody>
       </BSTable>
     );
   }

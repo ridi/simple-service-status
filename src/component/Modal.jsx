@@ -40,7 +40,7 @@ class Modal extends React.Component {
         </RBModal.Body>
         <RBModal.Footer>
           {this.props.buttons instanceof Array && this.props.buttons.map(button => {
-            return (<Button onClick={e => button.onClick(e, modal)}>{button.label}</Button>);
+            return (<Button onClick={e => button.onClick(e, modal)} bsStyle={button.style || 'default'}>{button.label}</Button>);
           })}
           <Button onClick={e => this.close(e)}>닫기</Button>
         </RBModal.Footer>

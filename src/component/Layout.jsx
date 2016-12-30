@@ -12,28 +12,24 @@ class Layout extends React.Component {
   render() {
     let button;
     if (this.props.auth && this.props.auth.isAuthenticated) {
-      button = <NavItem href="/logout">Logout {this.props.auth.username}</NavItem>;
+      button = <NavItem href="/logout">{this.props.auth.username} 로그아웃</NavItem>;
     } else {
-      button = <NavItem href="/login">Login</NavItem>;
+      button = <NavItem href="/login">로그인</NavItem>;
     }
     return (
       <html lang="ko">
         <head>
-          <title>{this.props.title}</title>
+          <title>긴급 공지사항 등록 시스템</title>
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
           <link rel="stylesheet" href="/public/assets/client.bundle.css" />
         </head>
         <body>
           <Navbar>
             <Navbar.Header>
-              <Navbar.Brand>
-                Notifications
-              </Navbar.Brand>
+              <Navbar.Brand>긴급 공지사항 등록 시스템</Navbar.Brand>
             </Navbar.Header>
             <Navbar.Collapse>
-              <Nav pullRight>
-                {button}
-              </Nav>
+              <Nav pullRight>{button}</Nav>
             </Navbar.Collapse>
           </Navbar>
           <Grid>

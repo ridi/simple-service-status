@@ -12,9 +12,15 @@ const StatusType = require('../repository/StatusType');
 
 const util = require('./../util');
 
-function view(reply, childViewName, context) {
+function view(request, reply, childViewName, context) {
   const ctx = context || {};
   ctx.childComponentName = childViewName;
+  if (request.auth) {
+    ctx.auth = {
+      isAuthenticated: request.auth.isAuthenticated,
+      username: request.auth.credentials ? request.auth.credentials.username : undefined,
+    };
+  }
   ctx.state = `window.state = ${JSON.stringify(ctx)}`;
   return reply.view('Layout', ctx);
 }
@@ -26,20 +32,8 @@ module.exports = [
     handler: (request, reply) => Promise.all([
       Status.findAll({ isActivated: -1, startTime: -1, endTime: -1 }),
       StatusType.find(),
-    ]).then(([items, statusTypes]) => {
-      const context = {
-        items,
-        statusTypes,
-        auth: {
-          isAuthenticated: request.auth.isAuthenticated,
-          username: request.auth.credentials.username,
-        },
-      };
-      return view(reply, 'StatusList', context);
-    }).catch(error => reply.view('Error', {
-      error,
-      auth: request.auth,
-    })),
+    ]).then(([items, statusTypes]) => view(request, reply, 'StatusList', { items, statusTypes })
+    ).catch(error => view(request, reply, 'Error', { error })),
   },
   {
     method: 'GET',
@@ -48,7 +42,7 @@ module.exports = [
       if (request.auth.isAuthenticated) {
         return reply.redirect('/');
       }
-      return view(reply, 'Login');
+      return view(request, reply, 'Login');
     },
     config: {
       auth: { mode: 'try' },
@@ -61,10 +55,10 @@ module.exports = [
       if (!request.payload.username || !request.payload.password) {
         return reply.view('Login', { errorMessage: 'Missing username or password' });
       }
-      User.find(request.payload.username).then((account) => {
+      return User.find(request.payload.username).then((account) => {
         // TODO PASSWORD 암호화
         if (!account || account.password !== request.payload.password) {
-          return view(reply, 'Login', { errorMessage: 'Invalid username or password' });
+          return view(request, reply, 'Login', { errorMessage: 'Invalid username or password' });
         }
         const redirectUrl = URL.parse(request.info.referrer, true).query.redirect;
         return reply()
