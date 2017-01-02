@@ -4,8 +4,9 @@
  * @since 1.0.0
  */
 
+const config = require('../config/server.config');
 
-const url = process.env.MONGODB_URI || 'mongodb://localhost';
+const url = process.env.MONGODB_URI || config.defaults.mongoDBUrl;
 
 const co = require('co');
 const mongodb = require('mongodb');

@@ -2,12 +2,14 @@ const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
+const config = require('./src/config/server.config').build;
+
 module.exports = {
-  entry: './src/client.js',
+  entry: config.entry,
   devtool: 'source-map',
   output: {
-    path: path.join(__dirname, '/public'),
-    filename: 'client.bundle.js',
+    path: path.join(__dirname, `/${config.outputDirectoryName}`),
+    filename: config.outputJsFileName,
   },
   plugins: [
     new webpack.optimize.DedupePlugin(),
@@ -22,7 +24,7 @@ module.exports = {
         NODE_ENV: JSON.stringify('production'),
       },
     }),
-    new ExtractTextPlugin('client.bundle.css', { allChunks: true }),
+    new ExtractTextPlugin(config.outputCssFileName, { allChunks: true }),
   ],
   resolve: {
     extensions: ['', '.js', '.jsx'],

@@ -12,6 +12,8 @@ const StatusType = require('../repository/StatusType');
 
 const util = require('./../util');
 
+const config = require('../config/server.config');
+
 function view(request, reply, childViewName, context) {
   const ctx = context || {};
   ctx.childComponentName = childViewName;
@@ -62,7 +64,7 @@ module.exports = [
         }
         const redirectUrl = URL.parse(request.info.referrer, true).query.redirect;
         return reply()
-          .state('token', util.generateToken(account), { path: '/', ttl: 24 * 60 * 60 * 1000, isSecure: false })
+          .state('token', util.generateToken(account), { path: '/', ttl: config.auth.tokenTTL, isSecure: false })
           .redirect(redirectUrl || '/');
       });
     },

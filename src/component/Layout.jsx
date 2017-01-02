@@ -7,7 +7,6 @@ const NavItem = require('react-bootstrap/lib/NavItem');
 const Grid = require('react-bootstrap/lib/Grid');
 const Row = require('react-bootstrap/lib/Row');
 
-// TODO Login/Logout 버튼
 class Layout extends React.Component {
   render() {
     let button;

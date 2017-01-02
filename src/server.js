@@ -1,9 +1,8 @@
 /**
- * Service API router
+ * Server main
  *
  * @since 1.0.0
  *
- * // TODO 1 minute caching (query=>key)
  */
 
 const Hapi = require('hapi');
@@ -18,18 +17,20 @@ const apiRouter = require('./router/api-router');
 const baseRouter = require('./router/ui-router');
 const User = require('./repository/User');
 
+const config = require('./config/server.config');
+
 // For JSX transpiling
 require('babel-register');
 require('babel-polyfill');
 
 const server = new Hapi.Server();
-server.connection({ port: process.env.PORT || 8080 });
+server.connection({ port: process.env.PORT || config.defaults.port });
 
 // TODO request-error event를 받는 방식으로 변경하기
 const errorConfig = {
   templateName: 'Error',
   statusCodes: {
-    401: { redirect: '/login' },
+    401: { redirect: config.url.loginUI },
   },
 };
 
@@ -51,8 +52,12 @@ exports.start = (extraRoutes) => {
     }
 
     server.auth.strategy('jwt', 'jwt', {
-      key: process.env.SECRET_KEY || 'secretkey',
+      key: process.env.SECRET_KEY || config.auth.secretKey,
       validateFunc(decoded, request, callback) {
+        if (decoded.exp < new Date().getTime()) {
+          // expired token
+          return callback(null, false);
+        }
         User.find(decoded.username)
           .then(account => callback(null, !!account))
           .catch(() => callback(null, false));
@@ -65,16 +70,16 @@ exports.start = (extraRoutes) => {
     server.views({
       engines: { jsx: HapiReactViews },
       relativeTo: __dirname,
-      path: 'component',
+      path: config.directory.component,
     });
 
     // for static assets
     server.route({
       method: 'GET',
-      path: '/public/assets/{param*}',
+      path: `${config.url.publicPrefix}/{param*}`,
       handler: {
         directory: {
-          path: 'public',
+          path: config.directory.public,
           listing: false,
         },
       },

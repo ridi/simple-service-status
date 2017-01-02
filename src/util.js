@@ -5,6 +5,7 @@
  */
 
 const JWT = require('jsonwebtoken');
+const config = require('./config/server.config');
 
 /**
  * Set pads at the front of the string.
@@ -23,15 +24,15 @@ exports.padStart = (str, padStr, num) => {
 /**
  * Generate auth token
  * @param account
- * @param ttl time to live by second
+ * @param ttl time to live in millisecond
  * @returns {*}
  */
 exports.generateToken = (account, ttl) => JWT.sign({
   id: account.id,
   username: account.username,
   role: account.role,
-  exp: (new Date().getTime() / 1000) + (ttl || 24 * 60 * 60),
-}, process.env.SECRET_KEY || 'secretkey');
+  exp: new Date().getTime() + (ttl || config.auth.tokenTTL),
+}, process.env.SECRET_KEY || config.auth.secretKey);
 
 /**
  * Extract current logged-in user information from request

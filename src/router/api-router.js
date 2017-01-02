@@ -3,18 +3,17 @@
  *
  * @since 1.0.0
  *
- * // TODO findAll, save => authentication
+ * // TODO 1 minute caching (query=>key)
  */
-
-const API_PREFIX = '/api/v1/status';
 
 const Joi = require('joi');
 const Status = require('./../repository/Status');
+const config = require('../config/server.config').url;
 
 module.exports = [
   {
     method: 'GET',
-    path: API_PREFIX,
+    path: `${config.statusApiPrefix}`,
     handler: (request, reply) => {
       Status.findAll({ endTime: -1, startTime: -1, isActivated: -1 })
         .then(result => reply(result))
@@ -29,7 +28,7 @@ module.exports = [
   },
   {
     method: 'GET',
-    path: `${API_PREFIX}/check`,
+    path: `${config.statusApiPrefix}/check`,
     handler: (request, reply) => {
       Status.find(request.query.deviceType || '*', request.query.deviceVersion || '*', request.query.appVersion || '*')
         .then(result => reply(result))
@@ -48,7 +47,7 @@ module.exports = [
   },
   {
     method: 'POST',
-    path: API_PREFIX,
+    path: `${config.statusApiPrefix}`,
     handler: (request, reply) => {
       request.payload.startTime = new Date(Date.parse(request.payload.startTime));
       request.payload.endTime = new Date(Date.parse(request.payload.endTime));
@@ -73,7 +72,7 @@ module.exports = [
   },
   {
     method: 'PUT',
-    path: `${API_PREFIX}/{statusId}`,
+    path: `${config.statusApiPrefix}/{statusId}`,
     handler: (request, reply) => {
       request.payload.startTime = new Date(Date.parse(request.payload.startTime));
       request.payload.endTime = new Date(Date.parse(request.payload.endTime));
@@ -102,7 +101,7 @@ module.exports = [
   },
   {
     method: 'GET',
-    path: `${API_PREFIX}/test`,
+    path: `${config.statusApiPrefix}/test`,
     handler: (request, reply) => {
       Status.test()
         .then(result => reply(result))

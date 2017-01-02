@@ -3,20 +3,20 @@ const Webpack = require('webpack');
 const AssetsPlugin = require('assets-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-const WEBPACK_HOT_ENTRY = 'webpack-hot-middleware/client?path=http://0.0.0.0:3000/__webpack_hmr&timeout=10000';
+const config = require('./src/config/server.config').build;
 
 module.exports = {
   entry: [
-    './src/client.js',
-    WEBPACK_HOT_ENTRY,
+    config.entry,
+    config.webpackEntry,
   ],
   devtool: 'cheap-module-eval-source-map',
   output: {
-    path: path.join(__dirname, '/public'),
-    filename: 'client.bundle.js',
-    publicPath: '/public/build/',
-    hotUpdateChunkFilename: 'hot-update.js',
-    hotUpdateMainFilename: 'hot-update.json',
+    path: path.join(__dirname, `/${config.outputDirectoryName}`),
+    filename: config.outputJsFileName,
+    publicPath: `${config.publicUrlPrefix}/`,
+    hotUpdateChunkFilename: config.hotUpdateChunkFileName,
+    hotUpdateMainFilename: config.hotUpdateMainFileName,
   },
   plugins: [
     new Webpack.optimize.OccurenceOrderPlugin(),
@@ -26,13 +26,13 @@ module.exports = {
       },
     }),
     new AssetsPlugin({
-      filename: 'webpack-assets.json',
-      path: './',
+      filename: config.webpackAssetsFileName,
+      path: `./${config.webpackAssetsDirName}`,
       prettyPrint: true,
     }),
     new Webpack.HotModuleReplacementPlugin(),
     new Webpack.NoErrorsPlugin(),
-    new ExtractTextPlugin('client.bundle.css', { allChunks: true }),
+    new ExtractTextPlugin(config.outputCssFileName, { allChunks: true }),
   ],
   resolve: {
     extensions: ['', '.js', '.jsx'],
