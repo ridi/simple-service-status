@@ -19,6 +19,8 @@ const User = require('./repository/User');
 const config = require('./config/server.config');
 const RidiError = require('./Error');
 
+const util = require('./util');
+
 // For JSX transpiling
 require('babel-register');
 require('babel-polyfill');
@@ -52,8 +54,9 @@ exports.start = (extraRoutes) => {
       key: process.env.SECRET_KEY || config.auth.secretKey,
       validateFunc: (decoded, request, callback) => {
         // Check token IP address
-        if (request.info.remoteAddress !== decoded.ip) {
-          console.warn(`[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${request.info.remoteAddress}`);
+        const clientIP = util.getClientIp(request);
+        if (clientIP !== decoded.ip) {
+          console.warn(`[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${clientIP}`);
           return callback(new RidiError(RidiError.Types.AUTH_TOKEN_INVALID), false);
         }
         // Check token expiration

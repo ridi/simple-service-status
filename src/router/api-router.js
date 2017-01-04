@@ -19,9 +19,10 @@ module.exports = [
     method: 'POST',
     path: `${config.apiPrefix}/login`,
     handler: (request, reply) => {
-      if (process.env.ALLOWED_IP && !process.env.ALLOWED_IP.includes(request.info.remoteAddress)) {
-        console.warn(`[Auth] This client IP is not allowed.: ${request.info.remoteAddress}`);
-        return reply(new RidiError(RidiError.Types.FORBIDDEN_IP_ADDRESS, { remoteAddress: request.info.remoteAddress }));
+      const clientIP = util.getClientIp(request);
+      if (process.env.ALLOWED_IP && !process.env.ALLOWED_IP.includes(clientIP)) {
+        console.warn(`[Auth] This client IP is not allowed.: ${clientIP}`);
+        return reply(new RidiError(RidiError.Types.FORBIDDEN_IP_ADDRESS, { remoteAddress: clientIP }));
       }
       if (!request.payload.username || !request.payload.password) {
         return reply(new RidiError(RidiError.Types.AUTH_MISSING_PARAMS));
@@ -31,7 +32,7 @@ module.exports = [
         if (!account || account.password !== request.payload.password) {
           return reply(new RidiError(RidiError.Types.AUTH_INVALID_PARAMS));
         }
-        const token = util.generateToken(Object.assign({}, account, { ip: request.info.remoteAddress }));
+        const token = util.generateToken(Object.assign({}, account, { ip: clientIP }));
         return reply().state('token', token);
       });
     },
