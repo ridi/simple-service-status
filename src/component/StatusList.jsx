@@ -55,7 +55,7 @@ class StatusList extends React.Component {
         checkedItems: [],
       },
       expired: {  // expired tab
-        items: this.props.items,
+        items: [],
         buttonDisabled: {
           add: false,
           modify: true,
@@ -140,7 +140,7 @@ class StatusList extends React.Component {
     const newState = {};
     newState[tabName] = {};
     Object.assign(newState[tabName], this.state[tabName]);
-    return axios.get(`${config.url.statusApiPrefix}`)
+    return axios.get(`${config.url.statusApiPrefix}?filter=${tabName}`)
       .then((response) => {
         newState[tabName].items = response.data;
         newState[tabName].error = null;
@@ -208,12 +208,16 @@ class StatusList extends React.Component {
     }
   }
 
+  onTabChanged(activeTab) {
+    this.setState({ activeTab }, () => this.refresh(activeTab));
+  }
+
   render() {
     const currentState = this.state.current;
     const expireState = this.state.expired;
     return (
       <div>
-        <Tabs activeKey={this.state.activeTab} onSelect={activeTab => this.setState({ activeTab })}>
+        <Tabs activeKey={this.state.activeTab} onSelect={activeTab => this.onTabChanged(activeTab)}>
           <Tab eventKey={'current'} title="현재 공지사항 목록">
             <ButtonToolbar>
               <ButtonGroup>

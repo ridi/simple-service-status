@@ -26,10 +26,10 @@ module.exports = [
     method: 'GET',
     path: '/',
     handler: (request, reply) => Promise.all([
-      Status.find({}, { endTime: -1, startTime: -1, isActivated: -1 }),
+      Status.find({ endTime: { $gt: new Date() } }, { endTime: -1, startTime: -1, isActivated: -1 }),
       StatusType.find(),
-    ]).then(([items, statusTypes]) => view(request, reply, 'StatusList', { items: util.formatDates(items), statusTypes })
-    ).catch(error => view(request, reply, 'Error', { error })),
+    ]).then(([items, statusTypes]) => view(request, reply, 'StatusList', { items: util.formatDates(items), statusTypes }))
+      .catch(error => view(request, reply, 'Error', { error })),
   },
   {
     method: 'GET',

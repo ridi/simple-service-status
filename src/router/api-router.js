@@ -44,7 +44,13 @@ module.exports = [
     method: 'GET',
     path: `${config.statusApiPrefix}`,
     handler: (request, reply) => {
-      Status.find({}, { endTime: -1, startTime: -1, isActivated: -1 })
+      let filter = {};
+      if (request.query.filter === 'current') { // 미래 포함
+        filter = { endTime: { $gt: new Date() } };
+      } else if (request.query.filter === 'expired') {
+        filter = { endTime: { $lte: new Date() } };
+      }
+      Status.find(filter, { endTime: -1, startTime: -1, isActivated: -1 })
         .then(result => util.formatDates(result))
         .then(result => reply(result))
         .catch(err => reply(err));
@@ -52,6 +58,7 @@ module.exports = [
     config: {
       validate: {
         query: {
+          filter: Joi.any().valid('current', 'expired'),
         },
       },
     },
