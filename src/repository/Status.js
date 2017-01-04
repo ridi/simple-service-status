@@ -30,10 +30,6 @@ class Status extends Model {
     );
   }
 
-  save(status) {
-    return super.save(status);
-  }
-
   test() {
     return this.save({
       deviceType: ['Android'],
@@ -81,20 +77,6 @@ class Status extends Model {
       }
     }
     return false;
-  }
-
-  _toView(model) {
-    return {
-      _id: model._id,
-      deviceType: model.deviceType,
-      deviceVersion: model.deviceVersion,
-      appVersion: model.appVersion.join(' ').replace(/([\d]+)\s([\d]+)/g, '$1.$2'),
-      startTime: model.startTime,
-      endTime: model.endTime,
-      type: model.type,
-      contents: model.contents,
-      isActivated: model.isActivated,
-    };
   }
 }
 

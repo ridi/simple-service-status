@@ -1,37 +1,88 @@
 const React = require('react');
 const Table = require('./Table');
 const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
+const ButtonGroup = require('react-bootstrap/lib/ButtonGroup');
 const Button = require('react-bootstrap/lib/Button');
 const Label = require('react-bootstrap/lib/Label');
 
+const Tabs = require('react-bootstrap/lib/Tabs');
+const Tab = require('react-bootstrap/lib/Tab');
+
 const CreateModal = require('./CreateModal');
+const Modal = require('./Modal');
 
 const moment = require('moment');
 const axios = require('axios');
 
+const config = require('../config/server.config');
+
 const dateFormat = 'YYYY-MM-DD HH:mm';
+
+const options = { // FIXME 나중에 repository로 분리
+  statusTypes: [],
+  deviceTypes: [
+    { label: 'Android', value: 'android' },
+    { label: 'iOS', value: 'ios' },
+    { label: 'Other', value: 'other' },
+  ],
+  comparators: [
+    { label: 'All', value: '*' },
+    { label: '= (Equal)', value: '=' },
+    { label: '< (Less Than)', value: '<' },
+    { label: '<= (Less Than or Equal)', value: '<=' },
+    { label: '> (Greater Than)', value: '>' },
+    { label: '>= (Greater Than or Equal)', value: '>=' },
+  ],
+};
 
 class StatusList extends React.Component {
   constructor(props) {
     super(props);
+    const self = this;
+    options.statusTypes = props.statusTypes;
+
     this.state = {
-      items: this.props.items,
-      buttonDisabled: {
-        add: false,
-        modify: true,
-        remove: true,
-        clone: true,
-        activate: true,
+      current: {  // current tab
+        items: this.props.items,
+        buttonDisabled: {
+          add: false,
+          modify: true,
+          remove: true,
+          clone: true,
+          activate: true,
+        },
+        checkedItems: [],
       },
-      targetItem: {},
-      checkedItems: [],
+      expired: {  // expired tab
+        items: this.props.items,
+        buttonDisabled: {
+          add: false,
+          modify: true,
+          remove: true,
+          clone: true,
+          activate: true,
+        },
+        checkedItems: [],
+      },
+      activationMode: true,
+      activeTab: 'current',
     };
 
-    const self = this;
+    this.modals = {};
+    this.tables = {};
+
     this.columns = [
       {
         title: '디바이스 타입',
-        display: row => row.deviceType ? <span>{row.deviceType.join(', ')}</span> : '',
+        display: (row) => {
+          if (!row.deviceType) {
+            return '';
+          }
+          if (row.deviceType.length === options.deviceTypes.length) {
+            return '*';
+          }
+          return row.deviceType ? <span>{row.deviceType.join(', ')}</span> : '';
+        },
       },
       {
         title: '디바이스 버전',
@@ -83,60 +134,156 @@ class StatusList extends React.Component {
     ];
   }
 
-  refresh() {
-    axios.get('/api/v1/status')
-      .then(response => this.setState({ items: response.data, error: null }))
-      .catch(error => this.setState({ error }));
+  refresh(tabName) {
+    const table = this.tables[tabName];
+    const newState = {};
+    newState[tabName] = {};
+    Object.assign(newState[tabName], this.state[tabName]);
+    return axios.get(`${config.url.statusApiPrefix}`)
+      .then((response) => {
+        newState[tabName].items = response.data;
+        newState[tabName].error = null;
+        newState[tabName].checkedItems = [];
+        this.setState(newState);
+        table.setChecked(false);
+      })
+      .catch((error) => {
+        newState[tabName].items = [];
+        newState[tabName].error = error;
+        newState[tabName].checkedItems = [];
+        this.setState(newState);
+        table.setChecked(false);
+      });
   }
 
-  onChechboxChanged(checkedItems) {
+  onChechboxChanged(tabName, checkedItems) {
+    const newState = {};
+    newState[tabName] = {};
+    Object.assign(newState[tabName], this.state[tabName]);
     if (checkedItems.length === 1) {
-      this.setState({ buttonDisabled: { add: false, modify: false, remove: false, clone: false, activate: false } });
+      newState[tabName].buttonDisabled = { add: false, modify: false, remove: false, clone: false, activate: false };
     } else if (checkedItems.length > 1) {
-      this.setState({ buttonDisabled: { add: false, modify: true, remove: false, clone: true, activate: false } });
+      newState[tabName].buttonDisabled = { add: false, modify: true, remove: false, clone: true, activate: false };
     } else {
-      this.setState({ buttonDisabled: { add: false, modify: true, remove: true, clone: true, activate: true } });
+      newState[tabName].buttonDisabled = { add: false, modify: true, remove: true, clone: true, activate: true };
     }
-    this.setState({ checkedItems });
+    newState[tabName].checkedItems = checkedItems;
+    this.setState(newState);
   }
 
   showModal(mode, data) {
-    this.modal.show(mode, data);
+    this.modals.createModal.show(mode, data);
   }
 
-  activate() {
-    // TODO
+  startToSetActivation(activationMode) {
+    this.setState({ activationMode });
+    this.modals.activationModal.show();
   }
 
-  remove() {
-    // TODO
+  setActivation(tabName, isActivated, items) {
+    const action = isActivated ? 'activate' : 'deactivate';
+    if (items instanceof Array && items.length > 0) {
+      Promise.all(items.map(item => axios.put(`${config.url.statusApiPrefix}/${item._id}/${action}`)))
+        .then(() => {
+          this.refresh(tabName);
+          this.modals.activationModal.close();
+        })
+        .catch(error => this.setState({ error }));
+    }
+  }
+
+  startToRemove() {
+    this.modals.removeModal.show();
+  }
+
+  remove(tabName, items) {
+    if (items instanceof Array && items.length > 0) {
+      Promise.all(items.map(item => axios.delete(`${config.url.statusApiPrefix}/${item._id}`)))
+        .then(() => {
+          this.refresh(tabName);
+          this.modals.removeModal.close();
+        })
+        .catch(error => this.setState({ error }));
+    }
   }
 
   render() {
-    const modal = (
-      <CreateModal
-        ref={(m) => { this.modal = m; }}
-        statusTypes={this.props.statusTypes}
-        onSuccess={() => this.refresh()}
-      />
-    );
+    const currentState = this.state.current;
+    const expireState = this.state.expired;
     return (
       <div>
-        <ButtonToolbar pullRight>
-          <Button onClick={() => this.showModal('add')} bsSize="small" disabled={this.state.buttonDisabled.add}>등록</Button>
-          <Button onClick={() => this.showModal('modify', this.state.checkedItems[0])} bsSize="small" disabled={this.state.buttonDisabled.modify}>수정</Button>
-          <Button onClick={() => this.showModal('add', this.state.checkedItems[0])} bsSize="small" disabled={this.state.buttonDisabled.clone}>복제</Button>
-          <Button onClick={() => this.activate()} bsSize="small" disabled={this.state.buttonDisabled.activate}>활성화</Button>
-          <Button onClick={() => this.remove()} bsSize="small" bsStyle="danger" disabled={this.state.buttonDisabled.remove}>삭제</Button>
-        </ButtonToolbar>
-        <Table items={this.state.items} columns={this.columns} error={this.state.error} onCheckboxChange={(checkedItems => this.onChechboxChanged(checkedItems))} />
-        {modal}
+        <Tabs activeKey={this.state.activeTab} onSelect={activeTab => this.setState({ activeTab })}>
+          <Tab eventKey={'current'} title="현재 공지사항 목록">
+            <ButtonToolbar>
+              <ButtonGroup>
+                <Button onClick={() => this.showModal('add')} bsSize="small" disabled={currentState.buttonDisabled.add}>등록</Button>
+                <Button onClick={() => this.showModal('add', currentState.checkedItems[0])} bsSize="small" disabled={currentState.buttonDisabled.clone}>복제</Button>
+              </ButtonGroup>
+              <Button onClick={() => this.showModal('modify', currentState.checkedItems[0])} bsSize="small" disabled={currentState.buttonDisabled.modify}>수정</Button>
+              <ButtonGroup>
+                <Button onClick={() => this.startToSetActivation(true)} bsSize="small" disabled={currentState.buttonDisabled.activate}>활성화</Button>
+                <Button onClick={() => this.startToSetActivation(false)} bsSize="small" disabled={currentState.buttonDisabled.activate}>비활성화</Button>
+              </ButtonGroup>
+              <Button onClick={() => this.startToRemove()} bsSize="small" disabled={currentState.buttonDisabled.remove}>삭제</Button>
+            </ButtonToolbar>
+            <Table
+              ref={(t) => { this.tables.current = t; }}
+              items={currentState.items}
+              columns={this.columns}
+              error={currentState.error}
+              onCheckboxChange={(checkedItems => this.onChechboxChanged('current', checkedItems))}
+            />
+          </Tab>
+
+          <Tab eventKey={'expired'} title="만료된 공지사항 목록">
+            <ButtonToolbar>
+              <ButtonGroup>
+                <Button onClick={() => this.showModal('add')} bsSize="small" disabled={expireState.buttonDisabled.add}>등록</Button>
+                <Button onClick={() => this.showModal('add', expireState.checkedItems[0])} bsSize="small" disabled={expireState.buttonDisabled.clone}>복제</Button>
+              </ButtonGroup>
+              <Button onClick={() => this.showModal('modify', expireState.checkedItems[0])} bsSize="small" disabled={expireState.buttonDisabled.modify}>수정</Button>
+              <Button onClick={() => this.startToRemove()} bsSize="small" disabled={expireState.buttonDisabled.remove}>삭제</Button>
+            </ButtonToolbar>
+            <Table
+              ref={(t) => { this.tables.expired = t; }}
+              items={expireState.items}
+              columns={this.columns}
+              error={expireState.error}
+              onCheckboxChange={(checkedItems => this.onChechboxChanged('expired', checkedItems))}
+            />
+          </Tab>
+        </Tabs>
+        <CreateModal
+          ref={(m) => { this.modals.createModal = m; }}
+          options={options}
+          onSuccess={() => this.refresh(this.state.activeTab)}
+        />
+        <Modal
+          ref={(m) => { this.modals.removeModal = m; }}
+          mode={'confirm'}
+          title="삭제 확인"
+          onConfirm={() => this.remove(this.state.activeTab, this.state[this.state.activeTab].checkedItems)}
+        >
+          <p>{this.state[this.state.activeTab].checkedItems.length} 건의 데이터를 삭제하시겠습니까?</p>
+        </Modal>
+        <Modal
+          ref={(m) => { this.modals.activationModal = m; }}
+          mode={'confirm'}
+          title={this.state.activationMode ? '활성화 확인' : '비활성화 확인'}
+          onConfirm={() => this.setActivation(this.state.activeTab, this.state.activationMode, this.state[this.state.activeTab].checkedItems)}
+        >
+          <p>{this.state[this.state.activeTab].checkedItems.length} 건의 데이터를 {this.state.activationMode ? '활성화' : '비활성화'} 하시겠습니까?</p>
+        </Modal>
       </div>
     );
   }
 }
 StatusList.propTypes = {
   items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+  statusTypes: React.PropTypes.arrayOf(React.PropTypes.objectOf({
+    label: React.PropTypes.string,
+    value: React.PropTypes.string,
+  })).isRequired,
 };
 
 module.exports = StatusList;

@@ -50,8 +50,9 @@ class ChildRow extends React.Component {
   render() {
     return (
       <tr>
+        <td></td>
         <td colSpan={this.props.colSpan}>
-          <BSTable>
+          <BSTable bsClass="table inner-table">
             <colgroup>
               <col style={{ width: '100px' }} />
               <col />
@@ -84,10 +85,18 @@ class Table extends React.Component {
     };
   }
 
-  onCheckboxChanged(checked, isAll, targetItem) {
+  setChecked(checked, item) {
+    this.onCheckboxChanged(checked, item);
+  }
+
+  getChecked() {
+    return this.state.checkedItems;
+  }
+
+  onCheckboxChanged(checked, targetItem) {
     let checkedItems = this.state.checkedItems;
     let allChecked = this.state.allChecked;
-    if (isAll) {
+    if (!targetItem) {  // all
       checkedItems = checked ? this.props.items.slice(0) : [];
       allChecked = checked;
     } else {
@@ -113,25 +122,28 @@ class Table extends React.Component {
     const mainCols = this.props.columns.filter(column => !column.isChildRow);
     const childCols = this.props.columns.filter(column => column.isChildRow);
 
-    const rows =  this.props.items.map((item, idx) => {
-      const checked = self.state.checkedItems.includes(item);
-      return [
-        <Row
-          key={idx}
-          item={item}
-          columns={mainCols}
-          onCheckboxChange={(isChecked, targetItem) => this.onCheckboxChanged(isChecked, false, targetItem)}
-          checked={checked}
-        />,
-        <ChildRow item={item} columns={childCols} colSpan={mainCols.length + 1} />,
-      ];
-    });
+    let rows = <tr><td colSpan={mainCols.length + 1} style={{ 'text-align': 'center' }}>아이템이 없습니다.</td></tr>;
+    if (this.props.items.length > 0) {
+      rows = this.props.items.map((item, idx) => {
+        const checked = self.state.checkedItems.includes(item);
+        return [
+          <Row
+            key={idx}
+            item={item}
+            columns={mainCols}
+            onCheckboxChange={(isChecked, targetItem) => this.onCheckboxChanged(isChecked, targetItem)}
+            checked={checked}
+          />,
+          <ChildRow item={item} columns={childCols} colSpan={mainCols.length}/>,
+        ];
+      });
+    }
 
     return (
       <BSTable responsive>
         <thead>
           <tr>
-            <th><Checkbox onChange={e => this.onCheckboxChanged(e.target.checked, true)} checked={this.state.allChecked} /></th>
+            <th><Checkbox onChange={e => this.onCheckboxChanged(e.target.checked)} checked={this.state.allChecked} /></th>
             {mainCols.map((col, idx) => <th key={idx}>{col.title}</th>)}
           </tr>
         </thead>
@@ -142,7 +154,7 @@ class Table extends React.Component {
 }
 Table.propTypes = {
   items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
-  columns: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
+  columns: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
   onCheckboxChange: React.PropTypes.func,
 };
 

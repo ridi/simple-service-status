@@ -51,6 +51,14 @@ class Model {
     }
     return this.runQuery(collection => collection.save(model));
   }
+
+  update(id, model) {
+    return this.runQuery(collection => collection.update({ _id: ObjectID(id) }, { $set: model }));
+  }
+
+  remove(id) {
+    return this.runQuery(collection => collection.remove({ _id: ObjectID(id) }));
+  }
 }
 
 module.exports = Model;

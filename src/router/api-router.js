@@ -4,13 +4,37 @@
  * @since 1.0.0
  *
  * // TODO 1 minute caching (query=>key)
+ * // TODO pagination
  */
 
 const Joi = require('joi');
 const Status = require('./../repository/Status');
+const User = require('./../repository/User');
 const config = require('../config/server.config').url;
+const util = require('../util');
+const RidiError = require('../Error');
 
 module.exports = [
+  {
+    method: 'POST',
+    path: `${config.apiPrefix}/login`,
+    handler: (request, reply) => {
+      if (!request.payload.username || !request.payload.password) {
+        return reply(new RidiError(RidiError.Types.AUTH_MISSING_PARAMS));
+      }
+      User.find(request.payload.username).then((account) => {
+        // TODO PASSWORD 암호화
+        if (!account || account.password !== request.payload.password) {
+          return reply(new RidiError(RidiError.Types.AUTH_INVALID_PARAMS));
+        }
+        const token = util.generateToken(account);
+        return reply().state('token', token);
+      });
+    },
+    config: {
+      auth: false,
+    },
+  },
   {
     method: 'GET',
     path: `${config.statusApiPrefix}`,
@@ -76,6 +100,7 @@ module.exports = [
     handler: (request, reply) => {
       request.payload.startTime = new Date(Date.parse(request.payload.startTime));
       request.payload.endTime = new Date(Date.parse(request.payload.endTime));
+      request.payload._id = request.params.statusId;
       Status.save(request.payload)
         .then(result => reply(result))
         .catch(err => reply(err));
@@ -95,6 +120,39 @@ module.exports = [
           type: Joi.string().required(),
           contents: Joi.string(),
           isActivated: Joi.boolean().required(),
+        },
+      },
+    },
+  },
+  {
+    method: 'PUT',
+    path: `${config.statusApiPrefix}/{statusId}/{action}`,
+    handler: (request, reply) => {
+      Status.update(request.params.statusId, { isActivated: request.params.action === 'activate' })
+        .then(result => reply(result))
+        .catch(err => reply(err));
+    },
+    config: {
+      validate: {
+        params: {
+          statusId: Joi.string().required(),
+          action: Joi.string().valid('activate', 'deactivate').required(),
+        },
+      },
+    },
+  },
+  {
+    method: 'DELETE',
+    path: `${config.statusApiPrefix}/{statusId}`,
+    handler: (request, reply) => {
+      Status.remove(request.params.statusId)
+        .then(result => reply(result))
+        .catch(err => reply(err));
+    },
+    config: {
+      validate: {
+        params: {
+          statusId: Joi.string().required(),
         },
       },
     },

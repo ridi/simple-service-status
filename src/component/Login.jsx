@@ -7,6 +7,8 @@ const Button = require('react-bootstrap/lib/Button');
 const Col = require('react-bootstrap/lib/Col');
 const Alert = require('react-bootstrap/lib/Alert');
 
+const axios = require('axios');
+
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -16,11 +18,24 @@ class Login extends React.Component {
     };
   }
 
+  onSubmit(e) {
+    e.preventDefault();
+    axios.post('/api/v1/login', this.state)
+      .then((response) => {
+        const search = /redirect=(.*)[\&]?/.exec(window.location.search);
+        this.setState({ errorMessage: null });
+        window.location.href = search ? search[1] : '/';
+      })
+      .catch((e) => {
+        this.setState({ errorMessage: (e && e.response && e.response.data) ? e.response.data.message : null });
+      });
+  }
+
   render() {
     return (
-      <Col xxs={10} xxsOffset={1} xs={6} xsOffset={3} md={4} mdOffset={4}>
-        <Alert style={{ display: this.props.errorMessage ? 'block' : 'none' }} bsStyle="warning">{this.props.errorMessage}</Alert>
-        <Form method="post" action="/login">
+      <Col xs={6} xsOffset={3} md={4} mdOffset={4}>
+        <Alert style={{ display: this.state.errorMessage ? 'block' : 'none' }} bsStyle="warning">{this.state.errorMessage}</Alert>
+        <Form onSubmit={(e) => this.onSubmit(e)}>
           <FormGroup controlId="username">
             <ControlLabel>사용자 이름</ControlLabel>
             <FormControl type="text" name="username" value={this.state.username} onChange={e => this.setState({ username: e.target.value })} placeholder="사용자 이름을 입력하세요" />

@@ -47,28 +47,6 @@ module.exports = [
       return view(request, reply, 'Login');
     },
     config: {
-      auth: { mode: 'try' },
-    },
-  },
-  {
-    method: 'POST',
-    path: '/login',
-    handler: (request, reply) => {
-      if (!request.payload.username || !request.payload.password) {
-        return reply.view('Login', { errorMessage: 'Missing username or password' });
-      }
-      return User.find(request.payload.username).then((account) => {
-        // TODO PASSWORD 암호화
-        if (!account || account.password !== request.payload.password) {
-          return view(request, reply, 'Login', { errorMessage: 'Invalid username or password' });
-        }
-        const redirectUrl = URL.parse(request.info.referrer, true).query.redirect;
-        return reply()
-          .state('token', util.generateToken(account), { path: '/', ttl: config.auth.tokenTTL, isSecure: false })
-          .redirect(redirectUrl || '/');
-      });
-    },
-    config: {
       auth: false,
     },
   },

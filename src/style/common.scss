@@ -14,16 +14,17 @@ table {
   tbody {
     tr {
       &.main-row {
-        background-color: #fbfbfb;
+        background-color: #f3f3f3;
       }
     }
   }
 
-  table { /* inner table */
+  &.inner-table {
     margin-bottom: 0 !important;
     tbody {
       tr {
         th, td {
+          padding: 2px 0 !important;
           border-top: 0 !important;
           font-size: 0.85em;
         }
@@ -33,7 +34,7 @@ table {
 }
 
 .btn-toolbar {
-  margin-bottom: 15px;
+  margin: 15px 0;
   text-align: right;
 }
 .btn-default {
@@ -116,7 +117,10 @@ label {
     color: #cccccc;
   }
 }
-
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
+  color: #4e8bbf;
+  background-color: #eaeaea;
+}
 .navbar {
   &.navbar-default {
     background-color: #4e8bbf;
@@ -129,12 +133,34 @@ label {
     color: #fff;
     font-weight: 200;
     font-size: 20px;
+    @media (min-width: 768px) {
+      margin-right: 20px;
+    }
   }
-  .navbar-nav > li > a {
-    font-weight: 300;
-    color: #fff;
-    &:hover {
-      color: #dedef2;
+  .navbar-nav {
+    & > li > a {
+      font-weight: 300;
+      color: #fff;
+      &:hover {
+        color: #dedef2;
+      }
+    }
+    & > li.active > a {
+      color: #4e8bbf;
+      background-color: #eaeaea;
+      font-weight: 500;
+      &:hover, &:focus {
+        color: #2076bf;
+      }
+    }
+  }
+  .navbar-toggle {
+    border-width: 0;
+    &:hover, &:focus {
+      background-color: transparent;
+    }
+    .icon-bar {
+      background-color: #fff;
     }
   }
   @media (min-width: 768px) {
