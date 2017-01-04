@@ -32,6 +32,7 @@ exports.generateToken = (account, ttl) => JWT.sign({
   username: account.username,
   role: account.role,
   exp: new Date().getTime() + (ttl || config.auth.tokenTTL),
+  ip: account.ip,
 }, process.env.SECRET_KEY || config.auth.secretKey);
 
 /**

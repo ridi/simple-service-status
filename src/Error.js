@@ -14,7 +14,8 @@ class RidiError extends Error {
 RidiError.Types = Object.freeze({
   AUTH: { code: 401000, message: context => `로그인이 실패하였습니다.` },
   AUTH_TOKEN: { code: 401100, message: context => `인증 토큰에 문제가 있습니다.` },
-  AUTH_TOKEN_EXPIRED: { code: 400110, message: context => `인증 토큰이 만료되었습니다.` },
+  AUTH_TOKEN_INVALID: { code: 401110, message: context => `인증 토큰이 유효하지 않습니다.` },
+  AUTH_TOKEN_EXPIRED: { code: 401120, message: context => `인증 토큰이 만료되었습니다.` },
   AUTH_USER: { code: 401200, message: context => `사용자 인증에 문제가 발생했습니다.` },
   AUTH_USER_NOT_EXIST: { code: 401210, message: context => `${context.username}은 존재하지 않는 사용자 입니다.` },
   AUTH_MISSING_PARAMS: { code: 401220, message: context => `사용자 이름 또는 패스워드를 입력하지 않았습니다.` },

@@ -28,7 +28,7 @@ server.connection({ port: process.env.PORT || config.defaults.port });
 
 server.state('token', {
   ttl: config.auth.tokenTTL,
-  isSecure: false,
+  isSecure: process.env.USE_HTTPS && process.env.USE_HTTPS === 'true',
   path: '/',
 });
 
@@ -51,10 +51,10 @@ exports.start = (extraRoutes) => {
     server.auth.strategy('jwt', 'jwt', {
       key: process.env.SECRET_KEY || config.auth.secretKey,
       validateFunc: (decoded, request, callback) => {
-        // Check IP address
-        if (process.env.ALLOWED_IP && !process.env.ALLOWED_IP.includes(request.info.remoteAddress)) {
-          console.warn(`[Auth] This client IP is not allowed.: ${request.info.remoteAddress}`);
-          return callback(new RidiError(RidiError.Types.FORBIDDEN_IP_ADDRESS, { remoteAddress: request.info.remoteAddress }), false);
+        // Check token IP address
+        if (request.info.remoteAddress !== decoded.ip) {
+          console.warn(`[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${request.info.remoteAddress}`);
+          return callback(new RidiError(RidiError.Types.AUTH_TOKEN_INVALID), false);
         }
         // Check token expiration
         if (decoded.exp < new Date().getTime()) {
@@ -105,15 +105,22 @@ exports.start = (extraRoutes) => {
         const resp = request.response;
         const statusCode = resp.statusCode || resp.output.statusCode;
         if (path.includes('api/')) {
-          return reply({
+          const response = reply({
             errorCode: resp.errorCode,
             message: resp.message,
           }).code(statusCode);
+          switch (statusCode) {
+            case 401:
+            case 403:
+              return response.unstate('token');
+            default:
+              return response;
+          }
         } else {
           switch (statusCode) {
             case 401:
             case 403:
-              return reply.redirect(`/login?redirect=${request.path || '/'}`);
+              return reply.redirect(`/login?redirect=${request.path || '/'}`).unstate('token');
             default:
               break;
           }

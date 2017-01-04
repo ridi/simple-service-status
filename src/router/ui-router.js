@@ -47,7 +47,9 @@ module.exports = [
       return view(request, reply, 'Login');
     },
     config: {
-      auth: false,
+      auth: {
+        mode: 'try',
+      },
     },
   },
   {
