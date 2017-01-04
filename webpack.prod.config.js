@@ -39,7 +39,11 @@ module.exports = {
       {
         test: /(\.scss|\.css)$/,
         loader: ExtractTextPlugin.extract('style', 'css?sourceMap!sass?sourceMap'),
-      }
+      },
     ],
+  },
+  node: {
+    dns: 'mock',
+    net: 'mock',
   },
 };

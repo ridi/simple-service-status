@@ -196,6 +196,11 @@ label {
       }
     }
   }
+  &.root-node.default.disabled {
+    .react-selectize-control {
+      background-color: #eee !important;
+    }
+  }
   &.multi-select.default.root-node {
     .simple-value {
       background: #ebecf1;

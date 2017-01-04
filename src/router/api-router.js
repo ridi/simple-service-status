@@ -45,6 +45,7 @@ module.exports = [
     path: `${config.statusApiPrefix}`,
     handler: (request, reply) => {
       Status.find({}, { endTime: -1, startTime: -1, isActivated: -1 })
+        .then(result => util.formatDates(result))
         .then(result => reply(result))
         .catch(err => reply(err));
     },
@@ -60,6 +61,7 @@ module.exports = [
     path: `${config.statusApiPrefix}/check`,
     handler: (request, reply) => {
       Status.findWithComparators(request.query.deviceType || '*', request.query.deviceVersion || '*', request.query.appVersion || '*')
+        .then(result => util.formatDates(result))
         .then(result => reply(result))
         .catch(err => reply(err));
     },
@@ -67,8 +69,8 @@ module.exports = [
       validate: {
         query: {
           deviceType: Joi.string(),
-          deviceVersion: Joi.string().regex(/^[0-9A-Za-z.*]+$/),
-          appVersion: Joi.string().regex(/^[0-9A-Za-z.*]+$/),
+          deviceVersion: Joi.string().regex(/^[\dA-Za-z.*]+$/),
+          appVersion: Joi.string().regex(/^[\dA-Za-z.*]+$/),
         },
       },
       auth: false,
@@ -87,11 +89,11 @@ module.exports = [
     config: {
       validate: {
         payload: {
-          startTime: Joi.string().regex(/^[\d]{4}-[\d]{2}-[\d]{2} [\d]{2}:[\d]{2}$/).required(),
-          endTime: Joi.string().regex(/^[\d]{4}-[\d]{2}-[\d]{2} [\d]{2}:[\d]{2}$/).required(),
+          startTime: Joi.string().isoDate().required(),
+          endTime: Joi.string().isoDate().required(),
           deviceType: Joi.array().items(Joi.string()).required(),
-          deviceVersion: Joi.array().items(Joi.string().regex(/[*<>=]{1,2}/), Joi.string().regex(/[\dA-Za-z]{1,5}/)).required(),
-          appVersion: Joi.array().items(Joi.string().regex(/[*<>=]{1,2}/), Joi.string().regex(/[\dA-Za-z]{1,5}/)).required(),
+          deviceVersion: Joi.array().items(Joi.string().regex(/^[*<>=]{1,2}$/), Joi.string().regex(/^[\dA-Za-z]{1,5}$/)).required(),
+          appVersion: Joi.array().items(Joi.string().regex(/^[*<>=]{1,2}$/), Joi.string().regex(/^[\dA-Za-z]{1,5}$/)).required(),
           type: Joi.string().required(),
           contents: Joi.string(),
           isActivated: Joi.boolean().required(),
@@ -117,11 +119,11 @@ module.exports = [
         },
         payload: {
           _id: Joi.string().required(),
-          startTime: Joi.string().regex(/^[\d]{4}-[\d]{2}-[\d]{2} [\d]{2}:[\d]{2}$/).required(),
-          endTime: Joi.string().regex(/^[\d]{4}-[\d]{2}-[\d]{2} [\d]{2}:[\d]{2}$/).required(),
+          startTime: Joi.string().isoDate().required(),
+          endTime: Joi.string().isoDate().required(),
           deviceType: Joi.array().items(Joi.string()).required(),
-          deviceVersion: Joi.array().items(Joi.string().regex(/[*<>=]{1,2}/), Joi.string().regex(/[\dA-Za-z]{1,5}/)).required(),
-          appVersion: Joi.array().items(Joi.string().regex(/[*<>=]{1,2}/), Joi.string().regex(/[\dA-Za-z]{1,5}/)).required(),
+          deviceVersion: Joi.array().items(Joi.string().regex(/^[*<>=]{1,2}$/), Joi.string().regex(/^[\dA-Za-z]{1,5}$/)).required(),
+          appVersion: Joi.array().items(Joi.string().regex(/^[*<>=]{1,2}$/), Joi.string().regex(/^[\dA-Za-z]{1,5}$/)).required(),
           type: Joi.string().required(),
           contents: Joi.string(),
           isActivated: Joi.boolean().required(),

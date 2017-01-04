@@ -13,6 +13,7 @@ const Modal = require('./Modal');
 
 const moment = require('moment');
 const axios = require('axios');
+const util = require('../util');
 
 const config = require('../config/server.config');
 
@@ -98,7 +99,7 @@ class StatusList extends React.Component {
           const start = moment(row.startTime);
           const end = moment(row.endTime);
           const duration = start.from(end, true);
-          return <span>{`${start.format(dateFormat)} ~ ${end.format(dateFormat)} (${duration})`}</span>;
+          return <span>{`${util.formatDate(start, dateFormat)} ~ ${util.formatDate(end, dateFormat)} (${duration})`}</span>;
         },
       },
       {

@@ -6,6 +6,7 @@
 
 const Status = require('./../repository/Status');
 const StatusType = require('../repository/StatusType');
+const util = require('../util');
 
 function view(request, reply, childViewName, context) {
   const ctx = context || {};
@@ -27,7 +28,7 @@ module.exports = [
     handler: (request, reply) => Promise.all([
       Status.find({}, { endTime: -1, startTime: -1, isActivated: -1 }),
       StatusType.find(),
-    ]).then(([items, statusTypes]) => view(request, reply, 'StatusList', { items, statusTypes })
+    ]).then(([items, statusTypes]) => view(request, reply, 'StatusList', { items: util.formatDates(items), statusTypes })
     ).catch(error => view(request, reply, 'Error', { error })),
   },
   {

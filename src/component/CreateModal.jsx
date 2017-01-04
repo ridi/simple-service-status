@@ -13,11 +13,11 @@ const DateTime = require('react-datetime');
 
 const moment = require('moment');
 const axios = require('axios');
+const util = require('../util');
 
 const SimpleSelect = Selectize.SimpleSelect;
 const MultiSelect = Selectize.MultiSelect;
 
-moment.locale('ko-kr');
 const dateFormat = 'YYYY-MM-DD';
 const timeFormat = 'HH:mm';
 
@@ -45,6 +45,8 @@ class CreateModal extends React.Component {
       endTimeState: null,
       deviceVersionDisabled: true,
       appVersionDisabled: true,
+      deviceVersionComparatorDisabled: false,
+      appVersionComparatorDisabled: false,
     };
 
     Object.assign(this.state, this.defaultData);
@@ -78,8 +80,8 @@ class CreateModal extends React.Component {
         .concat((this.state.deviceVersionComparator.value !== '*' && this.state.deviceVersion) ? this.state.deviceVersion.split('.') : []),
       appVersion: [this.state.appVersionComparator.value]
         .concat((this.state.appVersionComparator.value !== '*' && this.state.appVersion) ? this.state.appVersion.split('.') : []),
-      startTime: this.state.startTime.format(`${dateFormat} ${timeFormat}`),
-      endTime: this.state.endTime.format(`${dateFormat} ${timeFormat}`),
+      startTime: util.formatDate(this.state.startTime),
+      endTime: util.formatDate(this.state.endTime),
       contents: this.state.contents,
       isActivated: withActivation,
     };
@@ -127,14 +129,14 @@ class CreateModal extends React.Component {
         deviceVersion: data.deviceVersion.length > 1 ? data.deviceVersion.slice(1).join('.') : '',
         appVersionComparator: this.props.options.comparators.find(o => o.value === data.appVersion[0]),
         appVersion: data.appVersion.length > 1 ? data.appVersion.slice(1).join('.') : '',
-        startTime: moment(data.startTime).utcOffset(9),
-        endTime: moment(data.endTime).utcOffset(9),
+        startTime: moment(data.startTime),
+        endTime: moment(data.endTime),
         contents: data.contents,
         isActivated: data.isActivated,
       };
     }
 
-    this.setState(Object.assign({}, this.defaultData, newData));
+    this.setState(Object.assign({}, this.defaultData, newData), () => this.onSelectionChanged());
   }
 
   onEndTimeChanged(endTime) {
@@ -152,9 +154,31 @@ class CreateModal extends React.Component {
     return moment(startTime).isBefore(endTime);
   }
 
+  onSelectionChanged() {
+    if (this.state.deviceType.length > 1) {
+      // disable device version, app version inputs
+      this.setState({
+        appVersionDisabled: true,
+        appVersionComparatorDisabled: true,
+        deviceVersionDisabled: true,
+        deviceVersionComparatorDisabled: true,
+      });
+    } else {
+      this.setState({
+        appVersionDisabled: this.state.appVersionComparator.value === '*',
+        appVersionComparatorDisabled: false,
+        deviceVersionDisabled: this.state.deviceVersionComparator.value === '*',
+        deviceVersionComparatorDisabled: false,
+      });
+    }
+  }
+
   onComparatorChanged(selected, target) {
-    this.setState({ [`${target}Disabled`]: (!selected || selected.value === '*') });
-    this.setState({ [`${target}Comparator`]: selected });
+    this.setState({ [`${target}Comparator`]: selected }, () => this.onSelectionChanged());
+  }
+
+  onDeviceTypeChanged(deviceType) {
+    this.setState({ deviceType }, () => this.onSelectionChanged());
   }
 
   render() {
@@ -199,7 +223,7 @@ class CreateModal extends React.Component {
           <ControlLabel>타겟 디바이스 타입</ControlLabel>
           <MultiSelect
             values={this.state.deviceType}
-            onValuesChange={deviceType => this.setState({ deviceType })}
+            onValuesChange={deviceType => this.onDeviceTypeChanged(deviceType)}
             placeholder="디바이스 타압을 선택하세요"
             options={this.props.options.deviceTypes}
           />
@@ -212,6 +236,7 @@ class CreateModal extends React.Component {
                 value={this.state.deviceVersionComparator}
                 onValueChange={deviceVersionComparator => this.onComparatorChanged(deviceVersionComparator, 'deviceVersion')}
                 options={this.props.options.comparators}
+                disabled={this.state.deviceVersionComparatorDisabled}
               />
             </Col>
             <Col xs={6}>
@@ -233,6 +258,7 @@ class CreateModal extends React.Component {
                 value={this.state.appVersionComparator}
                 onValueChange={appVersionComparator => this.onComparatorChanged(appVersionComparator, 'appVersion')}
                 options={this.props.options.comparators}
+                disabled={this.state.appVersionComparatorDisabled}
               />
             </Col>
             <Col xs={6}>

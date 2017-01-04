@@ -5,6 +5,7 @@
  */
 
 const JWT = require('jsonwebtoken');
+const moment = require('moment');
 const config = require('./config/server.config');
 
 /**
@@ -128,4 +129,28 @@ exports.getClientIp = (req) => {
   }
 
   return ipAddress;
+};
+
+exports.formatDates = (model, formatString) => {
+  if (model instanceof Array) {
+    for (let i = 0; i < model.length; i++) {
+      model[i] = exports.formatDates(model[i], formatString);
+    }
+  } else if (model instanceof Date || model instanceof moment) {
+    return exports.formatDate(model, formatString);
+  } else if (model instanceof Object) {
+    const keys = Object.keys(model);
+    for (let i = 0; i < keys.length; i++) {
+      model[keys[i]] = exports.formatDates(model[keys[i]], formatString);
+    }
+  }
+  return model;
+};
+
+exports.toLocalDate = (date, utcOffset) => {
+  return moment(date).utcOffset(typeof utcOffset === 'undefined' ? 9 : utcOffset);
+};
+
+exports.formatDate = (date, formatString, utcOffset) => {
+  return exports.toLocalDate(date, utcOffset).format(formatString);
 };
