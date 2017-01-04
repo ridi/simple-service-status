@@ -31,6 +31,12 @@ table {
       }
     }
   }
+
+  &.table-responsive {
+    @media screen and (max-width: 767px) {
+      border-width: 0;
+    }
+  }
 }
 
 .btn-toolbar {
@@ -117,14 +123,10 @@ label {
     color: #cccccc;
   }
 }
-.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
-  color: #4e8bbf;
-  background-color: #eaeaea;
-}
 .navbar {
   &.navbar-default {
     background-color: #4e8bbf;
-    border-bottom: 0;
+    border-width: 0;
     -webkit-box-shadow: 0px 4px 4px 0px rgba(212,212,212,0.5);
     -moz-box-shadow: 0px 4px 4px 0px rgba(212,212,212,0.5);
     box-shadow: 0px 4px 4px 0px rgba(212,212,212,0.5);

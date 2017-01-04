@@ -3,8 +3,6 @@ const React = require('react');
 const Navbar = require('react-bootstrap/lib/Navbar');
 const Nav = require('react-bootstrap/lib/Nav');
 const NavItem = require('react-bootstrap/lib/NavItem');
-const NavDropdown = require('react-bootstrap/lib/NavItem');
-const MenuItem = require('react-bootstrap/lib/MenuItem');
 
 const Grid = require('react-bootstrap/lib/Grid');
 const Row = require('react-bootstrap/lib/Row');
@@ -25,6 +23,7 @@ class Layout extends React.Component {
       <html lang="ko">
         <head>
           <title>긴급 공지사항 등록 시스템</title>
+          <meta name="viewport" content="width=device-width, user-scalable=no" />
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
           <link rel="stylesheet" href="/public/assets/client.bundle.css" />
         </head>

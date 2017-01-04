@@ -4,15 +4,8 @@
  * @since 1.0.0
  */
 
-const URL = require('url');
-
-const User = require('./../repository/User');
 const Status = require('./../repository/Status');
 const StatusType = require('../repository/StatusType');
-
-const util = require('./../util');
-
-const config = require('../config/server.config');
 
 function view(request, reply, childViewName, context) {
   const ctx = context || {};
@@ -32,7 +25,7 @@ module.exports = [
     method: 'GET',
     path: '/',
     handler: (request, reply) => Promise.all([
-      Status.findAll({ endTime: -1, startTime: -1, isActivated: -1 }),
+      Status.find({}, { endTime: -1, startTime: -1, isActivated: -1 }),
       StatusType.find(),
     ]).then(([items, statusTypes]) => view(request, reply, 'StatusList', { items, statusTypes })
     ).catch(error => view(request, reply, 'Error', { error })),

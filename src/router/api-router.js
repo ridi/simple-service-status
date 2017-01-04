@@ -44,7 +44,7 @@ module.exports = [
     method: 'GET',
     path: `${config.statusApiPrefix}`,
     handler: (request, reply) => {
-      Status.findAll({ endTime: -1, startTime: -1, isActivated: -1 })
+      Status.find({}, { endTime: -1, startTime: -1, isActivated: -1 })
         .then(result => reply(result))
         .catch(err => reply(err));
     },
@@ -59,7 +59,7 @@ module.exports = [
     method: 'GET',
     path: `${config.statusApiPrefix}/check`,
     handler: (request, reply) => {
-      Status.find(request.query.deviceType || '*', request.query.deviceVersion || '*', request.query.appVersion || '*')
+      Status.findWithComparators(request.query.deviceType || '*', request.query.deviceVersion || '*', request.query.appVersion || '*')
         .then(result => reply(result))
         .catch(err => reply(err));
     },

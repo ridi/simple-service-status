@@ -1,11 +1,19 @@
 # Viewer Notification
 
+서버에 이상 상황 발생 시 앱에 신속하게 공지할 수 있도록 디바이스에서 접근 가능한 API와 관리 UI를 제공한다. 
+
 ## Development
 
 ### Prerequisite
 
-- [Node](https://nodejs.org/ko/) v6.9.1 버전 이상 설치
+- [Node](https://nodejs.org/ko/) 6.9.1 버전 이상 설치
 - [MongoDB](https://www.mongodb.com/) 설치
+
+### Install
+
+```
+$ git clone https://github.com/ridibooks/viewer-notification.git
+```
 
 ### Make .env file
 
@@ -26,8 +34,56 @@ SECRET_KEY=4g4Ykk4VnWTcRbcVB/0qlKYyGaqAyp6+U6lv4LhQurLg6khOQ9bNg5vobXHPwJ5f+qyIl
 npm start
 ```
 
-구동 후에 http://localhost:8080으로 접속한다.
+구동 후에 [http://localhost:8080](http://localhost:8080)으로 접속한다.
 
 ### Test
 
 아직 작업 안함
+
+## Public API
+
+### Check Notifications
+
+현재 디바이스 플랫폼과 앱 버전에 대해 공지사항이 있는지 확인한다.
+
+```
+GET /v1/status/check?deviceType=[deviceType]&deviceVersion=[deviceVersion]&appVersion=[appVersion]
+```
+
+#### Parameters
+
+| 이름          | 타입                       | 설명                                |
+| ------------- | -------------------------- | ----------------------------------- |
+| deviceType    | enum (android, ios, other) | 디바이스 종류 (더 추가될 수 있음)   |
+| deviceVersion | string                     | 디바이스의 버전 (x.x.x 형태로 입력) |
+| appVersion    | string                     | 현재 뷰어 앱 버전                   |
+
+#### Response
+
+```json
+[
+	{
+		"_id": "586c9b6b58ec76096eacd2bd",
+		"type": "serviceFailure",
+		"deviceType": [
+			"android"
+		],
+		"deviceVersion": [
+			"<",
+			"4",
+			"0",
+			"0"
+		],
+		"appVersion": [
+			"<",
+			"4",
+			"0",
+			"0"
+		],
+		"startTime": "2017-01-04T06:48:00.000Z",
+		"endTime": "2017-01-04T08:48:00.000Z",
+		"contents": "...",
+		"isActivated": true
+	}
+]
+```

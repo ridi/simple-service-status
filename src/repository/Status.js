@@ -9,25 +9,27 @@ const Model = require('./Model');
 
 class Status extends Model {
 
-  findAll(sort) {
-    return super.find({}, sort);
+  find(query, sort, postFilter) {
+    return super.find(query, sort).then((result) => {
+      if (typeof postFilter === 'function') {
+        return postFilter(result);
+      }
+      return result;
+    });
   }
 
-  find(deviceType, deviceVersion, appVersion) {
+  findWithComparators(deviceType, deviceVersion, appVersion) {
     const self = this;
-
     const now = new Date();
-
-    return super.find({
+    return this.find({
       startTime: { $lte: now },
       endTime: { $gt: now },
       isActivated: true,
-    }).then(results => results.filter(result => (
-        result.deviceType.includes(deviceType)
+    }, {}, results => results.filter(
+      result => result.deviceType.includes(deviceType)
         && self._compareVersion(result.deviceVersion, deviceVersion)
         && self._compareVersion(result.appVersion, appVersion)
-      ))
-    );
+    ));
   }
 
   test() {
