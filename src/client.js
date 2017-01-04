@@ -1,4 +1,4 @@
-import style from './style/common.scss';
+require('./style/common.scss');
 
 const React = require('react');
 const ReactDOM = require('react-dom');

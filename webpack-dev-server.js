@@ -24,7 +24,7 @@ const compiler = new Webpack(webpackConfig);
 const config = require('./src/config/server.config');
 
 webpackServer.use(webpackDevMiddleware(compiler, {
-  publicPath: `http://${config.defaults.host}:${config.defaults.port}/public/build/`,
+  publicPath: `http://${config.defaults.host}:${config.defaults.port}${config.build.publicUrlPrefix}/`,
   noInfo: false,
   quite: false,
   stats: {

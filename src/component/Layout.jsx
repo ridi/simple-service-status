@@ -3,11 +3,17 @@ const React = require('react');
 const Navbar = require('react-bootstrap/lib/Navbar');
 const Nav = require('react-bootstrap/lib/Nav');
 const NavItem = require('react-bootstrap/lib/NavItem');
+const NavDropdown = require('react-bootstrap/lib/NavItem');
+const MenuItem = require('react-bootstrap/lib/MenuItem');
 
 const Grid = require('react-bootstrap/lib/Grid');
 const Row = require('react-bootstrap/lib/Row');
 
 class Layout extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { navExpanded: false };
+  }
   render() {
     let button;
     if (this.props.auth && this.props.auth.isAuthenticated) {
@@ -23,11 +29,16 @@ class Layout extends React.Component {
           <link rel="stylesheet" href="/public/assets/client.bundle.css" />
         </head>
         <body>
-          <Navbar>
+          <Navbar expanded={this.state.navExpanded} onToggle={navExpanded => this.setState({ navExpanded })}>
             <Navbar.Header>
               <Navbar.Brand>긴급 공지사항 등록 시스템</Navbar.Brand>
+              <Navbar.Toggle />
             </Navbar.Header>
             <Navbar.Collapse>
+              <Nav activeKey={1}>
+                <NavItem eventKey={1} href="/">공지사항 관리</NavItem>
+                <NavItem eventKey={2} href="/">설정</NavItem>
+              </Nav>
               <Nav pullRight>{button}</Nav>
             </Navbar.Collapse>
           </Navbar>
@@ -48,5 +59,10 @@ class Layout extends React.Component {
     );
   }
 }
+
+Layout.propTypes = {
+  auth: React.PropTypes.object,
+  state: React.PropTypes.string,
+};
 
 module.exports = Layout;
