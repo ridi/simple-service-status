@@ -10,6 +10,7 @@ const Tab = require('react-bootstrap/lib/Tab');
 
 const CreateModal = require('./CreateModal');
 const Modal = require('./Modal');
+const Loading = require('./Loading');
 
 const moment = require('moment');
 const axios = require('axios');
@@ -67,6 +68,7 @@ class StatusList extends React.Component {
       },
       activationMode: true,
       activeTab: 'current',
+      showLoading: false,
     };
 
     this.modals = {};
@@ -136,6 +138,7 @@ class StatusList extends React.Component {
   }
 
   refresh(tabName) {
+    this.setState({ showLoading: true });
     const table = this.tables[tabName];
     const newState = {};
     newState[tabName] = {};
@@ -147,6 +150,7 @@ class StatusList extends React.Component {
         newState[tabName].checkedItems = [];
         this.setState(newState);
         table.setChecked(false);
+        this.setState({ showLoading: false });
       })
       .catch((error) => {
         newState[tabName].items = [];
@@ -154,6 +158,7 @@ class StatusList extends React.Component {
         newState[tabName].checkedItems = [];
         this.setState(newState);
         table.setChecked(false);
+        this.setState({ showLoading: false });
       });
   }
 
@@ -279,6 +284,7 @@ class StatusList extends React.Component {
         >
           <p>{this.state[this.state.activeTab].checkedItems.length} 건의 데이터를 {this.state.activationMode ? '활성화' : '비활성화'} 하시겠습니까?</p>
         </Modal>
+        <Loading show={this.state.showLoading} />
       </div>
     );
   }
