@@ -6,11 +6,17 @@
 
 const Status = require('./../repository/Status');
 const StatusType = require('../repository/StatusType');
+const DeviceType = require('../repository/DeviceType');
 const util = require('../util');
+
+const menus = [
+  { viewName: 'StatusList', title: '공지사항 관리', url: '/' },
+  { viewName: 'Settings', title: '설정', url: '/settings' },
+];
 
 function view(request, reply, childViewName, context) {
   const ctx = context || {};
-  ctx.childComponentName = childViewName;
+  ctx.viewName = childViewName;
   if (request.auth) {
     ctx.auth = {
       isAuthenticated: request.auth.isAuthenticated,
@@ -18,6 +24,7 @@ function view(request, reply, childViewName, context) {
     };
   }
   ctx.state = `window.state = ${JSON.stringify(ctx)}`;
+  ctx.menus = menus;
   return reply.view('Layout', ctx);
 }
 
@@ -28,7 +35,17 @@ module.exports = [
     handler: (request, reply) => Promise.all([
       Status.find({ endTime: { $gt: new Date() } }, { endTime: -1, startTime: -1, isActivated: -1 }),
       StatusType.find(),
-    ]).then(([items, statusTypes]) => view(request, reply, 'StatusList', { items: util.formatDates(items), statusTypes }))
+      DeviceType.find(),
+    ]).then(([items, statusTypes, deviceTypes]) => view(request, reply, 'StatusList', { items: util.formatDates(items), statusTypes, deviceTypes }))
+      .catch(error => view(request, reply, 'Error', { error })),
+  },
+  {
+    method: 'GET',
+    path: '/settings',
+    handler: (request, reply) => Promise.all([
+      StatusType.find(),
+      DeviceType.find(),
+    ]).then(([statusTypes, deviceTypes]) => view(request, reply, 'Settings', { statusTypes, deviceTypes }))
       .catch(error => view(request, reply, 'Error', { error })),
   },
   {

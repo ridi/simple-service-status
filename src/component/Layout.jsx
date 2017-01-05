@@ -34,9 +34,8 @@ class Layout extends React.Component {
               <Navbar.Toggle />
             </Navbar.Header>
             <Navbar.Collapse>
-              <Nav activeKey={1}>
-                <NavItem eventKey={1} href="/">공지사항 관리</NavItem>
-                <NavItem eventKey={2} href="/">설정</NavItem>
+              <Nav activeKey={this.props.viewName}>
+                {this.props.menus.map(menu => <NavItem eventKey={menu.viewName} href={menu.url}>{menu.title}</NavItem>)}
               </Nav>
               <Nav pullRight>{button}</Nav>
             </Navbar.Collapse>
@@ -62,6 +61,8 @@ class Layout extends React.Component {
 Layout.propTypes = {
   auth: React.PropTypes.object,
   state: React.PropTypes.string,
+  viewName: React.PropTypes.string,
+  menus: React.PropTypes.array,
 };
 
 module.exports = Layout;

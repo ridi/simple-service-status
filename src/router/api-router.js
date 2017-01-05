@@ -10,6 +10,8 @@
 const Joi = require('joi');
 const Status = require('./../repository/Status');
 const User = require('./../repository/User');
+const DeviceType = require('./../repository/DeviceType');
+const StatusType = require('./../repository/StatusType');
 const config = require('../config/server.config').url;
 const util = require('../util');
 const RidiError = require('../Error');
@@ -173,11 +175,23 @@ module.exports = [
   },
   {
     method: 'GET',
-    path: `${config.statusApiPrefix}/test`,
+    path: `${config.apiPrefix}/test`,
     handler: (request, reply) => {
-      Status.test()
-        .then(result => reply(result))
-        .catch(err => reply(err));
+      const deviceTypes = [
+        { label: 'Android', value: 'android' },
+        { label: 'iOS', value: 'ios' },
+        { label: 'Other', value: 'other' },
+      ];
+      const statusTypes = [
+        { label: '서버 문제', value: 'serviceFailure' },
+        { label: '정기 점검', value: 'routineInspection' },
+      ];
+      const promises = deviceTypes.map(deviceType => DeviceType.save(deviceType));
+      promises.concat(statusTypes.map(statusType => StatusType.save(statusType)));
+      Promise.all(promises).then(result => reply(result)).catch(err => reply(err));
+    },
+    config: {
+      auth: false,
     },
   },
 ];

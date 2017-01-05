@@ -20,13 +20,9 @@ const config = require('../config/server.config');
 
 const dateFormat = 'YYYY-MM-DD HH:mm';
 
-const options = { // FIXME 나중에 repository로 분리
+const options = {
   statusTypes: [],
-  deviceTypes: [
-    { label: 'Android', value: 'android' },
-    { label: 'iOS', value: 'ios' },
-    { label: 'Other', value: 'other' },
-  ],
+  deviceTypes: [],
   comparators: [
     { label: 'All', value: '*' },
     { label: '= (Equal)', value: '=' },
@@ -42,6 +38,7 @@ class StatusList extends React.Component {
     super(props);
     const self = this;
     options.statusTypes = props.statusTypes;
+    options.deviceTypes = props.deviceTypes;
 
     this.state = {
       current: {  // current tab
@@ -74,7 +71,7 @@ class StatusList extends React.Component {
     this.modals = {};
     this.tables = {};
 
-    this.columns = [
+    this.expiredTableColumns = [
       {
         title: '디바이스 타입',
         display: (row) => {
@@ -105,7 +102,7 @@ class StatusList extends React.Component {
         },
       },
       {
-        title: '타입',
+        title: '상태 타입',
         display: (row) => {
           if (!row.type) {
             return '';
@@ -130,11 +127,12 @@ class StatusList extends React.Component {
           return <span>{row.contents.split(/(\r\n|\n|\r)/gm).map(line => <p>{line}</p>)}</span>;
         },
       },
-      {
-        title: '활성화',
-        display: row => <Label bsStyle={row.isActivated ? 'success' : 'default'}>{row.isActivated ? 'ON' : 'OFF'}</Label>,
-      },
     ];
+
+    this.currentTableColumns = this.expiredTableColumns.concat({
+      title: '활성화',
+      display: row => <Label bsStyle={row.isActivated ? 'success' : 'default'}>{row.isActivated ? 'ON' : 'OFF'}</Label>,
+    });
   }
 
   refresh(tabName) {
@@ -239,7 +237,7 @@ class StatusList extends React.Component {
             <Table
               ref={(t) => { this.tables.current = t; }}
               items={currentState.items}
-              columns={this.columns}
+              columns={this.currentTableColumns}
               error={currentState.error}
               onCheckboxChange={(checkedItems => this.onChechboxChanged('current', checkedItems))}
             />
@@ -257,7 +255,7 @@ class StatusList extends React.Component {
             <Table
               ref={(t) => { this.tables.expired = t; }}
               items={expireState.items}
-              columns={this.columns}
+              columns={this.expiredTableColumns}
               error={expireState.error}
               onCheckboxChange={(checkedItems => this.onChechboxChanged('expired', checkedItems))}
             />
@@ -292,6 +290,10 @@ class StatusList extends React.Component {
 StatusList.propTypes = {
   items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
   statusTypes: React.PropTypes.arrayOf(React.PropTypes.objectOf({
+    label: React.PropTypes.string,
+    value: React.PropTypes.string,
+  })).isRequired,
+  deviceTypes: React.PropTypes.arrayOf(React.PropTypes.objectOf({
     label: React.PropTypes.string,
     value: React.PropTypes.string,
   })).isRequired,

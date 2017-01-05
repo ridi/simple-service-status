@@ -32,7 +32,7 @@ class Row extends React.Component {
 
   render() {
     return (
-      <tr className="main-row">
+      <tr className={this.props.className}>
         <td><Checkbox onChange={e => this.onCheckboxChanged(e)} checked={this.props.checked} /></td>
         {this.props.columns.map((col, idx) => <Column key={idx} item={this.props.item} options={col} />)}
       </tr>
@@ -44,6 +44,7 @@ Row.propTypes = {
   columns: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
   checked: React.PropTypes.bool,
   onCheckboxChange: React.PropTypes.func,
+  className: React.PropTypes.string,
 };
 
 class ChildRow extends React.Component {
@@ -73,7 +74,6 @@ ChildRow.propTypes = {
   columns: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
   colSpan: React.PropTypes.number,
 };
-
 
 class Table extends React.Component {
   constructor(props) {
@@ -126,16 +126,28 @@ class Table extends React.Component {
     if (this.props.items.length > 0) {
       rows = this.props.items.map((item, idx) => {
         const checked = self.state.checkedItems.includes(item);
-        return [
+        if (childCols.length > 0) {
+          return [
+            <Row
+              className="main-row"
+              key={idx}
+              item={item}
+              columns={mainCols}
+              onCheckboxChange={(isChecked, targetItem) => this.onCheckboxChanged(isChecked, targetItem)}
+              checked={checked}
+            />,
+            <ChildRow item={item} columns={childCols} colSpan={mainCols.length} />
+          ];
+        }
+        return (
           <Row
             key={idx}
             item={item}
             columns={mainCols}
             onCheckboxChange={(isChecked, targetItem) => this.onCheckboxChanged(isChecked, targetItem)}
             checked={checked}
-          />,
-          <ChildRow item={item} columns={childCols} colSpan={mainCols.length}/>,
-        ];
+          />
+        );
       });
     }
 
