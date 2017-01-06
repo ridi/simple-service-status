@@ -134,6 +134,9 @@ class CreateModal extends React.Component {
           result = `${cond.versionEnd}는 잘못된 버전 문자열입니다.`;
           return true;
         }
+        if (semver.gte(cond.versionStart, cond.versionEnd)) {
+          result = `범위 조건에서 시작 버전(${cond.versionStart})은 종료 버전(${cond.versionEnd})보다 작은 값이어야 합니다.`;
+        }
       }
       if (cond.comparator === '=') {
         if (!cond.version) {
