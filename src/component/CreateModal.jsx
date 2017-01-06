@@ -7,6 +7,7 @@ const FormControl = require('react-bootstrap/lib/FormControl');
 const HelpBlock = require('react-bootstrap/lib/HelpBlock');
 const Row = require('react-bootstrap/lib/Row');
 const Col = require('react-bootstrap/lib/Col');
+const Alert = require('react-bootstrap/lib/Alert');
 
 const VersionSelector = require('./VersionSelector');
 const Selectize = require('react-selectize');
@@ -15,6 +16,8 @@ const DateTime = require('react-datetime');
 const moment = require('moment');
 const axios = require('axios');
 const util = require('../util');
+
+const semver = require('semver');
 
 const SimpleSelect = Selectize.SimpleSelect;
 const MultiSelect = Selectize.MultiSelect;
@@ -43,10 +46,11 @@ class CreateModal extends React.Component {
       startTimeState: null,
       endTimeState: null,
       versionSelectorDisabled: false,
+      saveWarningMessage: null,
     };
 
     Object.assign(this.state, this.defaultData);
-
+    this.checkWarningOnce = false;
     this.modes = {
       add: {
         title: '새로운 알림 등록',
@@ -67,8 +71,109 @@ class CreateModal extends React.Component {
     };
   }
 
+  checkFormValidity() {
+    const data = this.state;
+    if (!data.type) {
+      return { error: '알림 타입을 설정해 주세요.' };
+    }
+    if (!data.startTime) {
+      return { error: '시작 일시를 지정해 주세요.' };
+    }
+    if (!data.endTime) {
+      return { error: '종료 일시를 지정해 주세요.' };
+    }
+    if (moment(data.startTime).isAfter(data.endTime)) {
+      return { error: '종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.' };
+    }
+    if (data.deviceType.length === 0) {
+      return { error: '디바이스 타입을 하나 이상 선택해 주세요.' };
+    }
+    if (data.contents.trim().length === 0) {
+      return { error: '내용을 입력해 주세요.' };
+    }
+    if (data.deviceType.length < 2) {
+      let semVersionValidity = this.checkSemVersionValidity(data.deviceSemVersion);
+      if (semVersionValidity !== true) {
+        return { error: semVersionValidity };
+      }
+      semVersionValidity = this.checkSemVersionValidity(data.appSemVersion);
+      if (semVersionValidity !== true) {
+        return { error: semVersionValidity };
+      }
+    }
+
+    const warning = [];
+    if (moment(data.endTime).isBefore(moment.now())) {
+      warning.push('- 설정된 종료 일시가 과거입니다. 활성화 하더라도 알림이 실행되지 않습니다.');
+    }
+    if (data.deviceSemVersion.some(cond => cond.comparator === '*') && data.deviceSemVersion.length > 1) {
+      warning.push('- 설정된 타겟 디바이스 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
+    }
+    if (data.appSemVersion.some(cond => cond.comparator === '*') && data.appSemVersion.length > 1) {
+      warning.push('- 설정된 앱 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
+    }
+    if (warning.length === 0) {
+      return true;
+    }
+    return { warning };
+  }
+
+  checkSemVersionValidity(parsedConditions) {
+    let result = true;
+    parsedConditions.some((cond) => { // for breaking, return true;
+      if (cond.comparator === '~') {
+        if (!cond.versionStart && !cond.versionEnd) {
+          result = '"~"(범위) 조건을 지정한 경우 시작 버전 또는 종료 버전을 반드시 작성해야 합니다.';
+          return true;
+        }
+        if (cond.versionStart && semver.valid(cond.versionStart) === null) {
+          result = `${cond.versionStart}는 잘못된 버전 문자열입니다.`;
+          return true;
+        }
+        if (cond.versionEnd && semver.valid(cond.versionEnd) === null) {
+          result = `${cond.versionEnd}는 잘못된 버전 문자열입니다.`;
+          return true;
+        }
+      }
+      if (cond.comparator === '=') {
+        if (!cond.version) {
+          result = '"="(일치) 조건을 지정한 경우 버전을 반드시 작성해야 합니다.';
+          return true;
+        }
+        if (cond.version && semver.valid(cond.version) === null) {
+          result = `${cond.version}는 잘못된 버전 문자열입니다.`;
+          return true;
+        }
+      }
+      return false;
+    });
+    return result;
+  }
+
   onSave(withActivation) {
     const self = this;
+
+    const result = this.checkFormValidity();
+    if (result !== true) {
+      if (result.error) {
+        this.modal.message(result.error, 'warning');
+        return;
+      } else if (result.warning && !this.checkWarningOnce) {
+        this.checkWarningOnce = true;
+        const message = (
+          <p>
+            저장하시기 전에 아래의 문제(들)를 확인해 주세요.
+            <br />
+            {result.warning.join(<br />)}
+            <br />
+            그래도 계속 하시려면 <strong>저장 버튼</strong>을 다시 누르세요.
+          </p>
+        );
+        this.setState({ saveWarningMessage: message });
+        return;
+      }
+    }
+
     const data = {
       type: this.state.type.value,
       deviceType: this.state.deviceType.map(dt => dt.value),
@@ -76,14 +181,15 @@ class CreateModal extends React.Component {
       endTime: util.formatDate(this.state.endTime),
       contents: this.state.contents,
       isActivated: withActivation,
-      deviceSemVersion: util.stringifySemVersion(this.state.deviceSemVersion),
-      appSemVersion: util.stringifySemVersion(this.state.appSemVersion),
+      deviceSemVersion: (this.state.deviceType.length === 1) ? util.stringifySemVersion(this.state.deviceSemVersion) : '*',
+      appSemVersion: (this.state.deviceType.length === 1) ? util.stringifySemVersion(this.state.appSemVersion) : '*',
     };
 
     if (this.state.mode !== 'add') {
       data._id = this.state._id;
     }
 
+    this.checkWarningOnce = false;
     const api = (this.state.mode === 'add')
       ? axios.post('/api/v1/status', data)
       : axios.put(`/api/v1/status/${data._id}`, data);
@@ -98,7 +204,7 @@ class CreateModal extends React.Component {
   }
 
   show(mode, data) {
-    this.setState({ mode });
+    this.setState({ mode, saveWarningMessage: null });
     this.resolveData(data);
     this.modal.show();
   }
@@ -159,8 +265,8 @@ class CreateModal extends React.Component {
     return (
       <Modal title={this.modes[this.state.mode].title} ref={(modal) => { this.modal = modal; }} buttons={this.modes[this.state.mode].buttons}>
         <FormGroup controlId="type">
-          <ControlLabel>알람 타입</ControlLabel>
-          <SimpleSelect value={this.state.type} onValueChange={type => this.setState({ type })} placeholder="알람 타입을 선택하세요" options={this.props.options.statusTypes} />
+          <ControlLabel>알림 타입</ControlLabel>
+          <SimpleSelect value={this.state.type} onValueChange={type => this.setState({ type })} placeholder="알림 타입을 선택하세요" options={this.props.options.statusTypes} />
         </FormGroup>
         <Row>
           <Col xs={6}>
@@ -202,7 +308,10 @@ class CreateModal extends React.Component {
             options={this.props.options.deviceTypes}
           />
         </FormGroup>
-        <FormGroup controlId="deviceVersion">
+        <Row>
+          <HelpBlock>타겟 디바이스를 여러 개 선택할 경우 타겟 디바이스 버전과 앱 버전을 설정할 수 없습니다.</HelpBlock>
+        </Row>
+        <FormGroup controlId="deviceVersion" style={{ display: this.state.versionSelectorDisabled ? 'none' : 'block' }}>
           <ControlLabel>타겟 디바이스 버전</ControlLabel>
           <VersionSelector
             values={this.state.deviceSemVersion}
@@ -210,7 +319,7 @@ class CreateModal extends React.Component {
             disabled={this.state.versionSelectorDisabled}
           />
         </FormGroup>
-        <FormGroup controlId="appVersion">
+        <FormGroup controlId="appVersion" style={{ display: this.state.versionSelectorDisabled ? 'none' : 'block' }}>
           <ControlLabel>앱 버전</ControlLabel>
           <VersionSelector
             values={this.state.appSemVersion}
@@ -227,6 +336,9 @@ class CreateModal extends React.Component {
             placeholder="Content"
           />
         </FormGroup>
+        <Alert style={{ display: this.state.saveWarningMessage ? 'block' : 'none' }} bsStyle="warning">
+          {this.state.saveWarningMessage}
+        </Alert>
       </Modal>
     );
   }

@@ -32,11 +32,12 @@ class Modal extends React.Component {
     super(props);
     this.state = {
       showModal: false,
+      alertMessage: null,
     };
   }
 
   show() {
-    this.setState({ showModal: true });
+    this.setState({ showModal: true, alertMessage: null });
   }
 
   close(isCancel) {

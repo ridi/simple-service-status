@@ -215,5 +215,8 @@ exports.stringifySemVersion = (parsedConditions) => {
         return '';
     }
   });
+  if (result.includes('*')) {
+    return '*';
+  }
   return result.filter(cond => !!cond).join(' || ').trim();
 };

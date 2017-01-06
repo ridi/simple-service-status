@@ -120,7 +120,7 @@ class VersionSelector extends React.Component {
                 type="text"
                 value={value.version}
                 onChange={e => this.onVersionChanged(index, { version: e.target.value })}
-                placeholder="= 버전"
+                placeholder="= 일치하는 버전"
                 style={value.comparator !== '=' ? { display: 'none' } : {}}
                 disabled={this.props.disabled}
               />
