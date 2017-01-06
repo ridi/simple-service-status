@@ -154,3 +154,66 @@ exports.toLocalDate = (date, utcOffset) => {
 exports.formatDate = (date, formatString, utcOffset) => {
   return exports.toLocalDate(date, utcOffset).format(formatString);
 };
+
+/**
+ * Parse below "limited" formatted Semantic Version to an array for UI expression
+ *  - equals: "=2.3", "=2", "=4.3.3"
+ *  - range: ">=1.2.3 <3.0", ">=1.2.3", "<3.0.0"  (only permitted gte(>=) and lt(<) for ranges)
+ *  - all: "*"
+ *  - mixed (by OR): ">=1.2.3 <3.0.0 || <0.1.2 || >=5.1"
+ * @param {string} conditionString
+ * @return {Array}
+ */
+const regex = /([>=<]{1,2})([0-9a-zA-Z\-.]+)*/g;
+exports.parseSemVersion = (semVerString) => {
+  if (!semVerString) {
+    return [{ comparator: '*' }];   // default
+  }
+  const conditions = semVerString.split('||').map(cond => cond.trim());  // OR 연산을 기준으로 분리
+  const result = [];
+  conditions.forEach((cond) => {
+    if (cond.startsWith('*')) {
+      result.push({ comparator: '*' });
+    } else if (cond.startsWith('>=') || cond.startsWith('<')) {
+      const resultItem = { comparator: '~' };
+      let execResult;
+      while ((execResult = regex.exec(cond)) !== null) {
+        if (execResult[1] === '>=') {
+          resultItem.versionStart = execResult[2];
+        } else if (execResult[1] === '<') {
+          resultItem.versionEnd = execResult[2];
+        }
+      }
+      if (resultItem.versionStart || resultItem.versionEnd) {
+        result.push(resultItem);
+      }
+    } else if (cond.startsWith('=')) {
+      let execResult;
+      if ((execResult = regex.exec(cond)) !== null) {
+        result.push({ comparator: '=', version: execResult[2] });
+      }
+    }
+  });
+  return result;
+};
+
+/**
+ * Stringify parsed version conditions to SemVer representation
+ * @param {Array} parsedConditions
+ * @return {string}
+ */
+exports.stringifySemVersion = (parsedConditions) => {
+  const result = parsedConditions.map((cond) => {
+    switch (cond.comparator) {
+      case '*':
+        return '*';
+      case '=':
+        return `=${cond.version}`;
+      case '~':
+        return `${cond.versionStart ? `>=${cond.versionStart}` : ''} ${cond.versionEnd ? `<${cond.versionEnd}` : ''}`;
+      default:
+        return '';
+    }
+  });
+  return result.filter(cond => !!cond).join(' || ').trim();
+};

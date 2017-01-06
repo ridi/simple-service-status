@@ -8,6 +8,7 @@ const HelpBlock = require('react-bootstrap/lib/HelpBlock');
 const Row = require('react-bootstrap/lib/Row');
 const Col = require('react-bootstrap/lib/Col');
 
+const VersionSelector = require('./VersionSelector');
 const Selectize = require('react-selectize');
 const DateTime = require('react-datetime');
 
@@ -31,11 +32,9 @@ class CreateModal extends React.Component {
       startTime: moment(),
       endTime: moment().add(2, 'hours'),
       deviceType: [],
-      deviceVersionComparator: props.options.comparators[0],
-      deviceVersion: '',
-      appVersionComparator: props.options.comparators[0],
-      appVersion: '',
       contents: '',
+      deviceSemVersion: [{ comparator: '*' }],
+      appSemVersion: [{ comparator: '*' }],
     });
 
     this.state = {
@@ -43,10 +42,7 @@ class CreateModal extends React.Component {
       mode: 'add',
       startTimeState: null,
       endTimeState: null,
-      deviceVersionDisabled: true,
-      appVersionDisabled: true,
-      deviceVersionComparatorDisabled: false,
-      appVersionComparatorDisabled: false,
+      versionSelectorDisabled: false,
     };
 
     Object.assign(this.state, this.defaultData);
@@ -71,19 +67,17 @@ class CreateModal extends React.Component {
     };
   }
 
-  onSave(withActivation, modal) {
+  onSave(withActivation) {
     const self = this;
     const data = {
       type: this.state.type.value,
       deviceType: this.state.deviceType.map(dt => dt.value),
-      deviceVersion: [this.state.deviceVersionComparator.value]
-        .concat((this.state.deviceVersionComparator.value !== '*' && this.state.deviceVersion) ? this.state.deviceVersion.split('.') : []),
-      appVersion: [this.state.appVersionComparator.value]
-        .concat((this.state.appVersionComparator.value !== '*' && this.state.appVersion) ? this.state.appVersion.split('.') : []),
       startTime: util.formatDate(this.state.startTime),
       endTime: util.formatDate(this.state.endTime),
       contents: this.state.contents,
       isActivated: withActivation,
+      deviceSemVersion: util.stringifySemVersion(this.state.deviceSemVersion),
+      appSemVersion: util.stringifySemVersion(this.state.appSemVersion),
     };
 
     if (this.state.mode !== 'add') {
@@ -120,19 +114,18 @@ class CreateModal extends React.Component {
 
   resolveData(data) {
     let newData = {};
+
     if (data) {
       newData = {
         _id: data._id,
         type: this.props.options.statusTypes.find(o => o.value === data.type),
         deviceType: this.props.options.deviceTypes.filter(o => data.deviceType.includes(o.value)),
-        deviceVersionComparator: this.props.options.comparators.find(o => o.value === data.deviceVersion[0]),
-        deviceVersion: data.deviceVersion.length > 1 ? data.deviceVersion.slice(1).join('.') : '',
-        appVersionComparator: this.props.options.comparators.find(o => o.value === data.appVersion[0]),
-        appVersion: data.appVersion.length > 1 ? data.appVersion.slice(1).join('.') : '',
         startTime: moment(data.startTime),
         endTime: moment(data.endTime),
         contents: data.contents,
         isActivated: data.isActivated,
+        deviceSemVersion: util.parseSemVersion(data.deviceSemVersion),
+        appSemVersion: util.parseSemVersion(data.appSemVersion),
       };
     }
 
@@ -155,26 +148,7 @@ class CreateModal extends React.Component {
   }
 
   onSelectionChanged() {
-    if (this.state.deviceType.length > 1) {
-      // disable device version, app version inputs
-      this.setState({
-        appVersionDisabled: true,
-        appVersionComparatorDisabled: true,
-        deviceVersionDisabled: true,
-        deviceVersionComparatorDisabled: true,
-      });
-    } else {
-      this.setState({
-        appVersionDisabled: this.state.appVersionComparator.value === '*',
-        appVersionComparatorDisabled: false,
-        deviceVersionDisabled: this.state.deviceVersionComparator.value === '*',
-        deviceVersionComparatorDisabled: false,
-      });
-    }
-  }
-
-  onComparatorChanged(selected, target) {
-    this.setState({ [`${target}Comparator`]: selected }, () => this.onSelectionChanged());
+    this.setState({ versionSelectorDisabled: this.state.deviceType.length > 1 });
   }
 
   onDeviceTypeChanged(deviceType) {
@@ -228,49 +202,21 @@ class CreateModal extends React.Component {
             options={this.props.options.deviceTypes}
           />
         </FormGroup>
-        <FormGroup controlId="deviceVersionComparator">
+        <FormGroup controlId="deviceVersion">
           <ControlLabel>타겟 디바이스 버전</ControlLabel>
-          <Row>
-            <Col xs={6}>
-              <SimpleSelect
-                value={this.state.deviceVersionComparator}
-                onValueChange={deviceVersionComparator => this.onComparatorChanged(deviceVersionComparator, 'deviceVersion')}
-                options={this.props.options.comparators}
-                disabled={this.state.deviceVersionComparatorDisabled}
-              />
-            </Col>
-            <Col xs={6}>
-              <FormControl
-                type="text"
-                value={this.state.deviceVersion}
-                onChange={e => this.setState({ deviceVersion: e.target.value })}
-                placeholder="Device Version"
-                disabled={this.state.deviceVersionDisabled}
-              />
-            </Col>
-          </Row>
+          <VersionSelector
+            values={this.state.deviceSemVersion}
+            onChange={(deviceSemVersion => this.setState({ deviceSemVersion }))}
+            disabled={this.state.versionSelectorDisabled}
+          />
         </FormGroup>
         <FormGroup controlId="appVersion">
           <ControlLabel>앱 버전</ControlLabel>
-          <Row>
-            <Col xs={6}>
-              <SimpleSelect
-                value={this.state.appVersionComparator}
-                onValueChange={appVersionComparator => this.onComparatorChanged(appVersionComparator, 'appVersion')}
-                options={this.props.options.comparators}
-                disabled={this.state.appVersionComparatorDisabled}
-              />
-            </Col>
-            <Col xs={6}>
-              <FormControl
-                type="text"
-                value={this.state.appVersion}
-                onChange={e => this.setState({ appVersion: e.target.value })}
-                placeholder="App Version"
-                disabled={this.state.appVersionDisabled}
-              />
-            </Col>
-          </Row>
+          <VersionSelector
+            values={this.state.appSemVersion}
+            onChange={(appSemVersion => this.setState({ appSemVersion }))}
+            disabled={this.state.versionSelectorDisabled}
+          />
         </FormGroup>
         <FormGroup controlId="content">
           <ControlLabel>내용</ControlLabel>

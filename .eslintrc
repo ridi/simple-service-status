@@ -5,6 +5,7 @@
     "max-len": [1, 140],        // 행의 최대 길이는 140
     "no-underscore-dangle": 0,  // 가독성을 위해 private 변수 앞에 _ prefix 붙이기 허용
     "class-methods-use-this": 0, // 클래스 메서드 안에서 반드시 this를 사용할 필요 없음
-    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "no-cond-assign": [2, "except-parens"]
   }
 }

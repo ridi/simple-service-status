@@ -39,27 +39,47 @@ table {
   }
 }
 
+// Buttons
 .btn-toolbar {
   margin: 15px 0;
   text-align: right;
 }
-.btn-default {
-  color: #333;
-  background-color: #fff;
-  border-color: #e0e0e0;
-}
-.btn-default:hover {
-  background-color: #f3f3f3;
-  border-color: #dcdcdc;
-}
-.btn-danger {
-  color: #fff;
-  background-color: #d26565;
-  border-color: #d45959;
-}
-.btn-danger:hover {
-  background-color: #d25959;
-  border-color: #d04040;
+.btn {
+  &.btn-default {
+    color: #5a5a5a;
+    background-color: #fff;
+    border-color: #e0e0e0;
+    &.active {
+      background: #e0e0e0;
+      color: #5a93c3;
+    }
+  }
+  &.btn-default:hover {
+    background-color: #f3f3f3;
+    border-color: #dcdcdc;
+  }
+  &.btn-danger {
+    color: #fff;
+    background-color: #d26565;
+    border-color: #d45959;
+  }
+  &.btn-danger:hover {
+    background-color: #d25959;
+    border-color: #d04040;
+  }
+  &.active {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
+  &.active.focus,
+  &.active:focus,
+  &.focus,
+  &:active.focus,
+  &:active:focus,
+  &:focus {
+    outline: none;
+  }
 }
 
 .label-default {
@@ -92,6 +112,12 @@ label {
   box-shadow: none;
   border-radius: 2px;
   border: 1px solid #cccccc;
+  &:focus {
+    outline: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
 }
 .btn {
   &.btn-default {
@@ -246,5 +272,55 @@ label {
         padding-left: 4px;
       }
     }
+  }
+}
+
+// Version Selector
+.version-selector-container {
+  .version-selector-item {
+    display: flex;
+    align-content: stretch;
+    margin-bottom: 4px;
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    .version-selector-comparator {
+      width: 120px;
+      margin: 0;
+      display: inline-block;
+      .btn-group {
+        margin-left: 0;
+        button {
+          font-size: 1.2em;
+          border-radius: 0;
+          border-top-width: 0;
+          border-bottom-width: 0;
+          border-color: #ccc !important;
+          width: 40px;
+          &:first-child {
+            border-left-width: 0;
+          }
+        }
+      }
+    }
+    .version-selector-inputs {
+      flex-grow: 1;
+      width: auto;
+      border-width: 0;
+      &.version-selector-inputs-second {
+        border-left-width: 1px;
+      }
+      &[readonly] {
+        background-color: #fff;
+      }
+    }
+    .version-selector-remove-btn {
+      border-width: 0;
+    }
+  }
+  .version-selector-add-btn {
+    width: 100%;
+    color: #5a93c3;
+    border-color: #669ac7;
+    font-weight: 300;
   }
 }

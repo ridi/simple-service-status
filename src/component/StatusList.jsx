@@ -73,6 +73,15 @@ class StatusList extends React.Component {
 
     this.expiredTableColumns = [
       {
+        title: '기간',
+        display: (row) => {
+          const start = moment(row.startTime);
+          const end = moment(row.endTime);
+          const duration = start.from(end, true);
+          return <span>{`${util.formatDate(start, dateFormat)} ~ ${util.formatDate(end, dateFormat)} (${duration})`}</span>;
+        },
+      },
+      {
         title: '디바이스 타입',
         display: (row) => {
           if (!row.deviceType) {
@@ -86,20 +95,11 @@ class StatusList extends React.Component {
       },
       {
         title: '디바이스 버전',
-        display: row => <span>{`${row.deviceVersion[0]} ${row.deviceVersion.length > 1 ? row.deviceVersion.slice(1).join('.') : ''}`}</span>,
+        key: 'deviceSemVersion',
       },
       {
         title: '앱 버전',
-        display: row => <span>{`${row.appVersion[0]} ${row.appVersion.length > 1 ? row.appVersion.slice(1).join('.') : ''}`}</span>,
-      },
-      {
-        title: '기간',
-        display: (row) => {
-          const start = moment(row.startTime);
-          const end = moment(row.endTime);
-          const duration = start.from(end, true);
-          return <span>{`${util.formatDate(start, dateFormat)} ~ ${util.formatDate(end, dateFormat)} (${duration})`}</span>;
-        },
+        key: 'appSemVersion',
       },
       {
         title: '상태 타입',
