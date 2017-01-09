@@ -2,6 +2,8 @@ const React = require('react');
 const Table = require('./Table');
 const Tabs = require('react-bootstrap/lib/Tabs');
 const Tab = require('react-bootstrap/lib/Tab');
+const Row = require('react-bootstrap/lib/Row');
+const Col = require('react-bootstrap/lib/Col');
 const Loading = require('./Loading');
 
 class Settings extends React.Component {
@@ -19,7 +21,7 @@ class Settings extends React.Component {
   }
 
   refresh(tabName) {
-
+    // TODO
   }
 
   onTabChanged(activeTab) {
@@ -31,6 +33,10 @@ class Settings extends React.Component {
       <div>
         <Tabs activeKey={this.state.activeTab} onSelect={activeTab => this.onTabChanged(activeTab)}>
           <Tab eventKey={'statusType'} title="상태 타입 목록">
+            <Row className="table-info">
+              <Col xs={6} className="table-info-left">총 {this.props.statusTypes.length}건의 데이터</Col>
+              <Col xs={6} className="table-info-right" />
+            </Row>
             <Table
               ref={(t) => { this.tables.statusType = t; }}
               items={this.props.statusTypes}
@@ -38,6 +44,10 @@ class Settings extends React.Component {
             />
           </Tab>
           <Tab eventKey={'deviceType'} title="디바이스 타입 목록">
+            <Row className="table-info">
+              <Col xs={6} className="table-info-left">총 {this.props.deviceTypes.length}건의 데이터</Col>
+              <Col xs={6} className="table-info-right" />
+            </Row>
             <Table
               ref={(t) => { this.tables.deviceType = t; }}
               items={this.props.deviceTypes}

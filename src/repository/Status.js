@@ -9,8 +9,8 @@ const semver = require('semver');
 
 class Status extends Model {
 
-  find(query, sort, postFilter) {
-    return super.find(query, sort).then((result) => {
+  find(query, sort, skip, limit, postFilter) {
+    return super.find(query, sort, skip, limit).then((result) => {
       if (typeof postFilter === 'function') {
         return postFilter(result);
       }
@@ -25,7 +25,7 @@ class Status extends Model {
       startTime: { $lte: now },
       endTime: { $gt: now },
       isActivated: true,
-    }, {}, results => results.filter(
+    }, {}, undefined, undefined, results => results.filter(
       result => result.deviceType.includes(deviceType)
         && self._isSatisfiedVersion(result.deviceSemVersion, deviceVersion)
         && self._isSatisfiedVersion(result.appSemVersion, appVersion)

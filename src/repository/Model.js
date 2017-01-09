@@ -41,8 +41,18 @@ class Model {
     });
   }
 
-  find(params, sort) {
-    return this.runQuery(collection => collection.find(params || {}).sort(sort || {}).toArray());
+  find(query, sort, skip, limit) {
+    return this.runQuery((collection) => {
+      const cursor = collection.find(query || {}).sort(sort || {});
+      if (typeof skip !== 'undefined' || typeof limit !== 'undefined') {
+        cursor.skip(skip).limit(limit);
+      }
+      return cursor.toArray();
+    });
+  }
+
+  count(query) {
+    return this.runQuery(collection => collection.count(query || {}));
   }
 
   save(model) {

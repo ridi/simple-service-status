@@ -33,10 +33,11 @@ module.exports = [
     method: 'GET',
     path: '/',
     handler: (request, reply) => Promise.all([
-      Status.find({ endTime: { $gt: new Date() } }, { endTime: -1, startTime: -1, isActivated: -1 }),
+      Status.find({ endTime: { $gt: new Date() } }, { endTime: -1, startTime: -1, isActivated: -1 }, 0, 10),
+      Status.count({ endTime: { $gt: new Date() } }),
       StatusType.find(),
       DeviceType.find(),
-    ]).then(([items, statusTypes, deviceTypes]) => view(request, reply, 'StatusList', { items: util.formatDates(items), statusTypes, deviceTypes }))
+    ]).then(([items, totalCount, statusTypes, deviceTypes]) => view(request, reply, 'StatusList', { items: util.formatDates(items), totalCount, statusTypes, deviceTypes }))
       .catch(error => view(request, reply, 'Error', { error })),
   },
   {

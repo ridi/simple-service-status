@@ -52,15 +52,22 @@ module.exports = [
       } else if (request.query.filter === 'expired') {
         filter = { endTime: { $lte: new Date() } };
       }
-      Status.find(filter, { endTime: -1, startTime: -1, isActivated: -1 })
-        .then(result => util.formatDates(result))
-        .then(result => reply(result))
-        .catch(err => reply(err));
+      Promise.all([
+        Status.find(filter, { endTime: -1, startTime: -1, isActivated: -1 }, request.query.skip, request.query.limit),
+        Status.count(filter),
+      ]).then(([list, totalCount]) => {
+        reply({
+          data: util.formatDates(list),
+          totalCount,
+        });
+      }).catch(err => reply(err));
     },
     config: {
       validate: {
         query: {
           filter: Joi.any().valid('current', 'expired'),
+          skip: Joi.number(),
+          limit: Joi.number(),
         },
       },
     },

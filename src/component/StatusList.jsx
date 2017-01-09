@@ -1,9 +1,13 @@
 const React = require('react');
+
 const Table = require('./Table');
 const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
 const ButtonGroup = require('react-bootstrap/lib/ButtonGroup');
 const Button = require('react-bootstrap/lib/Button');
 const Label = require('react-bootstrap/lib/Label');
+const Row = require('react-bootstrap/lib/Row');
+const Col = require('react-bootstrap/lib/Col');
+const Pagination = require('react-bootstrap/lib/Pagination');
 
 const Tabs = require('react-bootstrap/lib/Tabs');
 const Tab = require('react-bootstrap/lib/Tab');
@@ -51,6 +55,9 @@ class StatusList extends React.Component {
           activate: true,
         },
         checkedItems: [],
+        page: 1,
+        totalCount: this.props.totalCount,
+        countPerPage: 10,
       },
       expired: {  // expired tab
         items: [],
@@ -62,6 +69,9 @@ class StatusList extends React.Component {
           activate: true,
         },
         checkedItems: [],
+        page: 1,
+        totalCount: 0,
+        countPerPage: 10,
       },
       activationMode: true,
       activeTab: 'current',
@@ -141,9 +151,14 @@ class StatusList extends React.Component {
     const newState = {};
     newState[tabName] = {};
     Object.assign(newState[tabName], this.state[tabName]);
-    return axios.get(`${config.url.statusApiPrefix}?filter=${tabName}`)
+
+    const skip = (this.state[tabName].page - 1) * this.state[tabName].countPerPage;
+    const limit = this.state[tabName].countPerPage;
+
+    return axios.get(`${config.url.statusApiPrefix}?filter=${tabName}&skip=${skip}&limit=${limit}`)
       .then((response) => {
-        newState[tabName].items = response.data;
+        newState[tabName].items = response.data.data;
+        newState[tabName].totalCount = response.data.totalCount;
         newState[tabName].error = null;
         newState[tabName].checkedItems = [];
         this.setState(newState);
@@ -152,6 +167,7 @@ class StatusList extends React.Component {
       })
       .catch((error) => {
         newState[tabName].items = [];
+        newState[tabName].totalCount = 0;
         newState[tabName].error = error;
         newState[tabName].checkedItems = [];
         this.setState(newState);
@@ -215,6 +231,14 @@ class StatusList extends React.Component {
     this.setState({ activeTab }, () => this.refresh(activeTab));
   }
 
+  onPageChanged(tabName, page) {
+    const newState = {};
+    newState[tabName] = {};
+    Object.assign(newState[tabName], this.state[tabName]);
+    newState[tabName].page = page;
+    this.setState(newState, () => this.refresh(this.state.activeTab));
+  }
+
   render() {
     const currentState = this.state.current;
     const expireState = this.state.expired;
@@ -234,13 +258,30 @@ class StatusList extends React.Component {
               </ButtonGroup>
               <Button onClick={() => this.startToRemove()} bsSize="small" disabled={currentState.buttonDisabled.remove}>삭제</Button>
             </ButtonToolbar>
+
+            <Row className="table-info">
+              <Col xs={6} className="table-info-left">총 {currentState.totalCount || 0}건의 데이터</Col>
+              <Col xs={6} className="table-info-right">{currentState.page} / {Math.ceil(currentState.totalCount / currentState.countPerPage) || 1} 페이지</Col>
+            </Row>
             <Table
               ref={(t) => { this.tables.current = t; }}
               items={currentState.items}
               columns={this.currentTableColumns}
               error={currentState.error}
               onCheckboxChange={(checkedItems => this.onChechboxChanged('current', checkedItems))}
+              onPageChange={page => this.onPageChanged('current', page)}
+              page={currentState.page}
+              totalPage={Math.ceil(currentState.totalCount / currentState.countPerPage) || 1}
+              showCheckbox
             />
+            <div className="text-center">
+              <Pagination
+                prev next first last
+                items={Math.ceil(currentState.totalCount / currentState.countPerPage) || 1}
+                activePage={currentState.page || 1}
+                onSelect={page => this.onPageChanged('current', page)}
+              />
+            </div>
           </Tab>
 
           <Tab eventKey={'expired'} title="만료된 공지사항 목록">
@@ -252,13 +293,27 @@ class StatusList extends React.Component {
               <Button onClick={() => this.showModal('modify', expireState.checkedItems[0])} bsSize="small" disabled={expireState.buttonDisabled.modify}>수정</Button>
               <Button onClick={() => this.startToRemove()} bsSize="small" disabled={expireState.buttonDisabled.remove}>삭제</Button>
             </ButtonToolbar>
+
+            <Row className="table-info">
+              <Col xs={6} className="table-info-left">총 {expireState.totalCount || 0}건의 데이터</Col>
+              <Col xs={6} className="table-info-right">{expireState.page} / {Math.ceil(expireState.totalCount / expireState.countPerPage) || 1} 페이지</Col>
+            </Row>
             <Table
               ref={(t) => { this.tables.expired = t; }}
               items={expireState.items}
               columns={this.expiredTableColumns}
               error={expireState.error}
-              onCheckboxChange={(checkedItems => this.onChechboxChanged('expired', checkedItems))}
+              onCheckboxChange={checkedItems => this.onChechboxChanged('expired', checkedItems)}
+              showCheckbox
             />
+            <div className="text-center">
+              <Pagination
+                prev next first last
+                items={Math.ceil(expireState.totalCount / expireState.countPerPage) || 1}
+                activePage={expireState.page || 1}
+                onSelect={page => this.onPageChanged('expired', page)}
+              />
+            </div>
           </Tab>
         </Tabs>
         <CreateModal
@@ -289,6 +344,7 @@ class StatusList extends React.Component {
 }
 StatusList.propTypes = {
   items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+  totalCount: React.PropTypes.number.isRequired,
   statusTypes: React.PropTypes.arrayOf(React.PropTypes.objectOf({
     label: React.PropTypes.string,
     value: React.PropTypes.string,
