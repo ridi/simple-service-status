@@ -7,12 +7,13 @@
 const JWT = require('jsonwebtoken');
 const moment = require('moment');
 const config = require('./config/server.config');
+const crypto = require('crypto');
 
 /**
  * Set pads at the front of the string.
- * @param str
- * @param padStr
- * @param num
+ * @param {string} str
+ * @param {string} padStr
+ * @param {number} num
  * @returns {*}
  */
 exports.padStart = (str, padStr, num) => {
@@ -24,12 +25,15 @@ exports.padStart = (str, padStr, num) => {
 
 /**
  * Generate auth token
- * @param account
- * @param ttl time to live in millisecond
+ * @param {Object} account
+ *    - {string} username - username for login
+ *    - {string} role - user's role
+ *    - {number} exp - timestamp indicates expiration date
+ *    - {string} ip - client ip address
+ * @param {number} ttl - time to live in millisecond
  * @returns {*}
  */
 exports.generateToken = (account, ttl) => JWT.sign({
-  id: account.id,
   username: account.username,
   role: account.role,
   exp: new Date().getTime() + (ttl || config.auth.tokenTTL),
@@ -37,10 +41,25 @@ exports.generateToken = (account, ttl) => JWT.sign({
 }, process.env.SECRET_KEY || config.auth.secretKey);
 
 /**
+ * Compare password from database with password user input
+ * The password on database is always generated from '[username]:[password]' string. That improves password's security.
+ * @param {Object} credential - user inputs
+ *    - {string} username
+ *    - {string} password
+ * @param {string} dbPassword - digested password string from database
+ * @returns {boolean}
+ */
+exports.comparePassword = (credential, dbPassword) => {
+  const hmac = crypto.createHmac('sha256', process.env.SECRET_KEY || config.auth.secretKey);
+  hmac.update(`${credential.username}:${credential.password}`);
+  return hmac.digest('hex') === dbPassword;
+};
+
+/**
  * Extract current logged-in user information from request
  * If there's no lagged-in user, it will return false.
  * @param request
- * @returns {*}
+ * @returns {boolean|Object}
  */
 exports.getCurrentUser = (request) => {
   if (request.auth.isAuthenticated) {
@@ -55,30 +74,30 @@ exports.getCurrentUser = (request) => {
  * Will return 127.0.0.1 when testing locally
  * Useful when you need the user ip for geolocation or serving localized content
  *
- * @param req
+ * @param request
  * @returns {string} ip
  */
-exports.getClientIp = (req) => {
+exports.getClientIp = (request) => {
   // the ipAddress we return
   let ipAddress;
 
   // workaround to get real client IP
   // most likely because our app will be behind a [reverse] proxy or load balancer
-  const clientIp = req.headers['x-client-ip'];
-  const forwardedForAlt = req.headers['x-forwarded-for'];
-  const realIp = req.headers['x-real-ip'];
+  const clientIp = request.headers['x-client-ip'];
+  const forwardedForAlt = request.headers['x-forwarded-for'];
+  const realIp = request.headers['x-real-ip'];
 
   // more obsure ones below
-  const clusterClientIp = req.headers['x-cluster-client-ip'];
-  const forwardedAlt = req.headers['x-forwarded'];
-  const forwardedFor = req.headers['forwarded-for'];
-  const forwarded = req.headers['forwarded'];
+  const clusterClientIp = request.headers['x-cluster-client-ip'];
+  const forwardedAlt = request.headers['x-forwarded'];
+  const forwardedFor = request.headers['forwarded-for'];
+  const forwarded = request.headers['forwarded'];
 
   // remote address check
-  const reqConnectionRemoteAddress = req.connection ? req.connection.remoteAddress : null;
-  const reqSocketRemoteAddress = req.socket ? req.socket.remoteAddress : null;
-  const reqConnectionSocketRemoteAddress = (req.connection && req.connection.socket) ? req.connection.socket.remoteAddress : null;
-  const reqInfoRemoteAddress = req.info ? req.info.remoteAddress : null;
+  const reqConnectionRemoteAddress = request.connection ? request.connection.remoteAddress : null;
+  const reqSocketRemoteAddress = request.socket ? request.socket.remoteAddress : null;
+  const reqConnectionSocketRemoteAddress = (request.connection && request.connection.socket) ? request.connection.socket.remoteAddress : null;
+  const reqInfoRemoteAddress = request.info ? request.info.remoteAddress : null;
 
   if (clientIp) {
     // x-client-ip
@@ -131,6 +150,12 @@ exports.getClientIp = (req) => {
   return ipAddress;
 };
 
+/**
+ * Format all dates in the received model
+ * @param {Array|Date|Object} model
+ * @param {string} [formatString]
+ * @returns {*}
+ */
 exports.formatDates = (model, formatString) => {
   if (model instanceof Array) {
     for (let i = 0; i < model.length; i++) {
@@ -147,10 +172,23 @@ exports.formatDates = (model, formatString) => {
   return model;
 };
 
+/**
+ * Localize date
+ * @param {Date} date
+ * @param {number} [utcOffset]
+ * @returns {moment}
+ */
 exports.toLocalDate = (date, utcOffset) => {
   return moment(date).utcOffset(typeof utcOffset === 'undefined' ? 9 : utcOffset);
 };
 
+/**
+ * Format date to string
+ * @param {Date} date
+ * @param {string} [formatString]
+ * @param {number} [utcOffset]
+ * @returns {string}
+ */
 exports.formatDate = (date, formatString, utcOffset) => {
   return exports.toLocalDate(date, utcOffset).format(formatString);
 };

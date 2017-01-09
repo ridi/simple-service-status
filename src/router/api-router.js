@@ -9,8 +9,8 @@
 const Joi = require('joi');
 const Status = require('./../repository/Status');
 const User = require('./../repository/User');
-const DeviceType = require('./../repository/DeviceType');
-const StatusType = require('./../repository/StatusType');
+//const DeviceType = require('./../repository/DeviceType');
+//const StatusType = require('./../repository/StatusType');
 const config = require('../config/server.config').url;
 const util = require('../util');
 const RidiError = require('../Error');
@@ -28,12 +28,11 @@ module.exports = [
       if (!request.payload.username || !request.payload.password) {
         return reply(new RidiError(RidiError.Types.AUTH_MISSING_PARAMS));
       }
-      User.find(request.payload.username).then((account) => {
-        // TODO PASSWORD 암호화
-        if (!account || account.password !== request.payload.password) {
+      User.find({ username: request.payload.username }).then((account) => {
+        if (!account || account.length === 0 || !util.comparePassword(request.payload, account[0].password)) {
           return reply(new RidiError(RidiError.Types.AUTH_INVALID_PARAMS));
         }
-        const token = util.generateToken(Object.assign({}, account, { ip: clientIP }));
+        const token = util.generateToken(Object.assign({}, account[0], { ip: clientIP }));
         return reply().state('token', token);
       });
     },

@@ -64,8 +64,8 @@ exports.start = (extraRoutes) => {
           console.warn(`[Auth] This auth token is expired.: decoded.exp => ${decoded.exp}, now => ${new Date().getTime()}`);
           return callback(new RidiError(RidiError.Types.AUTH_TOKEN_EXPIRED), false);
         }
-        return User.find(decoded.username)
-          .then(account => callback(null, !!account))
+        return User.find({ username: decoded.username })
+          .then(account => callback(null, account && account.length > 0))
           .catch(() => {
             console.warn(`[Auth] This account is not exist.: ${decoded.username}`);
             callback(new RidiError(RidiError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }), false);
