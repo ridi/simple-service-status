@@ -56,11 +56,10 @@ table {
       }
     }
   }
-
-  &.table-responsive {
-    @media screen and (max-width: 767px) {
-      border-width: 0;
-    }
+}
+.table-responsive {
+  @media screen and (max-width: 767px) {
+    border-width: 0;
   }
 }
 .table-info {

@@ -4,7 +4,6 @@
  * @since 1.0.0
  *
  * // TODO 1 minute caching (query=>key)
- * // TODO pagination
  */
 
 const Joi = require('joi');
@@ -180,25 +179,27 @@ module.exports = [
       },
     },
   },
-  {
-    method: 'GET',
-    path: `${config.apiPrefix}/test`,
-    handler: (request, reply) => {
-      const deviceTypes = [
-        { label: 'Android', value: 'android' },
-        { label: 'iOS', value: 'ios' },
-        { label: 'Other', value: 'other' },
-      ];
-      const statusTypes = [
-        { label: '서버 문제', value: 'serviceFailure' },
-        { label: '정기 점검', value: 'routineInspection' },
-      ];
-      const promises = deviceTypes.map(deviceType => DeviceType.save(deviceType));
-      promises.concat(statusTypes.map(statusType => StatusType.save(statusType)));
-      Promise.all(promises).then(result => reply(result)).catch(err => reply(err));
-    },
-    config: {
-      auth: false,
-    },
-  },
+  // for server initialization
+  // {
+  //   method: 'GET',
+  //   path: `${config.apiPrefix}/init`,
+  //   handler: (request, reply) => {
+  //     const deviceTypes = [
+  //       { label: 'Android', value: 'android' },
+  //       { label: 'iOS', value: 'ios' },
+  //       { label: 'Paper', value: 'paper' },
+  //       { label: 'QT', value: 'qt' },
+  //     ];
+  //     const statusTypes = [
+  //       { label: '서버 문제', value: 'serviceFailure' },
+  //       { label: '정기 점검', value: 'routineInspection' },
+  //     ];
+  //     const promises = deviceTypes.map(deviceType => DeviceType.save(deviceType));
+  //     promises.concat(statusTypes.map(statusType => StatusType.save(statusType)));
+  //     Promise.all(promises).then(result => reply(result)).catch(err => reply(err));
+  //   },
+  //   config: {
+  //     auth: false,
+  //   },
+  // },
 ];

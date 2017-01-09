@@ -23,8 +23,8 @@ function view(request, reply, childViewName, context) {
       username: request.auth.credentials ? request.auth.credentials.username : undefined,
     };
   }
-  ctx.state = `window.state = ${JSON.stringify(ctx)}`;
   ctx.menus = menus;
+  ctx.state = `window.state = ${JSON.stringify(ctx)}`;
   return reply.view('Layout', ctx);
 }
 

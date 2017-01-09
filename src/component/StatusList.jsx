@@ -27,14 +27,6 @@ const dateFormat = 'YYYY-MM-DD HH:mm';
 const options = {
   statusTypes: [],
   deviceTypes: [],
-  comparators: [
-    { label: 'All', value: '*' },
-    { label: '= (Equal)', value: '=' },
-    { label: '< (Less Than)', value: '<' },
-    { label: '<= (Less Than or Equal)', value: '<=' },
-    { label: '> (Greater Than)', value: '>' },
-    { label: '>= (Greater Than or Equal)', value: '>=' },
-  ],
 };
 
 class StatusList extends React.Component {
