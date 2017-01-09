@@ -17,7 +17,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "axios": "^0.15.3",
     "babel-polyfill": "^6.20.0",
