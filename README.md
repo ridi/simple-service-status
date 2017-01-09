@@ -12,7 +12,9 @@
 ### Install
 
 ```
-$ git clone https://github.com/ridibooks/viewer-notification.git
+$ git clone git@github.com:ridibooks/viewer-notification.git [target directory]
+$ cd [taget directory]
+$ npm install
 ```
 
 ### Make .env file
