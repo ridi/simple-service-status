@@ -52,38 +52,50 @@ GET /v1/status/check?deviceType=[deviceType]&deviceVersion=[deviceVersion]&appVe
 
 #### Parameters
 
-| 이름          | 타입                       | 설명                                |
-| ------------- | -------------------------- | ----------------------------------- |
-| deviceType    | enum (android, ios, other) | 디바이스 종류 (더 추가될 수 있음)   |
-| deviceVersion | string                     | 디바이스의 버전 (x.x.x 형태로 입력) |
-| appVersion    | string                     | 현재 뷰어 앱 버전                   |
+| 이름          | 타입                           | 설명                                      |
+| ------------- | ------------------------------ | ----------------------------------------- |
+| deviceType    | enum (android, ios, paper, qt) | 디바이스(플랫폼) 종류 (더 추가될 수 있음) |
+| deviceVersion | string                         | 디바이스 플랫폼 버전 (x.x.x 형태로 입력)  |
+| appVersion    | string                         | 뷰어 앱 버전 (x.x.x 형태로 입력)          |
 
-#### Response
+#### Response (JSON)
 
+배열 형태로 전달된다. 질의한 디바이스 타입과 버전에 맞는 알림이 하나도 없을 경우 빈 배열이 전달된다. 
+
+| 이름             | 타입                                     | 설명                                                                |
+| ---------------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| _id              | string                                   | 상태 ID                                                             |
+| type             | enum (serviceFailure, routineInspection) | 상태 종류 (serviceFailure: 서버 문제, routineInspection: 정기 점검) |
+| deviceType       | array                                    | 알림의 대상 디바이스 종류                                           |
+| startTime        | string (ISO 8601 포맷)                   | 알림 시작 시간 (timezone 포함)                                      |
+| endTime          | string (ISO 8601 포맷)                   | 알림 종료 시간 (timezone 포함)                                      |
+| contents         | string                                   | 알림 내용                                                           |
+| isActivated      | boolean                                  | 알림 활성화 여부 (항상 true)                                        |
+| deviceSemVersion | string                                   | 대상 디바이스 플랫폼 버전 비교 기준 (SemVer를 따름)                 |
+| appSemVersion    | string                                   | 대상 뷰어 앱 버전 비교 기준 (SemVer를 따름)                         |
+
+#### Example
+
+##### Request
+```
+/api/v1/status/check?deviceType=android&deviceVersion=3.5.6&appVersion=3.5.6
+```
+
+##### Response
 ```json
 [
 	{
-		"_id": "586c9b6b58ec76096eacd2bd",
+		"_id": "586f6239ceed4d0004f91449",
 		"type": "serviceFailure",
 		"deviceType": [
 			"android"
 		],
-		"deviceVersion": [
-			"<",
-			"4",
-			"0",
-			"0"
-		],
-		"appVersion": [
-			"<",
-			"4",
-			"0",
-			"0"
-		],
-		"startTime": "2017-01-04T06:48:00.000Z",
-		"endTime": "2017-01-04T08:48:00.000Z",
+		"startTime": "2017-01-06T18:21:14+09:00",
+		"endTime": "2017-01-06T20:21:14+09:00",
 		"contents": "...",
-		"isActivated": true
+		"isActivated": true,
+		"deviceSemVersion": ">=0.0.1 <5.5.5",
+		"appSemVersion": "=3.5.6 || >=5.0.0 <6.0.0"
 	}
 ]
 ```
