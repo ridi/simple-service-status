@@ -80,7 +80,7 @@ GET /v1/status/check?deviceType=[deviceType]&deviceVersion=[deviceVersion]&appVe
 
 ##### Request
 ```
-/api/v1/status/check?device_type=android&device_version=3.5.6&app_version=3.5.6
+GET /api/v1/status/check?device_type=android&device_version=3.5.6&app_version=3.5.6
 ```
 
 ##### Response
