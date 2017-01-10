@@ -7,7 +7,6 @@
 const Status = require('./../repository/Status');
 const StatusType = require('../repository/StatusType');
 const DeviceType = require('../repository/DeviceType');
-const util = require('../util');
 
 const menus = [
   { viewName: 'StatusList', title: '공지사항 관리', url: '/' },
@@ -32,12 +31,8 @@ module.exports = [
   {
     method: 'GET',
     path: '/',
-    handler: (request, reply) => Promise.all([
-      Status.find({ endTime: { $gt: new Date() } }, { endTime: -1, startTime: -1, isActivated: -1 }, 0, 10),
-      Status.count({ endTime: { $gt: new Date() } }),
-      StatusType.find(),
-      DeviceType.find(),
-    ]).then(([items, totalCount, statusTypes, deviceTypes]) => view(request, reply, 'StatusList', { items: util.formatDates(items), totalCount, statusTypes, deviceTypes }))
+    handler: (request, reply) => Promise.all([StatusType.find(), DeviceType.find()])
+      .then(([statusTypes, deviceTypes]) => view(request, reply, 'StatusList', { statusTypes, deviceTypes }))
       .catch(error => view(request, reply, 'Error', { error })),
   },
   {

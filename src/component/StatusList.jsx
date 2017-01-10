@@ -17,10 +17,8 @@ const Modal = require('./Modal');
 const Loading = require('./Loading');
 
 const moment = require('moment');
-const axios = require('axios');
-const util = require('../util');
-
-const config = require('../config/server.config');
+const util = require('../common/util');
+const Api = require('../common/api');
 
 const dateFormat = 'YYYY-MM-DD HH:mm';
 
@@ -28,6 +26,21 @@ const options = {
   statusTypes: [],
   deviceTypes: [],
 };
+
+const defaultTabState = Object.freeze({
+  items: [],
+  buttonDisabled: {
+    add: false,
+    modify: true,
+    remove: true,
+    clone: true,
+    activate: true,
+  },
+  checkedItems: [],
+  page: 1,
+  totalCount: 0,
+  countPerPage: 10,
+});
 
 class StatusList extends React.Component {
   constructor(props) {
@@ -37,34 +50,8 @@ class StatusList extends React.Component {
     options.deviceTypes = props.deviceTypes;
 
     this.state = {
-      current: {  // current tab
-        items: this.props.items,
-        buttonDisabled: {
-          add: false,
-          modify: true,
-          remove: true,
-          clone: true,
-          activate: true,
-        },
-        checkedItems: [],
-        page: 1,
-        totalCount: this.props.totalCount,
-        countPerPage: 10,
-      },
-      expired: {  // expired tab
-        items: [],
-        buttonDisabled: {
-          add: false,
-          modify: true,
-          remove: true,
-          clone: true,
-          activate: true,
-        },
-        checkedItems: [],
-        page: 1,
-        totalCount: 0,
-        countPerPage: 10,
-      },
+      current: Object.assign({}, defaultTabState),
+      expired: Object.assign({}, defaultTabState),
       activationMode: true,
       activeTab: 'current',
       showLoading: false,
@@ -137,6 +124,10 @@ class StatusList extends React.Component {
     });
   }
 
+  componentDidMount() {
+    this.refresh(this.state.activeTab);
+  }
+
   refresh(tabName) {
     this.setState({ showLoading: true });
     const table = this.tables[tabName];
@@ -147,7 +138,7 @@ class StatusList extends React.Component {
     const skip = (this.state[tabName].page - 1) * this.state[tabName].countPerPage;
     const limit = this.state[tabName].countPerPage;
 
-    return axios.get(`${config.url.statusApiPrefix}?filter=${tabName}&skip=${skip}&limit=${limit}`)
+    return Api.getStatus(tabName, skip, limit)
       .then((response) => {
         newState[tabName].items = response.data.data;
         newState[tabName].totalCount = response.data.totalCount;
@@ -193,9 +184,9 @@ class StatusList extends React.Component {
   }
 
   setActivation(tabName, isActivated, items) {
-    const action = isActivated ? 'activate' : 'deactivate';
     if (items instanceof Array && items.length > 0) {
-      Promise.all(items.map(item => axios.put(`${config.url.statusApiPrefix}/${item._id}/${action}`)))
+      const api = isActivated ? Api.activateStatus : Api.deactivateStatus;
+      Promise.all(items.map(item => api(item.id)))
         .then(() => {
           this.refresh(tabName);
           this.modals.activationModal.close();
@@ -210,7 +201,7 @@ class StatusList extends React.Component {
 
   remove(tabName, items) {
     if (items instanceof Array && items.length > 0) {
-      Promise.all(items.map(item => axios.delete(`${config.url.statusApiPrefix}/${item._id}`)))
+      Promise.all(items.map(item => Api.removeStatus(item.id)))
         .then(() => {
           this.refresh(tabName);
           this.modals.removeModal.close();

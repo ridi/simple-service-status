@@ -13,6 +13,8 @@ const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 const ObjectID = mongodb.ObjectID;
 
+const RidiError = require('../common/Error');
+
 /**
  * @class
  * @classdesc basic interactions with selected collection
@@ -48,26 +50,48 @@ class Model {
         cursor.skip(skip).limit(limit);
       }
       return cursor.toArray();
+    }).then(list => list.map((item) => {
+      item._id = item._id.toHexString();
+      return item;
+    })).catch((error) => {
+      console.error(error);
+      throw new RidiError(RidiError.Types.DB);
     });
   }
 
   count(query) {
-    return this.runQuery(collection => collection.count(query || {}));
+    return this.runQuery(collection => collection.count(query || {}))
+      .catch((error) => {
+        console.error(error);
+        throw new RidiError(RidiError.Types.DB);
+      });
   }
 
-  save(model) {
-    if (model._id) {
-      model._id = ObjectID(model._id);
-    }
-    return this.runQuery(collection => collection.save(model));
+  add(model) {
+    return this.runQuery(collection => collection.insertOne(model))
+      .then(result => ({ data: result.ops }))
+      .catch((error) => {
+        console.error(error);
+        throw new RidiError(RidiError.Types.DB);
+      });
   }
 
   update(id, model) {
-    return this.runQuery(collection => collection.update({ _id: ObjectID(id) }, { $set: model }));
+    return this.runQuery(collection => collection.updateOne({ _id: ObjectID(id) }, { $set: model }))
+      .then(result => ({ data: result.ops }))
+      .catch((error) => {
+        console.error(error);
+        throw new RidiError(RidiError.Types.DB);
+      });
   }
 
   remove(id) {
-    return this.runQuery(collection => collection.remove({ _id: ObjectID(id) }));
+    return this.runQuery(collection => collection.deleteOne({ _id: ObjectID(id) }))
+      .then(result => ({ data: result.ops }))
+      .catch((error) => {
+        console.error(error);
+        throw new RidiError(RidiError.Types.DB);
+      });
   }
 }
 

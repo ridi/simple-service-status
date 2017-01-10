@@ -12,8 +12,8 @@ const User = require('./../repository/User');
 //const DeviceType = require('./../repository/DeviceType');
 //const StatusType = require('./../repository/StatusType');
 const config = require('../config/server.config').url;
-const util = require('../util');
-const RidiError = require('../Error');
+const util = require('../common/util');
+const RidiError = require('../common/Error');
 
 module.exports = [
   {
@@ -96,7 +96,7 @@ module.exports = [
     handler: (request, reply) => {
       request.payload.startTime = new Date(Date.parse(request.payload.startTime));
       request.payload.endTime = new Date(Date.parse(request.payload.endTime));
-      Status.save(request.payload)
+      Status.add(request.payload)
         .then(result => reply(result))
         .catch(err => reply(err));
     },
@@ -121,8 +121,7 @@ module.exports = [
     handler: (request, reply) => {
       request.payload.startTime = new Date(Date.parse(request.payload.startTime));
       request.payload.endTime = new Date(Date.parse(request.payload.endTime));
-      request.payload._id = request.params.statusId;
-      Status.save(request.payload)
+      Status.update(request.params.statusId, request.payload)
         .then(result => reply(result))
         .catch(err => reply(err));
     },
@@ -132,7 +131,6 @@ module.exports = [
           statusId: Joi.string().required(),
         },
         payload: {
-          _id: Joi.string().required(),
           startTime: Joi.string().isoDate().required(),
           endTime: Joi.string().isoDate().required(),
           deviceType: Joi.array().items(Joi.string()).required(),

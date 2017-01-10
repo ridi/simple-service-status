@@ -6,7 +6,7 @@
 
 const JWT = require('jsonwebtoken');
 const moment = require('moment');
-const config = require('./config/server.config');
+const config = require('./../config/server.config.js');
 const crypto = require('crypto');
 
 /**
@@ -96,7 +96,8 @@ exports.getClientIp = (request) => {
   // remote address check
   const reqConnectionRemoteAddress = request.connection ? request.connection.remoteAddress : null;
   const reqSocketRemoteAddress = request.socket ? request.socket.remoteAddress : null;
-  const reqConnectionSocketRemoteAddress = (request.connection && request.connection.socket) ? request.connection.socket.remoteAddress : null;
+  const reqConnectionSocketRemoteAddress = (request.connection && request.connection.socket)
+    ? request.connection.socket.remoteAddress : null;
   const reqInfoRemoteAddress = request.info ? request.info.remoteAddress : null;
 
   if (clientIp) {
@@ -210,6 +211,7 @@ exports.parseSemVersion = (semVerString) => {
   const conditions = semVerString.split('||').map(cond => cond.trim());  // OR 연산을 기준으로 분리
   const result = [];
   conditions.forEach((cond) => {
+    regex.lastIndex = 0;  // reset find index
     if (cond.startsWith('*')) {
       result.push({ comparator: '*' });
     } else if (cond.startsWith('>=') || cond.startsWith('<')) {
@@ -257,4 +259,74 @@ exports.stringifySemVersion = (parsedConditions) => {
     return '*';
   }
   return result.filter(cond => !!cond).join(' || ').trim();
+};
+
+/**
+ * Replace camelCase string to snake_case
+ * @param {string} str
+ * @returns {string}
+ */
+exports.camel2snake = (str) => {
+  if (typeof str === 'string') {
+    // ignore first occurrence of underscore(_) and capital
+    return str.replace(/^_/, '').replace(/^([A-Z])/, $1 => `${$1.toLowerCase()}`).replace(/([A-Z])/g, $1 => `_${$1.toLowerCase()}`);
+  }
+  return str;
+};
+
+/**
+ * Replace camelCase string to snake_case on the property names in objects
+ * @param {Array|Object} object
+ * @returns {*}
+ */
+exports.camel2snakeObject = (object) => {
+  if (object instanceof Array) {
+    for (let i = 0, n = object.length; i < n; i++) {
+      object[i] = exports.camel2snakeObject(object[i]);
+    }
+  } else if (typeof object === 'object') {
+    let result = {};
+    for (let prop in object) {
+      if (Object.prototype.hasOwnProperty.call(object, prop)) {
+        result[exports.camel2snake(prop)] = exports.camel2snakeObject(object[prop]);
+      }
+    }
+    return result;
+  }
+  return object;
+};
+
+/**
+ * Replace snake_case string to camelCase
+ * @param {string} str
+ * @returns {string}
+ */
+exports.snake2camel = (str) => {
+  if (typeof str === 'string') {
+    // ignore first occurrence of underscore(_)
+    return str.replace(/^_/, '').replace(/_([a-z])/g, ($1, $2) => `${$2.toUpperCase()}`);
+  }
+  return str;
+};
+
+/**
+ * Replace snake_case string to camelCase on the property names in objects
+ * @param {Array|Object} object
+ * @returns {*}
+ */
+exports.snake2camelObject = (object) => {
+  if (object instanceof Array) {
+    for (let i = 0, n = object.length; i < n; i++) {
+      object[i] = exports.snake2camelObject(object[i]);
+    }
+  } else if (typeof object === 'object') {
+    let result = {};
+    for (let prop in object) {
+      if (Object.prototype.hasOwnProperty.call(object, prop)) {
+        result[exports.snake2camel(prop)] = exports.snake2camelObject(object[prop]);
+      }
+    }
+    return result;
+  }
+  return object;
 };

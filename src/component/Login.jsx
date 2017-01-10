@@ -7,7 +7,7 @@ const Button = require('react-bootstrap/lib/Button');
 const Col = require('react-bootstrap/lib/Col');
 const Alert = require('react-bootstrap/lib/Alert');
 
-const axios = require('axios');
+const Api = require('../common/api');
 
 class Login extends React.Component {
   constructor(props) {
@@ -20,7 +20,7 @@ class Login extends React.Component {
 
   onSubmit(e) {
     e.preventDefault();
-    axios.post('/api/v1/login', this.state)
+    Api.login({ username: this.state.username, password: this.state.password })
       .then((response) => {
         const search = /redirect=(.*)[\&]?/.exec(window.location.search);
         this.setState({ errorMessage: null });

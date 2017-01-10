@@ -17,9 +17,9 @@ const baseRouter = require('./router/ui-router');
 const User = require('./repository/User');
 
 const config = require('./config/server.config');
-const RidiError = require('./Error');
+const RidiError = require('./common/Error');
 
-const util = require('./util');
+const util = require('./common/util');
 
 // For JSX transpiling
 require('babel-register');
@@ -102,31 +102,46 @@ exports.start = (extraRoutes) => {
       server.route(extraRoutes);
     }
 
+    server.ext('onPostAuth', (request, reply) => {
+      if (request.params) {
+        request.params = util.snake2camelObject(request.params);
+      }
+      if (request.query) {
+        request.query = util.snake2camelObject(request.query);
+      }
+      if (request.payload) {
+        request.payload = util.snake2camelObject(request.payload);
+      }
+      return reply.continue();
+    });
+
     server.ext('onPreResponse', (request, reply) => {
       const path = request.path;
-      if (request.response.isBoom) {
-        const resp = request.response;
-        const statusCode = resp.statusCode || resp.output.statusCode;
-        if (path.includes('api/')) {
-          const response = reply({
-            errorCode: resp.errorCode,
-            message: resp.message,
-          }).code(statusCode);
-          switch (statusCode) {
-            case 401:
-            case 403:
-              return response.unstate('token');
-            default:
-              return response;
-          }
-        } else {
-          switch (statusCode) {
-            case 401:
-            case 403:
-              return reply.redirect(`/login?redirect=${request.path || '/'}`).unstate('token');
-            default:
-              break;
-          }
+      const statusCode = request.response.statusCode || request.response.output.statusCode;
+
+      if (path.includes(config.url.apiPrefix)) {
+        // API
+        let responseObj = {};
+        if (statusCode !== 200) {
+          responseObj = { code: request.response.errorCode, message: request.response.message };
+        } else if (request.response.source) {
+          responseObj = util.camel2snakeObject(request.response.source);
+        }
+        switch (statusCode) {
+          case 401:
+          case 403:
+            return reply(responseObj).unstate('token');
+          default:
+            return reply(responseObj);
+        }
+      } else {
+        // UI
+        switch (statusCode) {
+          case 401:
+          case 403:
+            return reply.redirect(`/login?redirect=${request.path || '/'}`).unstate('token');
+          default:
+            break;
         }
       }
       return reply.continue();

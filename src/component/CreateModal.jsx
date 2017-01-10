@@ -14,9 +14,8 @@ const Selectize = require('react-selectize');
 const DateTime = require('react-datetime');
 
 const moment = require('moment');
-const axios = require('axios');
-const util = require('../util');
-
+const util = require('../common/util');
+const Api = require('../common/api');
 const semver = require('semver');
 
 const SimpleSelect = Selectize.SimpleSelect;
@@ -188,14 +187,8 @@ class CreateModal extends React.Component {
       appSemVersion: (this.state.deviceType.length === 1) ? util.stringifySemVersion(this.state.appSemVersion) : '*',
     };
 
-    if (this.state.mode !== 'add') {
-      data._id = this.state._id;
-    }
-
     this.checkWarningOnce = false;
-    const api = (this.state.mode === 'add')
-      ? axios.post('/api/v1/status', data)
-      : axios.put(`/api/v1/status/${data._id}`, data);
+    const api = (this.state.mode === 'add') ? Api.addStatus(data) : Api.updateStatus(this.state.id, data);
 
     api.then((response) => {
       if (typeof self.props.onSuccess === 'function') {
@@ -226,7 +219,7 @@ class CreateModal extends React.Component {
 
     if (data) {
       newData = {
-        _id: data._id,
+        id: data.id,
         type: this.props.options.statusTypes.find(o => o.value === data.type),
         deviceType: this.props.options.deviceTypes.filter(o => data.deviceType.includes(o.value)),
         startTime: moment(data.startTime),
