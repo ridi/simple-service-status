@@ -34,7 +34,7 @@ class Status extends Model {
     const now = new Date();
     return this.findWithCache({ startTime: { $lte: now }, endTime: { $gt: now }, isActivated: true })
       .then(results => results.filter(
-        result => result.deviceType.includes(deviceType)
+        result => result.deviceTypes.includes(deviceType)
           && self._isSatisfiedVersion(result.deviceSemVersion, deviceVersion)
           && self._isSatisfiedVersion(result.appSemVersion, appVersion)
       ));

@@ -105,7 +105,7 @@ module.exports = [
         payload: {
           startTime: Joi.string().isoDate().required(),
           endTime: Joi.string().isoDate().required(),
-          deviceType: Joi.array().items(Joi.string()).required(),
+          deviceTypes: Joi.array().items(Joi.string()).required(),
           deviceSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),
           appSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),
           type: Joi.string().required(),
@@ -133,7 +133,7 @@ module.exports = [
         payload: {
           startTime: Joi.string().isoDate().required(),
           endTime: Joi.string().isoDate().required(),
-          deviceType: Joi.array().items(Joi.string()).required(),
+          deviceTypes: Joi.array().items(Joi.string()).required(),
           deviceSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),
           appSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),
           type: Joi.string().required(),

@@ -73,13 +73,13 @@ class StatusList extends React.Component {
       {
         title: '디바이스 타입',
         display: (row) => {
-          if (!row.deviceType) {
+          if (!row.deviceTypes) {
             return '';
           }
-          if (row.deviceType.length === options.deviceTypes.length) {
+          if (row.deviceTypes.length === options.deviceTypes.length) {
             return '*';
           }
-          return row.deviceType ? <span>{row.deviceType.join(', ')}</span> : '';
+          return row.deviceTypes ? <span>{row.deviceTypes.join(', ')}</span> : '';
         },
       },
       {

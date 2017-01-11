@@ -33,7 +33,7 @@ class CreateModal extends React.Component {
       type: props.options.statusTypes[0],
       startTime: moment(),
       endTime: moment().add(2, 'hours'),
-      deviceType: [],
+      deviceTypes: [],
       contents: '',
       deviceSemVersion: [{ comparator: '*' }],
       appSemVersion: [{ comparator: '*' }],
@@ -84,13 +84,13 @@ class CreateModal extends React.Component {
     if (moment(data.startTime).isAfter(data.endTime)) {
       return { error: '종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.' };
     }
-    if (data.deviceType.length === 0) {
+    if (data.deviceTypes.length === 0) {
       return { error: '디바이스 타입을 하나 이상 선택해 주세요.' };
     }
     if (data.contents.trim().length === 0) {
       return { error: '내용을 입력해 주세요.' };
     }
-    if (data.deviceType.length < 2) {
+    if (data.deviceTypes.length < 2) {
       let semVersionValidity = this.checkSemVersionValidity(data.deviceSemVersion);
       if (semVersionValidity !== true) {
         return { error: semVersionValidity };
@@ -178,13 +178,13 @@ class CreateModal extends React.Component {
 
     const data = {
       type: this.state.type.value,
-      deviceType: this.state.deviceType.map(dt => dt.value),
+      deviceTypes: this.state.deviceTypes.map(dt => dt.value),
       startTime: util.formatDate(this.state.startTime),
       endTime: util.formatDate(this.state.endTime),
       contents: this.state.contents,
       isActivated: withActivation,
-      deviceSemVersion: (this.state.deviceType.length === 1) ? util.stringifySemVersion(this.state.deviceSemVersion) : '*',
-      appSemVersion: (this.state.deviceType.length === 1) ? util.stringifySemVersion(this.state.appSemVersion) : '*',
+      deviceSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.deviceSemVersion) : '*',
+      appSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.appSemVersion) : '*',
     };
 
     this.checkWarningOnce = false;
@@ -221,7 +221,7 @@ class CreateModal extends React.Component {
       newData = {
         id: data.id,
         type: this.props.options.statusTypes.find(o => o.value === data.type),
-        deviceType: this.props.options.deviceTypes.filter(o => data.deviceType.includes(o.value)),
+        deviceTypes: this.props.options.deviceTypes.filter(o => data.deviceTypes.includes(o.value)),
         startTime: moment(data.startTime),
         endTime: moment(data.endTime),
         contents: data.contents,
@@ -250,11 +250,11 @@ class CreateModal extends React.Component {
   }
 
   onSelectionChanged() {
-    this.setState({ versionSelectorDisabled: this.state.deviceType.length > 1 });
+    this.setState({ versionSelectorDisabled: this.state.deviceTypes.length > 1 });
   }
 
-  onDeviceTypeChanged(deviceType) {
-    this.setState({ deviceType }, () => this.onSelectionChanged());
+  onDeviceTypesChanged(deviceTypes) {
+    this.setState({ deviceTypes }, () => this.onSelectionChanged());
   }
 
   render() {
@@ -295,11 +295,11 @@ class CreateModal extends React.Component {
         <Row>
           <HelpBlock>시작/종료일시의 기본값은 현재부터 2시간으로 설정되어 있습니다.</HelpBlock>
         </Row>
-        <FormGroup controlId="deviceType">
+        <FormGroup controlId="deviceTypes">
           <ControlLabel>타겟 디바이스 타입</ControlLabel>
           <MultiSelect
-            values={this.state.deviceType}
-            onValuesChange={deviceType => this.onDeviceTypeChanged(deviceType)}
+            values={this.state.deviceTypes}
+            onValuesChange={deviceTypes => this.onDeviceTypesChanged(deviceTypes)}
             placeholder="디바이스 타입을 선택하세요"
             options={this.props.options.deviceTypes}
           />

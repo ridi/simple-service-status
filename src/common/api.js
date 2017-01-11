@@ -37,7 +37,7 @@ exports.getStatus = (filter, skip, limit) => axios.get('/status', { params: { fi
  * Add a status(notification)
  * @param {Object} data
  *    - {string} type
- *    - {string} deviceType,
+ *    - {Array} deviceTypes
  *    - {string} startTime (ISO 8601 format)
  *    - {string} endTime (ISO 8601 format)
  *    - {string} contents
@@ -52,7 +52,7 @@ exports.addStatus = data => axios.post('/status', data);
  * @param {string} statusId
  * @param {Object} data
  *    - {string} type
- *    - {string} deviceType,
+ *    - {Array} deviceTypes
  *    - {string} startTime (ISO 8601 format)
  *    - {string} endTime (ISO 8601 format)
  *    - {string} contents

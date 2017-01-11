@@ -49,7 +49,7 @@ npm start
 현재 디바이스 플랫폼과 앱 버전에 대해 공지사항이 있는지 확인한다.
 
 ```
-GET /v1/status/check?deviceType=[deviceType]&deviceVersion=[deviceVersion]&appVersion=[appVersion]
+GET /v1/status/check?device_type=[device_type]&device_version=[device_version]&app_version=[app_version]
 ```
 
 #### Parameters
@@ -68,7 +68,7 @@ GET /v1/status/check?deviceType=[deviceType]&deviceVersion=[deviceVersion]&appVe
 | ------------------ | ---------------------------------------- | ------------------------------------------------------------------- |
 | id                 | string                                   | 상태 ID                                                             |
 | type               | enum (serviceFailure, routineInspection) | 상태 종류 (serviceFailure: 서버 문제, routineInspection: 정기 점검) |
-| device_type        | array                                    | 알림의 대상 디바이스 종류                                           |
+| device_types       | array                                    | 알림의 대상 디바이스 종류                                           |
 | start_time         | string (ISO 8601 포맷)                   | 알림 시작 시간 (timezone 포함)                                      |
 | end_time           | string (ISO 8601 포맷)                   | 알림 종료 시간 (timezone 포함)                                      |
 | contents           | string                                   | 알림 내용                                                           |
@@ -89,7 +89,7 @@ GET /api/v1/status/check?device_type=android&device_version=3.5.6&app_version=3.
 	{
 		"id": "586f6239ceed4d0004f91449",
 		"type": "serviceFailure",
-		"device_type": [
+		"device_types": [
 			"android"
 		],
 		"start_time": "2017-01-06T18:21:14+09:00",
