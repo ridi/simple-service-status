@@ -1,6 +1,8 @@
 const React = require('react');
 
 const Modal = require('./Modal');
+const VersionSelector = require('./VersionSelector');
+
 const FormGroup = require('react-bootstrap/lib/FormGroup');
 const ControlLabel = require('react-bootstrap/lib/ControlLabel');
 const FormControl = require('react-bootstrap/lib/FormControl');
@@ -9,14 +11,14 @@ const Row = require('react-bootstrap/lib/Row');
 const Col = require('react-bootstrap/lib/Col');
 const Alert = require('react-bootstrap/lib/Alert');
 
-const VersionSelector = require('./VersionSelector');
 const Selectize = require('react-selectize');
 const DateTime = require('react-datetime');
 
 const moment = require('moment');
+const semver = require('semver');
+
 const util = require('../common/util');
 const Api = require('../common/api');
-const semver = require('semver');
 
 const SimpleSelect = Selectize.SimpleSelect;
 const MultiSelect = Selectize.MultiSelect;
@@ -195,7 +197,6 @@ class CreateModal extends React.Component {
         self.props.onSuccess();
       }
       self.modal.close();
-      console.log(`Add Status Success: ${response}`);
     }).catch(() => self.modal.message('저장 도중 에러가 발생했습니다. 다시 시도해주세요.', 'warning'));
   }
 
@@ -259,10 +260,19 @@ class CreateModal extends React.Component {
 
   render() {
     return (
-      <Modal title={this.modes[this.state.mode].title} ref={(modal) => { this.modal = modal; }} buttons={this.modes[this.state.mode].buttons}>
+      <Modal
+        title={this.modes[this.state.mode].title}
+        ref={(modal) => { this.modal = modal; }}
+        buttons={this.modes[this.state.mode].buttons}
+      >
         <FormGroup controlId="type">
           <ControlLabel>알림 타입</ControlLabel>
-          <SimpleSelect value={this.state.type} onValueChange={type => this.setState({ type })} placeholder="알림 타입을 선택하세요" options={this.props.options.statusTypes} />
+          <SimpleSelect
+            value={this.state.type}
+            onValueChange={type => this.setState({ type })}
+            placeholder="알림 타입을 선택하세요"
+            options={this.props.options.statusTypes}
+          />
         </FormGroup>
         <Row>
           <Col xs={6}>

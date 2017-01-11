@@ -8,7 +8,6 @@ const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
 const ButtonGroup = require('react-bootstrap/lib/ButtonGroup');
 const Button = require('react-bootstrap/lib/Button');
 const Glyphicon = require('react-bootstrap/lib/Glyphicon');
-const InputGroup = require('react-bootstrap/lib/InputGroup');
 
 const defaultCondition = { comparator: '*' };
 
@@ -143,7 +142,14 @@ class VersionSelector extends React.Component {
 }
 
 VersionSelector.propTypes = {
-  values: React.PropTypes.array,
+  values: React.PropTypes.arrayOf(React.PropTypes.shape({
+    comparator: React.PropTypes.string.isRequired,
+    versionStart: React.PropTypes.string,
+    versionEnd: React.PropTypes.string,
+    version: React.PropTypes.string,
+  })),
+  onChange: React.PropTypes.func,
+  disabled: React.PropTypes.bool,
 };
 
 module.exports = VersionSelector;

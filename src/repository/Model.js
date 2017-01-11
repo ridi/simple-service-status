@@ -4,16 +4,14 @@
  * @since 1.0.0
  */
 
-const config = require('../config/server.config');
-
-const url = process.env.MONGODB_URI || config.defaults.mongoDBUrl;
-
 const co = require('co');
 const mongodb = require('mongodb');
+const config = require('../config/server.config');
+const RidiError = require('../common/Error');
+
 const MongoClient = mongodb.MongoClient;
 const ObjectID = mongodb.ObjectID;
-
-const RidiError = require('../common/Error');
+const url = process.env.MONGODB_URI || config.defaults.mongoDBUrl;
 
 /**
  * @class

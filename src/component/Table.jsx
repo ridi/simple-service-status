@@ -1,4 +1,5 @@
 const React = require('react');
+
 const BSTable = require('react-bootstrap/lib/Table');
 const Checkbox = require('react-bootstrap/lib/Checkbox');
 
@@ -22,7 +23,10 @@ class Column extends React.Component {
 }
 Column.propTypes = {
   item: React.PropTypes.object.isRequired,
-  options: React.PropTypes.object.isRequired,
+  options: React.PropTypes.shape({
+    key: React.PropTypes.string,
+    display: React.PropTypes.func,
+  }).isRequired,
 };
 
 class Row extends React.Component {
@@ -43,7 +47,12 @@ class Row extends React.Component {
 }
 Row.propTypes = {
   item: React.PropTypes.object.isRequired,
-  columns: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
+  columns: React.PropTypes.arrayOf(React.PropTypes.shape({
+    key: React.PropTypes.string,
+    display: React.PropTypes.func,
+    isChildRow: React.PropTypes.boolean,
+    title: React.PropTypes.string,
+  })).isRequired,
   checked: React.PropTypes.bool,
   onCheckboxChange: React.PropTypes.func,
   className: React.PropTypes.string,
@@ -74,7 +83,12 @@ class ChildRow extends React.Component {
 }
 ChildRow.propTypes = {
   item: React.PropTypes.object.isRequired,
-  columns: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
+  columns: React.PropTypes.arrayOf(React.PropTypes.shape({
+    key: React.PropTypes.string,
+    display: React.PropTypes.func,
+    isChildRow: React.PropTypes.boolean,
+    title: React.PropTypes.string,
+  })).isRequired,
   colSpan: React.PropTypes.number,
   showCheckbox: React.PropTypes.boolean,
 };
@@ -169,7 +183,7 @@ class Table extends React.Component {
           <tr>
             {this.props.showCheckbox ? (
               <th>
-                <Checkbox onChange={e => this.onCheckboxChanged(e.target.checked)} checked={this.state.allChecked}/>
+                <Checkbox onChange={e => this.onCheckboxChanged(e.target.checked)} checked={this.state.allChecked} />
               </th>
             ) : ''}
             {mainCols.map((col, idx) => <th key={idx}>{col.title}</th>)}
@@ -182,7 +196,12 @@ class Table extends React.Component {
 }
 Table.propTypes = {
   items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
-  columns: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+  columns: React.PropTypes.arrayOf(React.PropTypes.shape({
+    key: React.PropTypes.string,
+    display: React.PropTypes.func,
+    isChildRow: React.PropTypes.boolean,
+    title: React.PropTypes.string,
+  })).isRequired,
   onCheckboxChange: React.PropTypes.func,
   showCheckbox: React.PropTypes.boolean,
 };

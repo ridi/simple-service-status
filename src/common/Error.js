@@ -1,6 +1,6 @@
 class RidiError extends Error {
   constructor(type, context) {
-    super();
+    super(type.message(context));
     this.type = type.type;
     this.errorCode = type.code;
     this.message = type.message(context);

@@ -1,7 +1,6 @@
 /**
  * Client SDK for using server's APIs
  *
- * @author kyungmi.k
  * @since 1.0.0
  */
 

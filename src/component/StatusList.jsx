@@ -326,8 +326,6 @@ class StatusList extends React.Component {
   }
 }
 StatusList.propTypes = {
-  items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
-  totalCount: React.PropTypes.number.isRequired,
   statusTypes: React.PropTypes.arrayOf(React.PropTypes.objectOf({
     label: React.PropTypes.string,
     value: React.PropTypes.string,

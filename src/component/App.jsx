@@ -1,8 +1,8 @@
 const React = require('react');
+
 const Navbar = require('react-bootstrap/lib/Navbar');
 const Nav = require('react-bootstrap/lib/Nav');
 const NavItem = require('react-bootstrap/lib/NavItem');
-
 const Grid = require('react-bootstrap/lib/Grid');
 const Row = require('react-bootstrap/lib/Row');
 
@@ -54,9 +54,15 @@ class App extends React.Component {
 
 App.propTypes = {
   viewName: React.PropTypes.string.isRequired,
-  auth: React.PropTypes.object,
-  state: React.PropTypes.string,
-  menus: React.PropTypes.array,
+  auth: React.PropTypes.shape({
+    isAuthenticated: React.PropTypes.bool,
+    username: React.PropTypes.string,
+  }),
+  menus: React.PropTypes.arrayOf(React.PropTypes.shape({
+    viewName: React.PropTypes.string.isRequired,
+    url: React.PropTypes.string.isRequired,
+    title: React.PropTypes.string.isRequired,
+  })),
 };
 
 module.exports = App;

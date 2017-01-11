@@ -1,4 +1,5 @@
 const React = require('react');
+
 const Col = require('react-bootstrap/lib/Col');
 
 class Error extends React.Component {

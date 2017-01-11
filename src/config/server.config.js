@@ -1,11 +1,8 @@
 /**
  * Configurations for server
  *
- * @author kyungmi.k@ridi.com
  * @since 1.0.0
  */
-
-const path = require('path');
 
 const API_CONTEXT = 'api';
 const API_VERSION = 1;

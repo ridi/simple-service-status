@@ -22,7 +22,7 @@ class Login extends React.Component {
     e.preventDefault();
     Api.login({ username: this.state.username, password: this.state.password })
       .then((response) => {
-        const search = /redirect=(.*)[\&]?/.exec(window.location.search);
+        const search = /redirect=(.*)[&]?/.exec(window.location.search);
         this.setState({ errorMessage: null });
         window.location.href = search ? search[1] : '/';
       })
@@ -60,6 +60,5 @@ Login.defaultProps = {
 Login.propTypes = {
   errorMessage: React.PropTypes.string,
 };
-
 
 module.exports = Login;

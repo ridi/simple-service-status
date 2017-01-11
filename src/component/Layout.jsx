@@ -27,4 +27,8 @@ class Layout extends React.Component {
   }
 }
 
+Layout.propTypes = {
+  state: React.PropTypes.string,
+};
+
 module.exports = Layout;

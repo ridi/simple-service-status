@@ -2,7 +2,6 @@ const React = require('react');
 
 const Button = require('react-bootstrap/lib/Button');
 const RBModal = require('react-bootstrap/lib/Modal');
-
 const Alert = require('react-bootstrap/lib/Alert');
 
 const MODE_PRESET = {
@@ -106,7 +105,7 @@ Modal.propTypes = {
   onConfirm: React.PropTypes.func,
   onCancel: React.PropTypes.func,
   onClose: React.PropTypes.func,
-  buttons: React.PropTypes.objectOf({
+  buttons: React.PropTypes.shape({
     label: React.PropTypes.string.isRequired,
     onClick: React.PropTypes.func,
     style: React.PropTypes.oneOf(['default', 'primary', 'success', 'info', 'warning', 'danger', 'link']),

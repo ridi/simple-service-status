@@ -1,10 +1,12 @@
 const React = require('react');
+
 const Table = require('./Table');
+const Loading = require('./Loading');
+
 const Tabs = require('react-bootstrap/lib/Tabs');
 const Tab = require('react-bootstrap/lib/Tab');
 const Row = require('react-bootstrap/lib/Row');
 const Col = require('react-bootstrap/lib/Col');
-const Loading = require('./Loading');
 
 class Settings extends React.Component {
   constructor(props) {
@@ -20,12 +22,12 @@ class Settings extends React.Component {
     ];
   }
 
-  refresh(tabName) {
-    // TODO
-  }
-
   onTabChanged(activeTab) {
     this.setState({ activeTab }, () => this.refresh(activeTab));
+  }
+
+  refresh(tabName) {
+    // TODO
   }
 
   render() {
@@ -60,5 +62,16 @@ class Settings extends React.Component {
     );
   }
 }
+
+Settings.propTypes = {
+  statusTypes: React.PropTypes.arrayOf(React.PropTypes.shape({
+    label: React.PropTypes.string.isRequired,
+    value: React.PropTypes.string.isRequired,
+  })),
+  deviceTypes: React.PropTypes.arrayOf(React.PropTypes.shape({
+    label: React.PropTypes.string.isRequired,
+    value: React.PropTypes.string.isRequired,
+  })),
+};
 
 module.exports = Settings;

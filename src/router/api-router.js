@@ -2,8 +2,6 @@
  * Service API router
  *
  * @since 1.0.0
- *
- * // TODO 1 minute caching (query=>key)
  */
 
 const Joi = require('joi');

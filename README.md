@@ -1,6 +1,6 @@
 # Viewer Notification
 
-서버에 이상 상황 발생 시 앱에 신속하게 공지할 수 있도록 디바이스에서 접근 가능한 API와 관리 UI를 제공한다. 
+서버 상태를 조회할 수 있는 API와 관리 UI 제공
 
 ## Development
 
@@ -19,13 +19,14 @@ $ npm install
 
 ### Make .env file
 
-프로젝트 루트에 .env 파일을 생성하고 테스트 용도의 mongodb 주소와 비밀번호 암호화를 위한 secret key를 작성한다.
+필요한 경우 프로젝트 루트에 `.env` 파일을 생성하고 다음의 값들을 설정한다.
 
-MongoDB URL을 설정하지 않으면 디폴트로 localhost에 있는 MongoDB를 사용한다.
+- `MONGODB_URI`: MongoDB 접속 주소 (없을 경우 mongodb://localhost 사용)
+- `SECRET_KEY`: 패스워드와 인증 토큰 암호화를 위한 비밀키 (없을 경우 "secretKey" 문자열 사용)
 
 ```
-MONGODB_URI=mongodb://heroku_ccbfvw99:r8g1oucqil81ndmfu1qk60n2gr@ds139438.mlab.com:39438/heroku_ccbfvw99
-SECRET_KEY=4g4Ykk4VnWTcRbcVB/0qlKYyGaqAyp6+U6lv4LhQurLg6khOQ9bNg5vobXHPwJ5f+qyIlTgqth07PPybOGzAzXBRjVuJJ1VqwvgDiO+KcHSUJSWYJ2cURZDLESeKEohW0DXCb04GCIoA6JgAQiKhxaN0sLj4WfZ3KTUo0w3XsOxXDN/ChQyJfN31QAtz1MG7Y79sGXiIWNePYBTq/SHewnHaiJFbxNf3liWsj7zt80t3y6xAdBKH637IPK/AYrVNFFay20eqDGJK0ES3aXpYXzE+H8lE6BkTy4lJ1kDlss6GAqn471TATk43RiR/mgfIM+TMzr4J+6IgQP5FeEbPIQ==
+MONGODB_URI=mongodb://your.domain:port/database_name
+SECRET_KEY=secret_key
 ```
 
 ### Run
@@ -36,7 +37,7 @@ SECRET_KEY=4g4Ykk4VnWTcRbcVB/0qlKYyGaqAyp6+U6lv4LhQurLg6khOQ9bNg5vobXHPwJ5f+qyIl
 npm start
 ```
 
-구동 후에 [http://localhost:8080](http://localhost:8080)으로 접속한다.
+구동 후 [http://localhost:8080](http://localhost:8080)으로 접속하면 관리 UI로 연결된다.
 
 ### Test
 
