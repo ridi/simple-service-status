@@ -44,12 +44,17 @@ module.exports = [
     handler: (request, reply) => {
       let filter = {};
       if (request.query.filter === 'current') { // 미래 포함
-        filter = { endTime: { $gt: new Date() } };
+        filter = {
+          $or: [
+            { endTime: { $gt: new Date() } },
+            { startTime: { $exists: false }, endTime: { $exists: false } },
+          ],
+        };
       } else if (request.query.filter === 'expired') {
         filter = { endTime: { $lte: new Date() } };
       }
       Promise.all([
-        Status.find(filter, { endTime: -1, startTime: -1, isActivated: -1 }, request.query.skip, request.query.limit),
+        Status.find(filter, { isActivated: -1, startTime: 1, endTime: 1 }, request.query.skip, request.query.limit),
         Status.count(filter),
       ]).then(([list, totalCount]) => {
         reply({
@@ -92,17 +97,20 @@ module.exports = [
     method: 'POST',
     path: `${config.statusApiPrefix}`,
     handler: (request, reply) => {
-      request.payload.startTime = new Date(Date.parse(request.payload.startTime));
-      request.payload.endTime = new Date(Date.parse(request.payload.endTime));
-      Status.add(request.payload)
+      const status = Object.assign({}, request.payload);
+      if (status.startTime && status.endTime) {
+        status.startTIme = new Date(Date.parse(status.startTime));
+        status.endTime = new Date(Date.parse(status.endTime));
+      }
+      Status.add(status)
         .then(result => reply(result))
         .catch(err => reply(err));
     },
     config: {
       validate: {
         payload: {
-          startTime: Joi.string().isoDate().required(),
-          endTime: Joi.string().isoDate().required(),
+          startTime: Joi.string().isoDate(),
+          endTime: Joi.string().isoDate(),
           deviceTypes: Joi.array().items(Joi.string()).required(),
           deviceSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),
           appSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),
@@ -117,9 +125,12 @@ module.exports = [
     method: 'PUT',
     path: `${config.statusApiPrefix}/{statusId}`,
     handler: (request, reply) => {
-      request.payload.startTime = new Date(Date.parse(request.payload.startTime));
-      request.payload.endTime = new Date(Date.parse(request.payload.endTime));
-      Status.update(request.params.statusId, request.payload)
+      const status = Object.assign({}, request.payload);
+      if (status.startTime && status.endTime) {
+        status.startTIme = new Date(Date.parse(status.startTime));
+        status.endTime = new Date(Date.parse(status.endTime));
+      }
+      Status.update(request.params.statusId, status)
         .then(result => reply(result))
         .catch(err => reply(err));
     },
@@ -129,8 +140,8 @@ module.exports = [
           statusId: Joi.string().required(),
         },
         payload: {
-          startTime: Joi.string().isoDate().required(),
-          endTime: Joi.string().isoDate().required(),
+          startTime: Joi.string().isoDate(),
+          endTime: Joi.string().isoDate(),
           deviceTypes: Joi.array().items(Joi.string()).required(),
           deviceSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),
           appSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),

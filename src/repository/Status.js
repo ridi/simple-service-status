@@ -32,12 +32,16 @@ class Status extends Model {
   findWithComparators(deviceType, deviceVersion, appVersion) {
     const self = this;
     const now = new Date();
-    return this.findWithCache({ startTime: { $lte: now }, endTime: { $gt: now }, isActivated: true })
-      .then(results => results.filter(
-        result => result.deviceTypes.includes(deviceType)
-          && self._isSatisfiedVersion(result.deviceSemVersion, deviceVersion)
-          && self._isSatisfiedVersion(result.appSemVersion, appVersion)
-      ));
+    return this.findWithCache({
+      $or: [
+        { startTime: { $lte: now }, endTime: { $gt: now }, isActivated: true },
+        { startTime: { $exists: false }, endTime: { $exists: false }, isActivated: true },
+      ],
+    }).then(results => results.filter(
+      result => result.deviceTypes.includes(deviceType)
+        && self._isSatisfiedVersion(result.deviceSemVersion, deviceVersion)
+        && self._isSatisfiedVersion(result.appSemVersion, appVersion)
+    ));
   }
 
   add(model) {

@@ -63,19 +63,19 @@ GET /v1/status/check?device_type=[device_type]&device_version=[device_version]&a
 
 #### Response (JSON)
 
-배열 형태로 전달된다. 질의한 디바이스 타입과 버전에 맞는 알림이 하나도 없을 경우 빈 배열이 전달된다. 
+배열 형태로 전달된다. 질의한 디바이스 타입과 버전에 맞는 알림이 없을 경우 빈 배열이 전달된다. 
 
-| 이름               | 타입                                     | 설명                                                                |
-| ------------------ | ---------------------------------------- | ------------------------------------------------------------------- |
-| id                 | string                                   | 상태 ID                                                             |
-| type               | enum (serviceFailure, routineInspection) | 상태 종류 (serviceFailure: 서버 문제, routineInspection: 정기 점검) |
-| device_types       | array                                    | 알림의 대상 디바이스 종류                                           |
-| start_time         | string (ISO 8601 포맷)                   | 알림 시작 시간 (timezone 포함)                                      |
-| end_time           | string (ISO 8601 포맷)                   | 알림 종료 시간 (timezone 포함)                                      |
-| contents           | string                                   | 알림 내용                                                           |
-| is_activated       | boolean                                  | 알림 활성화 여부 (항상 true)                                        |
-| device_sem_version | string                                   | 대상 디바이스 플랫폼 버전 비교 기준 (SemVer를 따름)                 |
-| app_sem_version    | string                                   | 대상 뷰어 앱 버전 비교 기준 (SemVer를 따름)                         |
+| 이름               | 타입                                     | 설명                                                                    |
+| ------------------ | ---------------------------------------- | ----------------------------------------------------------------------- |
+| id                 | string                                   | 상태 ID                                                                 |
+| type               | enum (serviceFailure, routineInspection) | 상태 종류 (serviceFailure: 서버 문제, routineInspection: 정기 점검)     |
+| device_types       | array                                    | 알림의 대상 디바이스 종류                                               |
+| start_time         | string (ISO 8601 포맷)                   | 알림 시작 시간 (timezone 포함) - 설정되어 있지 않은 경우 모든 기간 대상 |
+| end_time           | string (ISO 8601 포맷)                   | 알림 종료 시간 (timezone 포함) - 설정되어 있지 않은 경우 모든 기간 대상 |
+| contents           | string                                   | 알림 내용                                                               |
+| is_activated       | boolean                                  | 알림 활성화 여부 (항상 true)                                            |
+| device_sem_version | string                                   | 대상 디바이스 플랫폼 버전 비교 기준 (SemVer를 따름)                     |
+| app_sem_version    | string                                   | 대상 뷰어 앱 버전 비교 기준 (SemVer를 따름)                             |
 
 #### Example
 

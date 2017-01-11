@@ -2,6 +2,7 @@ const React = require('react');
 
 const Modal = require('./Modal');
 const VersionSelector = require('./VersionSelector');
+const DateRangeSelector = require('./DateRangeSelector');
 
 const FormGroup = require('react-bootstrap/lib/FormGroup');
 const ControlLabel = require('react-bootstrap/lib/ControlLabel');
@@ -37,6 +38,7 @@ class CreateModal extends React.Component {
       endTime: moment().add(2, 'hours'),
       deviceTypes: [],
       contents: '',
+      dateRange: { comparator: '~', startTime: moment(), endTime: moment().add(2, 'hours') },
       deviceSemVersion: [{ comparator: '*' }],
       appSemVersion: [{ comparator: '*' }],
     });
@@ -74,17 +76,24 @@ class CreateModal extends React.Component {
 
   checkFormValidity() {
     const data = this.state;
+    const warning = [];
+
     if (!data.type) {
       return { error: '알림 타입을 설정해 주세요.' };
     }
-    if (!data.startTime) {
-      return { error: '시작 일시를 지정해 주세요.' };
-    }
-    if (!data.endTime) {
-      return { error: '종료 일시를 지정해 주세요.' };
-    }
-    if (moment(data.startTime).isAfter(data.endTime)) {
-      return { error: '종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.' };
+    if (data.dateRange.comparator === '~') {
+      if (!data.startTime) {
+        return { error: '시작 일시를 지정해 주세요.' };
+      }
+      if (!data.endTime) {
+        return { error: '종료 일시를 지정해 주세요.' };
+      }
+      if (moment(data.startTime).isAfter(data.endTime)) {
+        return { error: '종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.' };
+      }
+      if (moment(data.endTime).isBefore(moment.now())) {
+        warning.push('- 설정된 종료 일시가 과거입니다. 활성화 하더라도 알림이 실행되지 않습니다.');
+      }
     }
     if (data.deviceTypes.length === 0) {
       return { error: '디바이스 타입을 하나 이상 선택해 주세요.' };
@@ -103,10 +112,6 @@ class CreateModal extends React.Component {
       }
     }
 
-    const warning = [];
-    if (moment(data.endTime).isBefore(moment.now())) {
-      warning.push('- 설정된 종료 일시가 과거입니다. 활성화 하더라도 알림이 실행되지 않습니다.');
-    }
     if (data.deviceSemVersion.some(cond => cond.comparator === '*') && data.deviceSemVersion.length > 1) {
       warning.push('- 설정된 타겟 디바이스 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
     }
@@ -181,13 +186,15 @@ class CreateModal extends React.Component {
     const data = {
       type: this.state.type.value,
       deviceTypes: this.state.deviceTypes.map(dt => dt.value),
-      startTime: util.formatDate(this.state.startTime),
-      endTime: util.formatDate(this.state.endTime),
       contents: this.state.contents,
       isActivated: withActivation,
       deviceSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.deviceSemVersion) : '*',
       appSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.appSemVersion) : '*',
     };
+    if (this.state.dateRange.comparator === '~') {
+      data.startTime = util.formatDate(this.state.dateRange.startTime);
+      data.endTime = util.formatDate(this.state.dateRange.endTime);
+    }
 
     this.checkWarningOnce = false;
     const api = (this.state.mode === 'add') ? Api.addStatus(data) : Api.updateStatus(this.state.id, data);
@@ -223,8 +230,11 @@ class CreateModal extends React.Component {
         id: data.id,
         type: this.props.options.statusTypes.find(o => o.value === data.type),
         deviceTypes: this.props.options.deviceTypes.filter(o => data.deviceTypes.includes(o.value)),
-        startTime: moment(data.startTime),
-        endTime: moment(data.endTime),
+        dateRange: {
+          comparator: (!data.startTime && !data.endTime) ? '*' : '~',
+          startTime: moment(data.startTime),
+          endTime: moment(data.endTime),
+        },
         contents: data.contents,
         isActivated: data.isActivated,
         deviceSemVersion: util.parseSemVersion(data.deviceSemVersion),
@@ -274,36 +284,15 @@ class CreateModal extends React.Component {
             options={this.props.options.statusTypes}
           />
         </FormGroup>
+        <FormGroup controlId="type">
+          <ControlLabel>알림 시작/종료 일시</ControlLabel>
+          <DateRangeSelector
+            value={this.state.dateRange}
+            onChange={(dateRange => this.setState({ dateRange }))}
+          />
+        </FormGroup>
         <Row>
-          <Col xs={6}>
-            <FormGroup validationState={this.state.startTimeState}>
-              <ControlLabel>시작일시</ControlLabel>
-              <DateTime
-                value={this.state.startTime}
-                placeholder="Start Time"
-                dateFormat={dateFormat}
-                timeFormat={timeFormat}
-                onChange={startTime => this.onStartTimeChanged(startTime)}
-              />
-            </FormGroup>
-          </Col>
-          <Col xs={6}>
-            <FormGroup validationState={this.state.endTimeState}>
-              <ControlLabel>종료일시</ControlLabel>
-              <DateTime
-                value={this.state.endTime}
-                placeholder="End Time"
-                dateFormat={dateFormat}
-                timeFormat={timeFormat}
-                isValidDate={current => this.isValidRange(this.state.startTime, current)}
-                onChange={endTime => this.onEndTimeChanged(endTime)}
-                onBlur={endTime => this.onEndTimeChanged(endTime)}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-        <Row>
-          <HelpBlock>시작/종료일시의 기본값은 현재부터 2시간으로 설정되어 있습니다.</HelpBlock>
+          <HelpBlock>시작/종료 일시의 기본값은 현재부터 2시간으로 설정되어 있습니다.</HelpBlock>
         </Row>
         <FormGroup controlId="deviceTypes">
           <ControlLabel>타겟 디바이스 타입</ControlLabel>

@@ -42,6 +42,8 @@ const defaultTabState = Object.freeze({
   countPerPage: 10,
 });
 
+const ASTERISK = '✱';
+
 class StatusList extends React.Component {
   constructor(props) {
     super(props);
@@ -64,6 +66,9 @@ class StatusList extends React.Component {
       {
         title: '기간',
         display: (row) => {
+          if (!row.startTime || !row.endTime) {
+            return <span>{ASTERISK}</span>;
+          }
           const start = moment(row.startTime);
           const end = moment(row.endTime);
           const duration = start.from(end, true);
@@ -74,21 +79,31 @@ class StatusList extends React.Component {
         title: '디바이스 타입',
         display: (row) => {
           if (!row.deviceTypes) {
-            return '';
+            return <span />;
           }
           if (row.deviceTypes.length === options.deviceTypes.length) {
-            return '*';
+            return <span>{ASTERISK}</span>;
           }
-          return row.deviceTypes ? <span>{row.deviceTypes.join(', ')}</span> : '';
+          return row.deviceTypes ? <span>{row.deviceTypes.join(', ')}</span> : <span />;
         },
       },
       {
         title: '디바이스 버전',
-        key: 'deviceSemVersion',
+        display: (row) => {
+          if (row.deviceSemVersion === '*') {
+            return <span>{ASTERISK}</span>;
+          }
+          return row.deviceSemVersion;
+        },
       },
       {
         title: '앱 버전',
-        key: 'appSemVersion',
+        display: (row) => {
+          if (row.appSemVersion === '*') {
+            return <span>{ASTERISK}</span>;
+          }
+          return row.appSemVersion;
+        },
       },
       {
         title: '상태 타입',

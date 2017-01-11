@@ -322,15 +322,16 @@ label {
   }
 }
 
-// Version Selector
-.version-selector-container {
-  .version-selector-item {
+// Version / Date Range Selector
+.version-selector-container,
+.date-range-selector-container {
+  .selector-item {
     display: flex;
     align-content: stretch;
     margin-bottom: 4px;
     border-radius: 2px;
     border: 1px solid #ccc;
-    .version-selector-comparator {
+    .selector-comparator {
       width: 120px;
       margin: 0;
       display: inline-block;
@@ -349,25 +350,58 @@ label {
         }
       }
     }
-    .version-selector-inputs {
+    .selector-inputs {
       flex-grow: 1;
       width: auto;
       border-width: 0;
-      &.version-selector-inputs-second {
+      &.selector-inputs-second {
         border-left-width: 1px;
       }
       &[readonly] {
         background-color: #fff;
       }
     }
-    .version-selector-remove-btn {
+    .selector-remove-btn {
       border-width: 0;
     }
   }
-  .version-selector-add-btn {
+  .selector-add-btn {
     width: 100%;
     color: #5a93c3;
     border-color: #669ac7;
     font-weight: 300;
+  }
+}
+
+.date-range-selector-container {
+  .selector-item {
+    .selector-comparator {
+      width: 80px;
+    }
+    .selector-inputs-container {
+      display: flex;
+      flex-grow: 1;
+      border-width: 0;
+      .selector-inputs {
+        flex-grow: 1;
+        & > input {
+          border-width: 0;
+        }
+      }
+      .selector-inputs-second {
+        border-left: 1px solid #ccc;
+      }
+    }
+  }
+}
+
+.tooltip {
+  &.top {
+    .tooltip-arrow {
+      border-top-color: #4e8bbf;
+    }
+    .tooltip-inner {
+      background-color: #4e8bbf;
+    }
   }
 }

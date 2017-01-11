@@ -8,8 +8,11 @@ const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
 const ButtonGroup = require('react-bootstrap/lib/ButtonGroup');
 const Button = require('react-bootstrap/lib/Button');
 const Glyphicon = require('react-bootstrap/lib/Glyphicon');
+const OverlayTrigger = require('react-bootstrap/lib/OverlayTrigger');
+const Tooltip = require('react-bootstrap/lib/Tooltip');
 
 const defaultCondition = { comparator: '*' };
+const defaultConditionAdded = { comparator: '~' };
 
 class VersionSelector extends React.Component {
   constructor(props) {
@@ -30,8 +33,8 @@ class VersionSelector extends React.Component {
     const newValues = this.state.values.slice();
     newValues[index] = Object.assign({}, this.state.values[index], changedItem);
     this.setState({ values: newValues }, () => {
-      if (changedItem.comparator && this.focusInputs[changedItem.comparator]) {
-        ReactDOM.findDOMNode(this.focusInputs[changedItem.comparator]).focus();
+      if (changedItem.comparator && this.focusInputs[index][changedItem.comparator]) {
+        ReactDOM.findDOMNode(this.focusInputs[index][changedItem.comparator]).focus();
       }
       this.onChanged();
     });
@@ -45,7 +48,7 @@ class VersionSelector extends React.Component {
 
   addCondition() {
     const newValues = this.state.values.slice();
-    newValues.push(defaultCondition);
+    newValues.push(defaultConditionAdded);
     this.setState({ values: newValues }, () => this.onChanged());
   }
 
@@ -61,42 +64,53 @@ class VersionSelector extends React.Component {
       <div className="version-selector-container">
         {values.map((value, index) => {
           return (
-            <div className="version-selector-item" key={index}>
-              <ButtonToolbar className="version-selector-comparator">
+            <div className="selector-item" key={index}>
+              <ButtonToolbar className="selector-comparator">
                 <ButtonGroup>
-                  <Button
-                    active={value.comparator === '*'}
-                    onClick={() => this.onVersionChanged(index, { comparator: '*' })}
-                    disabled={this.props.disabled}
-                  >
-                    &#x2731; {/* asterisk */}
-                  </Button>
-                  <Button
-                    active={value.comparator === '~'}
-                    onClick={() => this.onVersionChanged(index, { comparator: '~' })}
-                    disabled={this.props.disabled}
-                  >
-                    &#x0223C; {/* tilda */}
-                  </Button>
-                  <Button
-                    active={value.comparator === '='}
-                    onClick={() => this.onVersionChanged(index, { comparator: '=' })}
-                    disabled={this.props.disabled} style={{ paddingTop: '5px', paddingBottom: '7px' }}
-                  >
-                    =
-                  </Button>
+                  <OverlayTrigger placement="top" overlay={<Tooltip>모든 범위</Tooltip>}>
+                    <Button
+                      active={value.comparator === '*'}
+                      onClick={() => this.onVersionChanged(index, { comparator: '*' })}
+                      disabled={this.props.disabled}
+                    >
+                      &#x2731; {/* asterisk */}
+                    </Button>
+                  </OverlayTrigger>
+                  <OverlayTrigger placement="top" overlay={<Tooltip>범위 지정</Tooltip>}>
+                    <Button
+                      active={value.comparator === '~'}
+                      onClick={() => this.onVersionChanged(index, { comparator: '~' })}
+                      disabled={this.props.disabled}
+                    >
+                      &#x0223C; {/* tilda */}
+                    </Button>
+                  </OverlayTrigger>
+                  <OverlayTrigger placement="top" overlay={<Tooltip>일치</Tooltip>}>
+                    <Button
+                      active={value.comparator === '='}
+                      onClick={() => this.onVersionChanged(index, { comparator: '=' })}
+                      disabled={this.props.disabled} style={{ paddingTop: '5px', paddingBottom: '7px' }}
+                    >
+                      =
+                    </Button>
+                  </OverlayTrigger>
                 </ButtonGroup>
               </ButtonToolbar>
               <FormControl
-                className="version-selector-inputs"
+                className="selector-inputs"
                 type="text"
                 value={'모든 버전 대상'}
                 style={value.comparator !== '*' ? { display: 'none' } : {}}
                 readOnly
               />
               <FormControl
-                ref={(f) => { this.focusInputs['~'] = f; }}
-                className="version-selector-inputs"
+                ref={(f) => {
+                  if (!this.focusInputs[index]) {
+                    this.focusInputs[index] = {};
+                  }
+                  this.focusInputs[index]['~'] = f;
+                }}
+                className="selector-inputs"
                 type="text"
                 value={value.versionStart}
                 onChange={e => this.onVersionChanged(index, { versionStart: e.target.value })}
@@ -105,7 +119,7 @@ class VersionSelector extends React.Component {
                 style={value.comparator !== '~' ? { display: 'none' } : {}}
               />
               <FormControl
-                className="version-selector-inputs version-selector-inputs-second"
+                className="selector-inputs selector-inputs-second"
                 type="text"
                 value={value.versionEnd}
                 onChange={e => this.onVersionChanged(index, { versionEnd: e.target.value })}
@@ -114,8 +128,13 @@ class VersionSelector extends React.Component {
                 style={value.comparator !== '~' ? { display: 'none' } : {}}
               />
               <FormControl
-                ref={(f) => { this.focusInputs['='] = f; }}
-                className="version-selector-inputs"
+                ref={(f) => {
+                  if (!this.focusInputs[index]) {
+                    this.focusInputs[index] = {};
+                  }
+                  this.focusInputs[index]['='] = f;
+                }}
+                className="selector-inputs"
                 type="text"
                 value={value.version}
                 onChange={e => this.onVersionChanged(index, { version: e.target.value })}
@@ -123,7 +142,7 @@ class VersionSelector extends React.Component {
                 style={value.comparator !== '=' ? { display: 'none' } : {}}
                 disabled={this.props.disabled}
               />
-              <Button className="version-selector-remove-btn" onClick={() => this.removeCondition(index)} disabled={index === 0 || this.props.disabled}>
+              <Button className="selector-remove-btn" onClick={() => this.removeCondition(index)} disabled={index === 0 || this.props.disabled}>
                 <Glyphicon glyph="remove" />
               </Button>
             </div>
@@ -131,7 +150,7 @@ class VersionSelector extends React.Component {
         })}
         <Row>
           <Col xs={12}>
-            <Button className="version-selector-add-btn" onClick={() => this.addCondition()} disabled={this.props.disabled}>
+            <Button className="selector-add-btn" onClick={() => this.addCondition()} disabled={this.props.disabled}>
               <Glyphicon glyph="plus" /> 조건 추가하기 (OR)
             </Button>
           </Col>
