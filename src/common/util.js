@@ -281,11 +281,13 @@ exports.camel2snake = (str) => {
  */
 exports.camel2snakeObject = (object) => {
   if (object instanceof Array) {
+    const result = [];
     for (let i = 0, n = object.length; i < n; i++) {
-      object[i] = exports.camel2snakeObject(object[i]);
+      result[i] = exports.camel2snakeObject(object[i]);
     }
-  } else if (typeof object === 'object') {
-    let result = {};
+    return result;
+  } else if (object && typeof object === 'object') {
+    const result = {};
     for (let prop in object) {
       if (Object.prototype.hasOwnProperty.call(object, prop)) {
         result[exports.camel2snake(prop)] = exports.camel2snakeObject(object[prop]);
@@ -304,7 +306,7 @@ exports.camel2snakeObject = (object) => {
 exports.snake2camel = (str) => {
   if (typeof str === 'string') {
     // ignore first occurrence of underscore(_)
-    return str.replace(/^_/, '').replace(/_([a-z])/g, ($1, $2) => `${$2.toUpperCase()}`);
+    return str.replace(/^_/, '').replace(/_([a-z0-9]?)/g, ($1, $2) => `${$2.toUpperCase()}`);
   }
   return str;
 };
@@ -316,10 +318,12 @@ exports.snake2camel = (str) => {
  */
 exports.snake2camelObject = (object) => {
   if (object instanceof Array) {
+    const result = [];
     for (let i = 0, n = object.length; i < n; i++) {
-      object[i] = exports.snake2camelObject(object[i]);
+      result[i] = exports.snake2camelObject(object[i]);
     }
-  } else if (typeof object === 'object') {
+    return result;
+  } else if (object && typeof object === 'object') {
     let result = {};
     for (let prop in object) {
       if (Object.prototype.hasOwnProperty.call(object, prop)) {

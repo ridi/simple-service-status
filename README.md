@@ -41,7 +41,9 @@ npm start
 
 ### Test
 
-아직 작업 안함
+```
+npm test
+```
 
 ## Public API
 
