@@ -99,7 +99,7 @@ module.exports = [
     handler: (request, reply) => {
       const status = Object.assign({}, request.payload);
       if (status.startTime && status.endTime) {
-        status.startTIme = new Date(Date.parse(status.startTime));
+        status.startTime = new Date(Date.parse(status.startTime));
         status.endTime = new Date(Date.parse(status.endTime));
       }
       Status.add(status)
