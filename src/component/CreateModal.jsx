@@ -9,11 +9,9 @@ const ControlLabel = require('react-bootstrap/lib/ControlLabel');
 const FormControl = require('react-bootstrap/lib/FormControl');
 const HelpBlock = require('react-bootstrap/lib/HelpBlock');
 const Row = require('react-bootstrap/lib/Row');
-const Col = require('react-bootstrap/lib/Col');
 const Alert = require('react-bootstrap/lib/Alert');
 
 const Selectize = require('react-selectize');
-const DateTime = require('react-datetime');
 
 const moment = require('moment');
 const semver = require('semver');
@@ -23,9 +21,6 @@ const Api = require('../common/api');
 
 const SimpleSelect = Selectize.SimpleSelect;
 const MultiSelect = Selectize.MultiSelect;
-
-const dateFormat = 'YYYY-MM-DD';
-const timeFormat = 'HH:mm';
 
 class CreateModal extends React.Component {
   constructor(props) {
@@ -82,16 +77,16 @@ class CreateModal extends React.Component {
       return { error: '알림 타입을 설정해 주세요.' };
     }
     if (data.dateRange.comparator === '~') {
-      if (!data.startTime) {
+      if (!data.dateRange.startTime) {
         return { error: '시작 일시를 지정해 주세요.' };
       }
-      if (!data.endTime) {
+      if (!data.dateRange.endTime) {
         return { error: '종료 일시를 지정해 주세요.' };
       }
-      if (moment(data.startTime).isAfter(data.endTime)) {
+      if (moment(data.dateRange.startTime).isAfter(data.dateRange.endTime)) {
         return { error: '종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.' };
       }
-      if (moment(data.endTime).isBefore(moment.now())) {
+      if (moment(data.dateRange.endTime).isBefore(moment.now())) {
         warning.push('- 설정된 종료 일시가 과거입니다. 활성화 하더라도 알림이 실행되지 않습니다.');
       }
     }
@@ -213,15 +208,6 @@ class CreateModal extends React.Component {
     this.modal.show();
   }
 
-  onStartTimeChanged(startTime) {
-    this.setState({ startTime });
-    if (this.state.endTime.isSameOrBefore(startTime)) {
-      this.setState({ endTimeState: 'error' });
-      return;
-    }
-    this.setState({ endTimeState: null });
-  }
-
   resolveData(data) {
     let newData = {};
 
@@ -243,21 +229,6 @@ class CreateModal extends React.Component {
     }
 
     this.setState(Object.assign({}, this.defaultData, newData), () => this.onSelectionChanged());
-  }
-
-  onEndTimeChanged(endTime) {
-    if (typeof endTime === 'string' || endTime.isSameOrBefore(this.state.startTime)) {
-      this.setState({ endTime, endTimeState: 'error' });
-      return;
-    }
-    this.setState({ endTime, endTimeState: null });
-  }
-
-  isValidRange(startTime, endTime) {
-    if (!startTime || !endTime) {
-      return true;
-    }
-    return moment(startTime).isBefore(endTime);
   }
 
   onSelectionChanged() {
