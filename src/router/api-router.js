@@ -7,8 +7,6 @@
 const Joi = require('joi');
 const Status = require('./../repository/Status');
 const User = require('./../repository/User');
-//const DeviceType = require('./../repository/DeviceType');
-//const StatusType = require('./../repository/StatusType');
 const config = require('../config/server.config').url;
 const util = require('../common/util');
 const RidiError = require('../common/Error');
@@ -127,7 +125,7 @@ module.exports = [
     handler: (request, reply) => {
       const status = Object.assign({}, request.payload);
       if (status.startTime && status.endTime) {
-        status.startTIme = new Date(Date.parse(status.startTime));
+        status.startTime = new Date(Date.parse(status.startTime));
         status.endTime = new Date(Date.parse(status.endTime));
       }
       Status.update(request.params.statusId, status)
@@ -185,27 +183,4 @@ module.exports = [
       },
     },
   },
-  // for server initialization
-  // {
-  //   method: 'GET',
-  //   path: `${config.apiPrefix}/init`,
-  //   handler: (request, reply) => {
-  //     const deviceTypes = [
-  //       { label: 'Android', value: 'android' },
-  //       { label: 'iOS', value: 'ios' },
-  //       { label: 'Paper', value: 'paper' },
-  //       { label: 'QT', value: 'qt' },
-  //     ];
-  //     const statusTypes = [
-  //       { label: '서버 문제', value: 'serviceFailure' },
-  //       { label: '정기 점검', value: 'routineInspection' },
-  //     ];
-  //     const promises = deviceTypes.map(deviceType => DeviceType.save(deviceType));
-  //     promises.concat(statusTypes.map(statusType => StatusType.save(statusType)));
-  //     Promise.all(promises).then(result => reply(result)).catch(err => reply(err));
-  //   },
-  //   config: {
-  //     auth: false,
-  //   },
-  // },
 ];

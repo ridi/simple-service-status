@@ -11,6 +11,9 @@ const Cache = require('node-cache');
 const cache = new Cache({ stdTTL: 60, checkperiod: 30 });
 
 class Status extends Model {
+  constructor() {
+    super('status', [{ key: { isActivated: -1, startTime: 1, endTime: 1 } }]);
+  }
 
   find(query, sort, skip, limit) {
     return super.find(query, sort, skip, limit);

@@ -41,6 +41,19 @@ exports.generateToken = (account, ttl) => JWT.sign({
 }, process.env.SECRET_KEY || config.auth.secretKey);
 
 /**
+ * Encrypt user password
+ * @param {Object} credential - user inputs
+ *    - {string} username
+ *    - {string} password
+ * @returns {string}
+ */
+exports.encryptPassword = (credential) => {
+  const hmac = crypto.createHmac('sha256', process.env.SECRET_KEY || config.auth.secretKey);
+  hmac.update(`${credential.username}:${credential.password}`);
+  return hmac.digest('hex');
+};
+
+/**
  * Compare password from database with password user input
  * The password on database is always generated from '[username]:[password]' string. That improves password's security.
  * @param {Object} credential - user inputs
@@ -49,11 +62,7 @@ exports.generateToken = (account, ttl) => JWT.sign({
  * @param {string} dbPassword - digested password string from database
  * @returns {boolean}
  */
-exports.comparePassword = (credential, dbPassword) => {
-  const hmac = crypto.createHmac('sha256', process.env.SECRET_KEY || config.auth.secretKey);
-  hmac.update(`${credential.username}:${credential.password}`);
-  return hmac.digest('hex') === dbPassword;
-};
+exports.comparePassword = (credential, dbPassword) => exports.encryptPassword(credential) === dbPassword;
 
 /**
  * Extract current logged-in user information from request

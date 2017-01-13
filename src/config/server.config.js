@@ -43,6 +43,26 @@ const configs = {
     hotUpdateChunkFileName: 'hot-update.js',
     hotUpdateMainFileName: 'hot-update.json',
   },
+  initialData: {
+    users: [
+      {
+        username: 'admin',
+        password: 'admin',
+        role: 'WRITE',
+        isTemporary: true,
+      },
+    ],
+    deviceTypes: [
+      { label: 'Android', value: 'android' },
+      { label: 'iOS', value: 'ios' },
+      { label: 'Paper', value: 'paper' },
+      { label: 'QT', value: 'qt' },
+    ],
+    statusTypes: [
+      { label: '서버 문제', value: 'serviceFailure' },
+      { label: '정기 점검', value: 'routineInspection' },
+    ],
+  },
 };
 
 module.exports = configs;

@@ -19,12 +19,18 @@ const url = process.env.MONGODB_URI || config.defaults.mongoDBUrl;
  */
 class Model {
 
-  constructor(collection) {
+  constructor(collection, indexes) {
     if (new.target === Model) {
       throw new TypeError('Cannot construct Model instances directly');
     }
 
     this.collection = collection || this.constructor.name.toLowerCase();
+
+    if (indexes instanceof Array) {
+      this.runQuery(col => col.createIndexes(indexes))
+        .then(() => console.log(`[DB] ${this.collection}'s index creation is successfully done.`))
+        .catch(error => console.error(`[DB] ${this.collection}'s index creation is failed.`, error));
+    }
   }
 
   runQuery(fn) {
@@ -36,7 +42,6 @@ class Model {
       yield db.close();
       return result;
     }).catch((err) => {
-      console.error(err);
       throw err;
     });
   }
@@ -53,7 +58,7 @@ class Model {
       return item;
     })).catch((error) => {
       console.error(error);
-      throw new RidiError(RidiError.Types.DB);
+      throw new RidiError(RidiError.Types.DB, {}, error);
     });
   }
 
@@ -61,16 +66,16 @@ class Model {
     return this.runQuery(collection => collection.count(query || {}))
       .catch((error) => {
         console.error(error);
-        throw new RidiError(RidiError.Types.DB);
+        throw new RidiError(RidiError.Types.DB, {}, error);
       });
   }
 
   add(model) {
     return this.runQuery(collection => collection.insertOne(model))
-      .then(result => ({ data: result.ops }))
+      .then(result => ({ data: result.ops, count: result.result.n }))
       .catch((error) => {
         console.error(error);
-        throw new RidiError(RidiError.Types.DB);
+        throw new RidiError(RidiError.Types.DB, {}, error);
       });
   }
 
@@ -79,7 +84,7 @@ class Model {
       .then(result => ({ data: [{ _id: id }], count: result.result.nModified }))
       .catch((error) => {
         console.error(error);
-        throw new RidiError(RidiError.Types.DB);
+        throw new RidiError(RidiError.Types.DB, {}, error);
       });
   }
 
@@ -88,7 +93,7 @@ class Model {
       .then(result => ({ data: [{ _id: id }], count: result.result.n }))
       .catch((error) => {
         console.error(error);
-        throw new RidiError(RidiError.Types.DB);
+        throw new RidiError(RidiError.Types.DB, {}, error);
       });
   }
 }
