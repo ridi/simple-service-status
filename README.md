@@ -1,4 +1,6 @@
 # Simple Notifier
+[![npm](https://img.shields.io/npm/v/simple-notifier.svg)](https://www.npmjs.com/package/simple-notifier)
+
 
 ## Overview
 
