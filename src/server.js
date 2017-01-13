@@ -11,6 +11,8 @@ const vision = require('vision');
 const inert = require('inert');
 const HapiAuthJwt2 = require('hapi-auth-jwt2');
 const HapiReactViews = require('hapi-react-views');
+const HapiErrorHandler = require('./middleware/error-handler');
+const HapiTransform = require('./middleware/transform');
 
 const apiRouter = require('./router/api-router');
 const baseRouter = require('./router/ui-router');
@@ -38,6 +40,8 @@ const plugins = [
   { register: vision },
   { register: inert },
   { register: HapiAuthJwt2 },
+  { register: HapiErrorHandler, options: { apiPrefix: config.url.apiPrefix, errorView: 'Error' } },
+  { register: HapiTransform, options: { apiPrefix: config.url.apiPrefix } },
 ];
 
 const _setAuthStrategy = () => {
@@ -98,53 +102,6 @@ const _setRoutes = (extraRoutes) => {
   }
 };
 
-const _setExtensions = () => {
-  server.ext('onPostAuth', (request, reply) => {
-    if (request.params) {
-      request.params = util.snake2camelObject(request.params);
-    }
-    if (request.query) {
-      request.query = util.snake2camelObject(request.query);
-    }
-    if (request.payload) {
-      request.payload = util.snake2camelObject(request.payload);
-    }
-    return reply.continue();
-  });
-
-  server.ext('onPreResponse', (request, reply) => {
-    const path = request.path;
-    const statusCode = request.response.statusCode || request.response.output.statusCode;
-
-    if (path.includes(config.url.apiPrefix)) {
-      // API
-      let responseObj = {};
-      if (statusCode !== 200) {
-        responseObj = { code: request.response.errorCode, message: request.response.message };
-      } else if (request.response.source) {
-        responseObj = util.camel2snakeObject(request.response.source);
-      }
-      switch (statusCode) {
-        case 401:
-        case 403:
-          return reply(responseObj).unstate('token');
-        default:
-          return reply(responseObj);
-      }
-    } else {
-      // UI
-      switch (statusCode) {
-        case 401:
-        case 403:
-          return reply.redirect(`/login?redirect=${request.path || '/'}`).unstate('token');
-        default:
-          break;
-      }
-    }
-    return reply.continue();
-  });
-};
-
 exports.addPlugin = (pluginSetting) => {
   plugins.push(pluginSetting);
 };
@@ -155,7 +112,6 @@ exports.start = (extraRoutes) => {
       _setAuthStrategy();
       _setViewEngine();
       _setRoutes(extraRoutes);
-      _setExtensions();
       return server;
     })
     .then(() => server.start())
