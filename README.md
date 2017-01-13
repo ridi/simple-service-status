@@ -1,7 +1,12 @@
 # Simple Notifier
 
+## Overview
+
 Simple Notifiers는 특정 앱/플랫폼 버전을 지정하여 공지사항을 전달할 수 있는 간단한 도구입니다.
 공지사항을 관리할 수 있는 웹 UI와 질의를 위한 API를 제공합니다.
+
+버전 비교를 위해서 내부적으로 [SemVer](http://semver.org/)를 사용하고 있습니다.
+자세한 비교 방식을 확인하시려면 [SemVer Calculator](https://semver.npmjs.com/)를 참조하세요.
 
 ## Development
 
@@ -58,11 +63,11 @@ GET /v1/status/check?device_type=[device_type]&device_version=[device_version]&a
 
 #### Parameters
 
-| 이름           | 타입                           | 설명                                      |
-| -------------- | ------------------------------ | ----------------------------------------- |
-| device_type    | enum (android, ios, paper, qt) | 디바이스(플랫폼) 종류 (더 추가될 수 있음) |
-| device_version | string                         | 디바이스 플랫폼 버전 (x.x.x 형태로 입력)  |
-| app_version    | string                         | 뷰어 앱 버전 (x.x.x 형태로 입력)          |
+| 이름           | 타입                                              | 설명                                      |
+| -------------- | ------------------------------------------------- | ----------------------------------------- |
+| device_type    | enum (*, android, ios, paper, qt)                 | 디바이스(플랫폼) 종류 (더 추가될 수 있음) |
+| device_version | string (* or [SemVer format](http://semver.org/)) | 디바이스 플랫폼 버전                      |
+| app_version    | string (* or [SemVer format](http://semver.org/)) | 뷰어 앱 버전 ('x.x.x' 형태 or '*' 입력)   |
 
 #### Response (JSON)
 

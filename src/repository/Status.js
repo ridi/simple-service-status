@@ -7,6 +7,7 @@
 const Model = require('./Model');
 const semver = require('semver');
 const Cache = require('node-cache');
+const NotifierError = require('../common/Error');
 
 const cache = new Cache({ stdTTL: 60, checkperiod: 30 });
 
@@ -35,13 +36,21 @@ class Status extends Model {
   findWithComparators(deviceType, deviceVersion, appVersion) {
     const self = this;
     const now = new Date();
+    if (deviceVersion !== '*' && !semver.valid(deviceVersion)) {
+      return Promise.reject(new NotifierError(NotifierError.Types.BAD_REQUEST_INVALID,
+        { message: `"${deviceVersion}"은 잘못된 버전 형식입니다.` }));
+    }
+    if (appVersion !== '*' && !semver.valid(appVersion)) {
+      return Promise.reject(new NotifierError(NotifierError.Types.BAD_REQUEST_INVALID,
+        { message: `"${appVersion}"은 잘못된 버전 형식입니다.` }));
+    }
     return this.findWithCache({
       $or: [
         { startTime: { $lte: now }, endTime: { $gt: now }, isActivated: true },
         { startTime: { $exists: false }, endTime: { $exists: false }, isActivated: true },
       ],
     }).then(results => results.filter(
-      result => result.deviceTypes.includes(deviceType)
+      result => (deviceType === '*' || result.deviceTypes.includes(deviceType))
         && self._isSatisfiedVersion(result.deviceSemVersion, deviceVersion)
         && self._isSatisfiedVersion(result.appSemVersion, appVersion)
     ));

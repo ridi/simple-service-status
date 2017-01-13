@@ -14,12 +14,6 @@ const defaultOptions = Object.freeze({
 const register = (server, opts, next) => {
   const options = Object.assign({}, defaultOptions, opts);
 
-  // options.apiPrefix
-  server.on('request-error', () => {
-    // TODO
-    console.error(arguments);
-  });
-
   server.ext('onPreResponse', (request, reply) => {
     const path = request.path;
     const statusCode = request.response.statusCode || request.response.output.statusCode;
@@ -42,7 +36,7 @@ const register = (server, opts, next) => {
         // API
         switch (statusCode) {
           case 400:
-            if (request.response.data.name === 'ValidationError') {
+            if (request.response.data && request.response.data.name === 'ValidationError') {
               responseObj.code = NotifierError.Types.BAD_REQUEST_INVALID.code;
               responseObj.message = NotifierError.Types.BAD_REQUEST_INVALID.message({ message: request.response.message });
             }
