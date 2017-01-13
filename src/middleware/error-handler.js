@@ -24,20 +24,29 @@ const register = (server, opts, next) => {
     const path = request.path;
     const statusCode = request.response.statusCode || request.response.output.statusCode;
 
-    if (statusCode !== 200) {
-      const responseObj = { code: request.response.errorCode, message: request.response.message };
+    if (statusCode === 200) {
+      // on Success
+      if (path.includes(options.apiPrefix)) {
+        const responseObj = request.response.source || {};
+        responseObj.success = true;
+        request.response.source = responseObj;
+      }
+    } else {
+      // on Error
+      const responseObj = {
+        code: request.response.errorCode,
+        message: request.response.message,
+        success: false,
+      };
       if (path.includes(options.apiPrefix)) {
         // API
         switch (statusCode) {
           case 400:
             if (request.response.data.name === 'ValidationError') {
-              return reply({
-                code: RidiError.Types.BAD_REQUEST_INVALID.code,
-                message: RidiError.Types.BAD_REQUEST_INVALID.message({ message: request.response.message }),
-              });
-            } else {
-              return reply(responseObj).code(statusCode);
+              responseObj.code = RidiError.Types.BAD_REQUEST_INVALID.code;
+              responseObj.message = RidiError.Types.BAD_REQUEST_INVALID.message({ message: request.response.message });
             }
+            return reply(responseObj).code(statusCode);
           case 401:
           case 403:
             return reply(responseObj).unstate('token').code(statusCode);

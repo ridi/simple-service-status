@@ -76,7 +76,7 @@ class Model {
 
   update(id, model) {
     return this.runQuery(collection => collection.updateOne({ _id: ObjectID(id) }, { $set: model }))
-      .then(result => ({ data: result.ops }))
+      .then(result => ({ data: [{ _id: id }], count: result.result.nModified }))
       .catch((error) => {
         console.error(error);
         throw new RidiError(RidiError.Types.DB);
@@ -85,7 +85,7 @@ class Model {
 
   remove(id) {
     return this.runQuery(collection => collection.deleteOne({ _id: ObjectID(id) }))
-      .then(result => ({ data: result.ops }))
+      .then(result => ({ data: [{ _id: id }], count: result.result.n }))
       .catch((error) => {
         console.error(error);
         throw new RidiError(RidiError.Types.DB);

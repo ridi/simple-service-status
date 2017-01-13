@@ -17,6 +17,8 @@ const HapiTransform = require('./middleware/transform');
 const apiRouter = require('./router/api-router');
 const baseRouter = require('./router/ui-router');
 const User = require('./repository/User');
+const DeviceType = require('./repository/DeviceType');
+const StatusType = require('./repository/StatusType');
 
 const config = require('./config/server.config');
 const RidiError = require('./common/Error');
@@ -60,10 +62,16 @@ const _setAuthStrategy = () => {
         return callback(new RidiError(RidiError.Types.AUTH_TOKEN_EXPIRED), false);
       }
       return User.find({ username: decoded.username })
-        .then(account => callback(null, account && account.length > 0))
-        .catch(() => {
-          console.warn(`[Auth] This account is not exist.: ${decoded.username}`);
-          callback(new RidiError(RidiError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }), false);
+        .then((account) => {
+          if (!account || account.length === 0) {
+            console.warn(`[Auth] This account is not exist.: ${decoded.username}`);
+            return callback(new RidiError(RidiError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }), false);
+          }
+          return callback(null, true);
+        })
+        .catch((e) => {
+          console.error(`[DB] DB error occurred: ${e.message}`);
+          callback(new RidiError(RidiError.Types.DB), false);
         });
     },
     verifyOptions: { algorithms: ['HS256'] },
@@ -102,6 +110,24 @@ const _setRoutes = (extraRoutes) => {
   }
 };
 
+const _setInitalData = () => {
+  let promises = [];
+  return Promise.all([User.count(), DeviceType.count(), StatusType.count()])
+    .then(([userCount, deviceTypeCount, statusTypeCount]) => {
+      if (userCount === 0) {
+        promises = promises.concat(config.initialData.users.map(user => User.add(user)));
+      }
+      if (deviceTypeCount === 0) {
+        promises = promises.concat(config.initialData.deviceTypes.map(dt => DeviceType.add(dt)));
+      }
+      if (statusTypeCount === 0) {
+        promises = promises.concat(config.initialData.statusTypes.map(user => StatusType.add(user)));
+      }
+    })
+    .then(() => Promise.all(promises))
+    .then(result => console.log('[SET INITIAL DATA] success: ', result));
+};
+
 exports.addPlugin = (pluginSetting) => {
   plugins.push(pluginSetting);
 };
@@ -112,8 +138,8 @@ exports.start = (extraRoutes) => {
       _setAuthStrategy();
       _setViewEngine();
       _setRoutes(extraRoutes);
-      return server;
     })
+    .then(() => _setInitalData())
     .then(() => server.start())
     .then(() => {
       console.log('Server running at:', server.info.uri);

@@ -79,7 +79,7 @@ module.exports = [
     handler: (request, reply) => {
       Status.findWithComparators(request.query.deviceType || '*', request.query.deviceVersion || '*', request.query.appVersion || '*')
         .then(result => util.formatDates(result))
-        .then(result => reply(result))
+        .then(result => reply({ data: result }))
         .catch(err => reply(err));
     },
     config: {

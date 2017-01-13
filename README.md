@@ -86,21 +86,24 @@ GET /v1/status/check?device_type=[device_type]&device_version=[device_version]&a
 GET /api/v1/status/check?device_type=android&device_version=3.5.6&app_version=3.5.6
 ```
 
-##### Response
+##### Response (Success)
 ```json
-[
-	{
-		"id": "586f6239ceed4d0004f91449",
-		"type": "serviceFailure",
-		"device_types": [
-			"android"
-		],
-		"start_time": "2017-01-06T18:21:14+09:00",
-		"end_time": "2017-01-06T20:21:14+09:00",
-		"contents": "...",
-		"is_activated": true,
-		"device_sem_version": ">=0.0.1 <5.5.5",
-		"app_sem_version": "=3.5.6 || >=5.0.0 <6.0.0"
-	}
-]
+{
+    "data": [
+        {
+            "id": "58783e50fdfef4e35318f620",
+            "type": "routineInspection",
+            "device_types": [
+                "android"
+            ],
+            "contents": "...",
+            "is_activated": true,
+            "device_sem_version": ">=1.0.0  || =7.0.0-alpha.1",
+            "app_sem_version": "<3.0.0 || =6.0.0",
+            "start_time": "2017-01-13T11:40:55+09:00",
+            "end_time": "2017-01-13T13:40:55+09:00"
+        }
+    ],
+    "success": true
+}
 ```

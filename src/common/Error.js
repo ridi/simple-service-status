@@ -1,13 +1,15 @@
 class RidiError extends Error {
-  constructor(type, context) {
+  constructor(type, context, originalError) {
     super(type.message(context));
     this.type = type.type;
     this.errorCode = type.code;
     this.message = type.message(context);
+    this.serverMessage = this.message;
     this.statusCode = Math.floor(this.errorCode / 1000);
-  }
-  setContext(context) {
-    this.message = RidiError.Types[this.type].message(context);
+    if (originalError) {
+      this.originalError = originalError;
+      this.serverMessage = `${this.message}: ${this.originalError.message}`;
+    }
   }
 }
 
