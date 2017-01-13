@@ -21,7 +21,7 @@ const DeviceType = require('./repository/DeviceType');
 const StatusType = require('./repository/StatusType');
 
 const config = require('./config/server.config');
-const RidiError = require('./common/Error');
+const NotifierError = require('./common/Error');
 
 const util = require('./common/util');
 
@@ -54,24 +54,24 @@ const _setAuthStrategy = () => {
       const clientIP = util.getClientIp(request);
       if (clientIP !== decoded.ip) {
         console.warn(`[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${clientIP}`);
-        return callback(new RidiError(RidiError.Types.AUTH_TOKEN_INVALID), false);
+        return callback(new NotifierError(NotifierError.Types.AUTH_TOKEN_INVALID), false);
       }
       // Check token expiration
       if (decoded.exp < new Date().getTime()) {
         console.warn(`[Auth] This auth token is expired.: decoded.exp => ${decoded.exp}, now => ${new Date().getTime()}`);
-        return callback(new RidiError(RidiError.Types.AUTH_TOKEN_EXPIRED), false);
+        return callback(new NotifierError(NotifierError.Types.AUTH_TOKEN_EXPIRED), false);
       }
       return User.find({ username: decoded.username })
         .then((account) => {
           if (!account || account.length === 0) {
             console.warn(`[Auth] This account is not exist.: ${decoded.username}`);
-            return callback(new RidiError(RidiError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }), false);
+            return callback(new NotifierError(NotifierError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }), false);
           }
           return callback(null, true);
         })
         .catch((e) => {
           console.error(`[DB] DB error occurred: ${e.message}`);
-          callback(new RidiError(RidiError.Types.DB), false);
+          callback(new NotifierError(NotifierError.Types.DB), false);
         });
     },
     verifyOptions: { algorithms: ['HS256'] },

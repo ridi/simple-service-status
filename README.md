@@ -1,6 +1,7 @@
-# Viewer Notification
+# Simple Notifier
 
-서버 상태를 조회할 수 있는 API와 관리 UI 제공
+Simple Notifiers는 특정 앱/플랫폼 버전을 지정하여 공지사항을 전달할 수 있는 간단한 도구입니다.
+공지사항을 관리할 수 있는 웹 UI와 질의를 위한 API를 제공합니다.
 
 ## Development
 

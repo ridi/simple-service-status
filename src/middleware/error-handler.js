@@ -4,7 +4,7 @@
  * @since 1.0.0
  */
 
-const RidiError = require('../common/Error');
+const NotifierError = require('../common/Error');
 
 const defaultOptions = Object.freeze({
   apiPrefix: '/api',
@@ -43,8 +43,8 @@ const register = (server, opts, next) => {
         switch (statusCode) {
           case 400:
             if (request.response.data.name === 'ValidationError') {
-              responseObj.code = RidiError.Types.BAD_REQUEST_INVALID.code;
-              responseObj.message = RidiError.Types.BAD_REQUEST_INVALID.message({ message: request.response.message });
+              responseObj.code = NotifierError.Types.BAD_REQUEST_INVALID.code;
+              responseObj.message = NotifierError.Types.BAD_REQUEST_INVALID.message({ message: request.response.message });
             }
             return reply(responseObj).code(statusCode);
           case 401:
@@ -52,7 +52,7 @@ const register = (server, opts, next) => {
             return reply(responseObj).unstate('token').code(statusCode);
           case 500:
             if (!responseObj.code) {
-              responseObj.code = RidiError.Types.SERVER.code;
+              responseObj.code = NotifierError.Types.SERVER.code;
             }
             return reply(responseObj).code(statusCode);
           default:

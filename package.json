@@ -1,11 +1,11 @@
 {
-  "name": "viewer-notification",
+  "name": "simple-notifier",
   "version": "1.0.0",
   "engines": {
     "node": "6.9.1",
     "npm": "3.10.8"
   },
-  "description": "",
+  "description": "A simple tool that supports management UI and query API for notifiactions designating specific version of app or platform",
   "main": "index.js",
   "scripts": {
     "prestart": "npm run webpack:dev",
@@ -15,7 +15,7 @@
     "webpack:prod": "webpack --config=./webpack.prod.config.js -p",
     "heroku-postbuild": "npm run webpack:prod"
   },
-  "keywords": [],
+  "keywords": ["notifier"],
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {

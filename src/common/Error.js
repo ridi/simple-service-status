@@ -1,4 +1,4 @@
-class RidiError extends Error {
+class NotifierError extends Error {
   constructor(type, context, originalError) {
     super(type.message(context));
     this.type = type.type;
@@ -13,7 +13,7 @@ class RidiError extends Error {
   }
 }
 
-RidiError.Types = Object.freeze({
+NotifierError.Types = Object.freeze({
   BAD_REQUEST: { code: 400000, message: context => `잘못된 요청입니다.` },
   BAD_REQUEST_INVALID: { code: 400100, message: context => `요청이 유효하지 않습니다: ${context.message}` },
   AUTH: { code: 401000, message: context => `로그인이 실패하였습니다.` },
@@ -32,8 +32,8 @@ RidiError.Types = Object.freeze({
   DB: { code: 5001000, message: context => `DB 에러가 발생했습니다.` },
 });
 
-for (let typeKey in RidiError.Types) {
-  RidiError.Types[typeKey].type = typeKey;
+for (let typeKey in NotifierError.Types) {
+  NotifierError.Types[typeKey].type = typeKey;
 }
 
-module.exports = RidiError;
+module.exports = NotifierError;

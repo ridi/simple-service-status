@@ -7,7 +7,7 @@
 const co = require('co');
 const mongodb = require('mongodb');
 const config = require('../config/server.config');
-const RidiError = require('../common/Error');
+const NotifierError = require('../common/Error');
 
 const MongoClient = mongodb.MongoClient;
 const ObjectID = mongodb.ObjectID;
@@ -58,7 +58,7 @@ class Model {
       return item;
     })).catch((error) => {
       console.error(error);
-      throw new RidiError(RidiError.Types.DB, {}, error);
+      throw new NotifierError(NotifierError.Types.DB, {}, error);
     });
   }
 
@@ -66,7 +66,7 @@ class Model {
     return this.runQuery(collection => collection.count(query || {}))
       .catch((error) => {
         console.error(error);
-        throw new RidiError(RidiError.Types.DB, {}, error);
+        throw new NotifierError(NotifierError.Types.DB, {}, error);
       });
   }
 
@@ -75,7 +75,7 @@ class Model {
       .then(result => ({ data: result.ops, count: result.result.n }))
       .catch((error) => {
         console.error(error);
-        throw new RidiError(RidiError.Types.DB, {}, error);
+        throw new NotifierError(NotifierError.Types.DB, {}, error);
       });
   }
 
@@ -84,7 +84,7 @@ class Model {
       .then(result => ({ data: [{ _id: id }], count: result.result.nModified }))
       .catch((error) => {
         console.error(error);
-        throw new RidiError(RidiError.Types.DB, {}, error);
+        throw new NotifierError(NotifierError.Types.DB, {}, error);
       });
   }
 
@@ -93,7 +93,7 @@ class Model {
       .then(result => ({ data: [{ _id: id }], count: result.result.n }))
       .catch((error) => {
         console.error(error);
-        throw new RidiError(RidiError.Types.DB, {}, error);
+        throw new NotifierError(NotifierError.Types.DB, {}, error);
       });
   }
 }
