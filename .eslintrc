@@ -17,6 +17,9 @@
     "no-cond-assign": ["error", "except-parens"],
 
     // ++ 문법은 for 루프안에서만 허용
-    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+
+    // 무한루프 while (true) 등의 구문을 허용
+    "no-constant-condition": ["error", { "checkLoops": false }]
   }
 }
