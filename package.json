@@ -10,7 +10,7 @@
   "scripts": {
     "prestart": "npm run webpack:dev",
     "start": "node webpack-dev-server.js",
-    "test": "jest",
+    "test": "jest --verbose",
     "webpack:dev": "webpack --config=./webpack.dev.config.js -p",
     "webpack:prod": "webpack --config=./webpack.prod.config.js -p",
     "heroku-postbuild": "npm run webpack:prod"

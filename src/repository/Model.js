@@ -47,6 +47,9 @@ class Model {
   }
 
   find(query, sort, skip, limit) {
+    if (query._id) {
+      query._id = ObjectID(query._id);
+    }
     return this.runQuery((collection) => {
       const cursor = collection.find(query || {}).sort(sort || {});
       if (typeof skip !== 'undefined' || typeof limit !== 'undefined') {
@@ -72,7 +75,13 @@ class Model {
 
   add(model) {
     return this.runQuery(collection => collection.insertOne(model))
-      .then(result => ({ data: result.ops, count: result.result.n }))
+      .then((result) => {
+        let data = result.ops;
+        if (data) {
+          data = result.ops.map(d => Object.assign({}, d, { _id: d._id.toHexString() }))
+        }
+        return { data, count: result.result.n };
+      })
       .catch((error) => {
         console.error(error);
         throw new NotifierError(NotifierError.Types.DB, {}, error);
