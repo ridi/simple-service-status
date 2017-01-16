@@ -1,7 +1,11 @@
 /* global jest describe test expect beforeAll afterAll */
 
+const fs = require('fs');
 // Load local environments
-require('node-env-file')(`${__dirname}/../.env`);
+if (fs.existsSync(`${__dirname}/../.env`)) {
+  require('node-env-file')(`${__dirname}/../.env`);
+}
+
 const Server = require('../src/server');
 const User = require('../src/repository/User');
 const Status = require('../src/repository/Status');
