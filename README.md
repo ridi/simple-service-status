@@ -54,7 +54,6 @@ npm test
 ```
 
 ## Public API
-
 ### Check Notifications
 
 현재 디바이스 플랫폼과 앱 버전에 대해 공지사항이 있는지 확인한다.
