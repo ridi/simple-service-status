@@ -1,4 +1,6 @@
 # Simple Notifier
+
+[![Build Status](https://travis-ci.org/ridibooks/simple-notifier.svg?branch=master)](https://travis-ci.org/ridibooks/simple-notifier)
 [![npm](https://img.shields.io/npm/v/simple-notifier.svg)](https://www.npmjs.com/package/simple-notifier)
 
 
