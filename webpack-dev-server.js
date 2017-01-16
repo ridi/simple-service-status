@@ -6,16 +6,13 @@
 require('node-env-file')(`${__dirname}/.env`);
 
 const appServer = require('./src/server');
-
 const express = require('express');
-
 const Webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
-
 const webpackConfig = require('./webpack.dev.config');
-
 const H2O2 = require('h2o2');
+const logger = require('winston');
 
 const webpackServer = express();
 
@@ -36,10 +33,10 @@ webpackServer.use(webpackHotMiddleware(compiler));
 
 webpackServer.listen(config.build.webpackServerPort, (err) => {
   if (err) {
-    console.error(err);
+    logger.error(err);
     return;
   }
-  console.log(`Webpack dev server listening at ${config.defaults.host}:${config.build.webpackServerPort}`);
+  logger.log(`Webpack dev server listening at ${config.defaults.host}:${config.build.webpackServerPort}`);
 
   appServer.addPlugin({ register: H2O2 });
 

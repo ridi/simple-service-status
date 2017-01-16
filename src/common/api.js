@@ -27,7 +27,7 @@ exports.login = data => axios.post('/login', data);
 /**
  * Get status(notification) list
  * @param {string} filter - filter name: 'current' or 'expired'
- * @param {numnber} skip - numbers of records to be skipped
+ * @param {number} skip - numbers of records to be skipped
  * @param {number} limit - numbers of records to be returned
  */
 exports.getStatus = (filter, skip, limit) => axios.get('/status', { params: { filter, skip, limit } });

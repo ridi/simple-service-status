@@ -1,5 +1,4 @@
 const React = require('react');
-const ReactDOM = require('react-dom');
 
 const FormControl = require('react-bootstrap/lib/FormControl');
 const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');

@@ -12,6 +12,7 @@ const NotifierError = require('../common/Error');
 const MongoClient = mongodb.MongoClient;
 const ObjectID = mongodb.ObjectID;
 const url = process.env.MONGODB_URI || config.defaults.mongoDBUrl;
+const logger = require('winston');
 
 /**
  * @class
@@ -28,8 +29,8 @@ class Model {
 
     if (indexes instanceof Array) {
       this.runQuery(col => col.createIndexes(indexes))
-        .then(() => console.log(`[DB] ${this.collection}'s index creation is successfully done.`))
-        .catch(error => console.error(`[DB] ${this.collection}'s index creation is failed.`, error));
+        .then(() => logger.log(`[DB] ${this.collection}'s index creation is successfully done.`))
+        .catch(error => logger.error(`[DB] ${this.collection}'s index creation is failed.`, error));
     }
   }
 
@@ -60,7 +61,7 @@ class Model {
       item._id = item._id.toHexString();
       return item;
     })).catch((error) => {
-      console.error(error);
+      logger.error(error);
       throw new NotifierError(NotifierError.Types.DB, {}, error);
     });
   }
@@ -68,7 +69,7 @@ class Model {
   count(query) {
     return this.runQuery(collection => collection.count(query || {}))
       .catch((error) => {
-        console.error(error);
+        logger.error(error);
         throw new NotifierError(NotifierError.Types.DB, {}, error);
       });
   }
@@ -83,7 +84,7 @@ class Model {
         return { data, count: result.result.n };
       })
       .catch((error) => {
-        console.error(error);
+        logger.error(error);
         throw new NotifierError(NotifierError.Types.DB, {}, error);
       });
   }
@@ -92,7 +93,7 @@ class Model {
     return this.runQuery(collection => collection.updateOne({ _id: ObjectID(id) }, { $set: model }))
       .then(result => ({ data: [{ _id: id }], count: result.result.nModified }))
       .catch((error) => {
-        console.error(error);
+        logger.error(error);
         throw new NotifierError(NotifierError.Types.DB, {}, error);
       });
   }
@@ -101,7 +102,7 @@ class Model {
     return this.runQuery(collection => collection.deleteOne({ _id: ObjectID(id) }))
       .then(result => ({ data: [{ _id: id }], count: result.result.n }))
       .catch((error) => {
-        console.error(error);
+        logger.error(error);
         throw new NotifierError(NotifierError.Types.DB, {}, error);
       });
   }

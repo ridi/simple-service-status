@@ -195,7 +195,7 @@ class CreateModal extends React.Component {
     this.checkWarningOnce = false;
     const api = (this.state.mode === 'add') ? Api.addStatus(data) : Api.updateStatus(this.state.id, data);
 
-    api.then((response) => {
+    api.then(() => {
       if (typeof self.props.onSuccess === 'function') {
         self.props.onSuccess();
       }

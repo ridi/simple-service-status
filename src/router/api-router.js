@@ -12,6 +12,7 @@ const util = require('../common/common-util');
 const authUtil = require('../common/auth-util');
 const dateUtil = require('../common/date-util');
 const NotifierError = require('../common/Error');
+const logger = require('winston');
 
 module.exports = [
   {
@@ -20,7 +21,7 @@ module.exports = [
     handler: (request, reply) => {
       const clientIP = util.getClientIp(request);
       if (process.env.ALLOWED_IP && !process.env.ALLOWED_IP.includes(clientIP)) {
-        console.warn(`[Auth] This client IP is not allowed.: ${clientIP}`);
+        logger.warn(`[Auth] This client IP is not allowed.: ${clientIP}`);
         return reply(new NotifierError(NotifierError.Types.FORBIDDEN_IP_ADDRESS, { remoteAddress: clientIP }));
       }
       if (!request.payload.username || !request.payload.password) {

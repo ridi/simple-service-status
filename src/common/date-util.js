@@ -34,9 +34,7 @@ exports.formatDates = (model, formatString) => {
  * @param {number} [utcOffset]
  * @returns {moment}
  */
-exports.toLocalDate = (date, utcOffset) => {
-  return moment(date).utcOffset(typeof utcOffset === 'undefined' ? 9 : utcOffset);
-};
+exports.toLocalDate = (date, utcOffset) => moment(date).utcOffset(typeof utcOffset === 'undefined' ? 9 : utcOffset);
 
 /**
  * Format date to string
@@ -45,6 +43,4 @@ exports.toLocalDate = (date, utcOffset) => {
  * @param {number} [utcOffset]
  * @returns {string}
  */
-exports.formatDate = (date, formatString, utcOffset) => {
-  return exports.toLocalDate(date, utcOffset).format(formatString);
-};
+exports.formatDate = (date, formatString, utcOffset) => exports.toLocalDate(date, utcOffset).format(formatString);

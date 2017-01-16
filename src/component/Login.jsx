@@ -21,7 +21,7 @@ class Login extends React.Component {
   onSubmit(e) {
     e.preventDefault();
     Api.login({ username: this.state.username, password: this.state.password })
-      .then((response) => {
+      .then(() => {
         const search = /redirect=(.*)[&]?/.exec(window.location.search);
         this.setState({ errorMessage: null });
         window.location.href = search ? search[1] : '/';
