@@ -17,7 +17,7 @@ const Modal = require('./Modal');
 const Loading = require('./Loading');
 
 const moment = require('moment');
-const util = require('../common/util');
+const dateUtil = require('../common/date-util');
 const Api = require('../common/api');
 
 const dateFormat = 'YYYY-MM-DD HH:mm';
@@ -72,7 +72,7 @@ class StatusList extends React.Component {
           const start = moment(row.startTime);
           const end = moment(row.endTime);
           const duration = start.from(end, true);
-          return <span>{`${util.formatDate(start, dateFormat)} ~ ${util.formatDate(end, dateFormat)} (${duration})`}</span>;
+          return <span>{`${dateUtil.formatDate(start, dateFormat)} ~ ${dateUtil.formatDate(end, dateFormat)} (${duration})`}</span>;
         },
       },
       {

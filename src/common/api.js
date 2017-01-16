@@ -6,7 +6,7 @@
 
 const Axios = require('axios');
 const config = require('../config/server.config');
-const util = require('./util');
+const util = require('./common-util');
 
 const axios = Axios.create({
   baseURL: config.url.apiPrefix,

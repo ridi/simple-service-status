@@ -23,7 +23,7 @@ const StatusType = require('./repository/StatusType');
 const config = require('./config/server.config');
 const NotifierError = require('./common/Error');
 
-const util = require('./common/util');
+const util = require('./common/common-util');
 
 // For JSX transpiling
 require('babel-register');

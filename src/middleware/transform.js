@@ -4,7 +4,7 @@
  * @since 1.0.0
  */
 
-const util = require('../common/util');
+const util = require('../common/common-util');
 
 const defaultOptions = Object.freeze({
   apiPrefix: '/api',

@@ -4,7 +4,6 @@
  * @since 1.0.0
  */
 
-const Status = require('./../repository/Status');
 const StatusType = require('../repository/StatusType');
 const DeviceType = require('../repository/DeviceType');
 

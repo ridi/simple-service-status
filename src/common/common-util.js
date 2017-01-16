@@ -4,79 +4,6 @@
  * @since 1.0.0
  */
 
-const JWT = require('jsonwebtoken');
-const moment = require('moment');
-const config = require('./../config/server.config.js');
-const crypto = require('crypto');
-
-/**
- * Set pads at the front of the string.
- * @param {string} str
- * @param {string} padStr
- * @param {number} num
- * @returns {*}
- */
-exports.padStart = (str, padStr, num) => {
-  if (padStr.length >= num) {
-    return padStr;
-  }
-  return (padStr.repeat(num) + str).slice(-num);
-};
-
-/**
- * Generate auth token
- * @param {Object} account
- *    - {string} username - username for login
- *    - {string} role - user's role
- *    - {number} exp - timestamp indicates expiration date
- *    - {string} ip - client ip address
- * @param {number} ttl - time to live in millisecond
- * @returns {*}
- */
-exports.generateToken = (account, ttl) => JWT.sign({
-  username: account.username,
-  role: account.role,
-  exp: new Date().getTime() + (ttl || config.auth.tokenTTL),
-  ip: account.ip,
-}, process.env.SECRET_KEY || config.auth.secretKey);
-
-/**
- * Encrypt user password
- * @param {Object} credential - user inputs
- *    - {string} username
- *    - {string} password
- * @returns {string}
- */
-exports.encryptPassword = (credential) => {
-  const hmac = crypto.createHmac('sha256', process.env.SECRET_KEY || config.auth.secretKey);
-  hmac.update(`${credential.username}:${credential.password}`);
-  return hmac.digest('hex');
-};
-
-/**
- * Compare password from database with password user input
- * The password on database is always generated from '[username]:[password]' string. That improves password's security.
- * @param {Object} credential - user inputs
- *    - {string} username
- *    - {string} password
- * @param {string} dbPassword - digested password string from database
- * @returns {boolean}
- */
-exports.comparePassword = (credential, dbPassword) => exports.encryptPassword(credential) === dbPassword;
-
-/**
- * Extract current logged-in user information from request
- * If there's no lagged-in user, it will return false.
- * @param request
- * @returns {boolean|Object}
- */
-exports.getCurrentUser = (request) => {
-  if (request.auth.isAuthenticated) {
-    return request.auth.credentials;
-  }
-  return false;
-};
-
 /**
  * Get client IP address
  *
@@ -158,49 +85,6 @@ exports.getClientIp = (request) => {
   }
 
   return ipAddress;
-};
-
-/**
- * Format all dates in the received model
- * @param {Array|Date|Object} model
- * @param {string} [formatString]
- * @returns {*}
- */
-exports.formatDates = (model, formatString) => {
-  if (model instanceof Array) {
-    for (let i = 0; i < model.length; i++) {
-      model[i] = exports.formatDates(model[i], formatString);
-    }
-  } else if (model instanceof Date || model instanceof moment) {
-    return exports.formatDate(model, formatString);
-  } else if (model instanceof Object) {
-    const keys = Object.keys(model);
-    for (let i = 0; i < keys.length; i++) {
-      model[keys[i]] = exports.formatDates(model[keys[i]], formatString);
-    }
-  }
-  return model;
-};
-
-/**
- * Localize date
- * @param {Date} date
- * @param {number} [utcOffset]
- * @returns {moment}
- */
-exports.toLocalDate = (date, utcOffset) => {
-  return moment(date).utcOffset(typeof utcOffset === 'undefined' ? 9 : utcOffset);
-};
-
-/**
- * Format date to string
- * @param {Date} date
- * @param {string} [formatString]
- * @param {number} [utcOffset]
- * @returns {string}
- */
-exports.formatDate = (date, formatString, utcOffset) => {
-  return exports.toLocalDate(date, utcOffset).format(formatString);
 };
 
 /**

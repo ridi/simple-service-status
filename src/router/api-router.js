@@ -8,7 +8,9 @@ const Joi = require('joi');
 const Status = require('./../repository/Status');
 const User = require('./../repository/User');
 const config = require('../config/server.config').url;
-const util = require('../common/util');
+const util = require('../common/common-util');
+const authUtil = require('../common/auth-util');
+const dateUtil = require('../common/date-util');
 const NotifierError = require('../common/Error');
 
 module.exports = [
@@ -24,11 +26,11 @@ module.exports = [
       if (!request.payload.username || !request.payload.password) {
         return reply(new NotifierError(NotifierError.Types.AUTH_MISSING_PARAMS));
       }
-      User.find({ username: request.payload.username }).then((account) => {
-        if (!account || account.length === 0 || !util.comparePassword(request.payload, account[0].password)) {
+      return User.find({ username: request.payload.username }).then((account) => {
+        if (!account || account.length === 0 || !authUtil.comparePassword(request.payload, account[0].password)) {
           return reply(new NotifierError(NotifierError.Types.AUTH_INVALID_PARAMS));
         }
-        const token = util.generateToken(Object.assign({}, account[0], { ip: clientIP }));
+        const token = authUtil.generateToken(Object.assign({}, account[0], { ip: clientIP }));
         return reply().state('token', token);
       });
     },
@@ -56,7 +58,7 @@ module.exports = [
         Status.count(filter),
       ]).then(([list, totalCount]) => {
         reply({
-          data: util.formatDates(list),
+          data: dateUtil.formatDates(list),
           totalCount,
         });
       }).catch(err => reply(err));
@@ -76,7 +78,7 @@ module.exports = [
     path: `${config.statusApiPrefix}/check`,
     handler: (request, reply) => {
       Status.findWithComparators(request.query.deviceType || '*', request.query.deviceVersion || '*', request.query.appVersion || '*')
-        .then(result => util.formatDates(result))
+        .then(result => dateUtil.formatDates(result))
         .then(result => reply({ data: result }))
         .catch(err => reply(err));
     },

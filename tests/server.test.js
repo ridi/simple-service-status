@@ -1,3 +1,4 @@
+/** global: jest */
 /* global jest describe test expect beforeAll afterAll */
 
 const fs = require('fs');
@@ -10,7 +11,6 @@ const Server = require('../src/server');
 const User = require('../src/repository/User');
 const Status = require('../src/repository/Status');
 const config = require('../src/config/server.config');
-const util = require('../src/common/util');
 const moment = require('moment');
 
 jest.dontMock('console');
