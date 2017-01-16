@@ -14,16 +14,29 @@
  * @returns {string} ip
  */
 exports.getClientIp = (request) => {
-  // the ipAddress we return
-  let ipAddress;
-
   // workaround to get real client IP
   // most likely because our app will be behind a [reverse] proxy or load balancer
   const clientIp = request.headers['x-client-ip'];
+  // x-forwarded-for
+  // (typically when your node app is behind a load-balancer (eg. AWS ELB) or proxy)
+  //
+  // x-forwarded-for may return multiple IP addresses in the format:
+  // "client IP, proxy 1 IP, proxy 2 IP"
+  // Therefore, the right-most IP address is the IP address of the most recent proxy
+  // and the left-most IP address is the IP address of the originating client.
+  // source: http://docs.aws.amazon.com/elasticloadbalancing/latest/classic/x-forwarded-headers.html
   const forwardedForAlt = request.headers['x-forwarded-for'];
+  // x-real-ip
+  // (default nginx proxy/fcgi)
+  // alternative to x-forwarded-for, used by some proxies
   const realIp = request.headers['x-real-ip'];
 
   // more obsure ones below
+
+  // x-cluster-client-ip
+  // (Rackspace LB and Riverbed's Stingray)
+  // http://www.rackspace.com/knowledge_center/article/controlling-access-to-linux-cloud-sites-based-on-the-client-ip-address
+  // https://splash.riverbed.com/docs/DOC-1926
   const clusterClientIp = request.headers['x-cluster-client-ip'];
   const forwardedAlt = request.headers['x-forwarded'];
   const forwardedFor = request.headers['forwarded-for'];
@@ -32,59 +45,58 @@ exports.getClientIp = (request) => {
   // remote address check
   const reqConnectionRemoteAddress = request.connection ? request.connection.remoteAddress : null;
   const reqSocketRemoteAddress = request.socket ? request.socket.remoteAddress : null;
+  // remote address checks
   const reqConnectionSocketRemoteAddress = (request.connection && request.connection.socket)
     ? request.connection.socket.remoteAddress : null;
   const reqInfoRemoteAddress = request.info ? request.info.remoteAddress : null;
 
-  if (clientIp) {
-    // x-client-ip
-    ipAddress = clientIp;
-  } else if (forwardedForAlt) {
-    // x-forwarded-for
-    // (typically when your node app is behind a load-balancer (eg. AWS ELB) or proxy)
-    //
-    // x-forwarded-for may return multiple IP addresses in the format:
-    // "client IP, proxy 1 IP, proxy 2 IP"
-    // Therefore, the right-most IP address is the IP address of the most recent proxy
-    // and the left-most IP address is the IP address of the originating client.
-    // source: http://docs.aws.amazon.com/elasticloadbalancing/latest/classic/x-forwarded-headers.html
-    const forwardedIps = forwardedForAlt.split(',');
-    ipAddress = forwardedIps[0];
-  } else if (realIp) {
-    // x-real-ip
-    // (default nginx proxy/fcgi)
-    // alternative to x-forwarded-for, used by some proxies
-    ipAddress = realIp;
-  } else if (clusterClientIp) {
-    // x-cluster-client-ip
-    // (Rackspace LB and Riverbed's Stingray)
-    // http://www.rackspace.com/knowledge_center/article/controlling-access-to-linux-cloud-sites-based-on-the-client-ip-address
-    // https://splash.riverbed.com/docs/DOC-1926
-    ipAddress = clusterClientIp;
-  } else if (forwardedAlt) {
-    // x-forwarded
-    ipAddress = forwardedAlt;
-  } else if (forwardedFor) {
-    // forwarded-for
-    ipAddress = forwardedFor;
-  } else if (forwarded) {
-    // forwarded
-    ipAddress = forwarded;
-  } else if (reqConnectionRemoteAddress) {
-    // remote address checks
-    ipAddress = reqConnectionRemoteAddress;
-  } else if (reqSocketRemoteAddress) {
-    ipAddress = reqSocketRemoteAddress;
-  } else if (reqConnectionSocketRemoteAddress) {
-    ipAddress = reqConnectionSocketRemoteAddress;
-  } else if (reqInfoRemoteAddress) {
-    ipAddress = reqInfoRemoteAddress;
-  } else {
-    // return null if we cannot find an address
-    ipAddress = null;
-  }
+  return clientIp
+    || (forwardedForAlt && forwardedForAlt.split(',')[0])
+    || realIp
+    || clusterClientIp
+    || forwardedAlt
+    || forwardedFor
+    || forwarded
+    || reqConnectionRemoteAddress
+    || reqSocketRemoteAddress
+    || reqConnectionSocketRemoteAddress
+    || reqInfoRemoteAddress;
+};
 
-  return ipAddress;
+const regex = /([>=<]{1,2})([0-9a-zA-Z\-.]+)*/g;
+
+const getComparator = (conditionStr) => {
+  let result = conditionStr.charAt(0);
+  if ('<>'.includes(result)) {
+    result = '~';
+  }
+  return result;
+};
+
+const parsers = {
+  '*': () => ({ comparator: '*' }),
+  '=': (conditionStr) => {
+    let execResult;
+    if ((execResult = regex.exec(conditionStr)) !== null) {
+      return { comparator: '=', version: execResult[2] };
+    }
+    return false;
+  },
+  '~': (conditionStr) => {
+    const resultItem = { comparator: '~' };
+    let execResult;
+    while ((execResult = regex.exec(conditionStr)) !== null) {
+      if (execResult[1] === '>=') {
+        resultItem.versionStart = execResult[2];
+      } else if (execResult[1] === '<') {
+        resultItem.versionEnd = execResult[2];
+      }
+    }
+    if (resultItem.versionStart || resultItem.versionEnd) {
+      return resultItem;
+    }
+    return false;
+  },
 };
 
 /**
@@ -96,7 +108,7 @@ exports.getClientIp = (request) => {
  * @param {string} conditionString
  * @return {Array}
  */
-const regex = /([>=<]{1,2})([0-9a-zA-Z\-.]+)*/g;
+
 exports.parseSemVersion = (semVerString) => {
   if (!semVerString) {
     return [{ comparator: '*' }];   // default
@@ -105,26 +117,10 @@ exports.parseSemVersion = (semVerString) => {
   const result = [];
   conditions.forEach((cond) => {
     regex.lastIndex = 0;  // reset find index
-    if (cond.startsWith('*')) {
-      result.push({ comparator: '*' });
-    } else if (cond.startsWith('>=') || cond.startsWith('<')) {
-      const resultItem = { comparator: '~' };
-      let execResult;
-      while ((execResult = regex.exec(cond)) !== null) {
-        if (execResult[1] === '>=') {
-          resultItem.versionStart = execResult[2];
-        } else if (execResult[1] === '<') {
-          resultItem.versionEnd = execResult[2];
-        }
-      }
-      if (resultItem.versionStart || resultItem.versionEnd) {
-        result.push(resultItem);
-      }
-    } else if (cond.startsWith('=')) {
-      let execResult;
-      if ((execResult = regex.exec(cond)) !== null) {
-        result.push({ comparator: '=', version: execResult[2] });
-      }
+    const comparator = getComparator(cond);
+    const parsedObj = parsers[comparator](cond);
+    if (parsedObj) {
+      result.push(parsedObj);
     }
   });
   return result;
@@ -217,7 +213,7 @@ exports.snake2camelObject = (object) => {
     }
     return result;
   } else if (object && typeof object === 'object') {
-    let result = {};
+    const result = {};
     for (let prop in object) {
       if (Object.prototype.hasOwnProperty.call(object, prop)) {
         result[exports.snake2camel(prop)] = exports.snake2camelObject(object[prop]);
