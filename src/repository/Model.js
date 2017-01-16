@@ -47,7 +47,7 @@ class Model {
   }
 
   find(query, sort, skip, limit) {
-    if (query._id) {
+    if (query && query._id) {
       query._id = ObjectID(query._id);
     }
     return this.runQuery((collection) => {
