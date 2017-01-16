@@ -45,7 +45,7 @@ SECRET_KEY=secret_key
 npm start
 ```
 
-구동 후 [http://localhost:8080](http://localhost:8080)으로 접속하면 관리 UI로 연결다.
+구동 후 [http://localhost:8080](http://localhost:8080)으로 접속하면 관리 UI로 연결됩니다.
 
 ### Test
 
