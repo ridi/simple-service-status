@@ -4,3 +4,5 @@ install: npm install
 before_script: npm run heroku-postbuild
 script: npm test
 services: mongodb
+branches:
+  only: production
