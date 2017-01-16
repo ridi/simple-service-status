@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+- '6'
+install:
+- npm install
+before_script:
+- npm run heroku-postbuild
+deploy:
+  provider: heroku
+  buildpack: nodejs
+  api_key:
+    secure: m7Jbxx49p0Rh8K2S1RQA5fJFB6Bxl/0YAVhMlm8VQA+4nA0plnbMTtx+dOiRbHFq2jP4oskivJMEi7wOtCxWCzvsr/1xMGWW9+9AOaUkoOTyTIvTxrzSSKdTxOpJUAG54/Bul80Jhoc/DJao4g1sGZ7F41qYnC9MgYY0esZLiNA8Dq5OqeXNG2wd/QUgfmrhUnoAFfClEUaemw2A1GmuSI5fF4HXFMvVfI9nJoBe/IgpLEtSbLbCLhRNqn1M4oGJr/g9jZDR5+wqHs1uE5zpkE9FcMkd3jd8XO/7AJUL3DaQ5wxVoD4CiFAfoo7brH/JaimNUVajGngRpCJZn3Zo+y6q77R0733uRDB/8FOkqIyb9/ueensS2961lTQQ6KahchPzpuV8iQsPpkPt7nq5XjtyQnY0oUq97RQiVNRBLK8uI6TziRwgUuBlGJV2SA9eHyZmuQdK7FAWF68Eu7yp+ik2SpwjkyiaK6Y/vl04B2u3u44ZvIgeiuxNA96vugbvQWLEhn/Bv5/u4HTSSyZ4WFSzenl2ASlHcx8/bn73QAFf9SuaM2ZEXkLjbRWGsXPPMg3I/UnQqgibUClbrF+mCzhJ9swsMyGUJlkiVn5w4ji3wVh55CC/HOvR3N8ZzrRq6lSOaUdeEy6dboAXCkBGInV+SWNXYRF6ve1JvL0xi3c=
+  on: production
+services:
+- mongodb
