@@ -39,6 +39,25 @@ class CreateModal extends React.Component {
       appSemVersion: [{ comparator: '*' }],
     });
 
+    this.modes = Object.freeze({
+      add: {
+        title: '새로운 알림 등록',
+        buttons: [
+          { label: '저장', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
+          { label: '저장과 함께 활성화', onClick: () => self.ensureSafeClick(() => self.save(true)), disabled: false },
+          { label: '닫기', onClick: (e, modal) => modal.close(true), disabled: false },
+        ],
+      },
+      modify: {
+        title: '알림 업데이트',
+        buttons: [
+          { label: '업데이트', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
+          { label: '업데이트와 함께 활성화', onClick: () => self.ensureSafeClick(() => self.save(true)), disabled: false },
+          { label: '닫기', onClick: (e, modal) => modal.close(true), disabled: false },
+        ],
+      },
+    });
+
     this.state = {
       title: '새로운 알림 등록',
       mode: 'add',
@@ -46,28 +65,11 @@ class CreateModal extends React.Component {
       endTimeState: null,
       versionSelectorDisabled: false,
       saveWarningMessage: null,
+      buttons: this.modes.add,
     };
 
     Object.assign(this.state, this.defaultData);
     this.checkWarningOnce = false;
-    this.modes = {
-      add: {
-        title: '새로운 알림 등록',
-        buttons: [
-          { label: '저장', onClick: (e, modal) => self.onSave(false, modal), style: 'primary' },
-          { label: '저장과 함께 활성화', onClick: (e, modal) => self.onSave(true, modal) },
-          { label: '닫기', onClick: (e, modal) => modal.close(true) },
-        ],
-      },
-      modify: {
-        title: '알림 업데이트',
-        buttons: [
-          { label: '업데이트', onClick: (e, modal) => self.onSave(false, modal), style: 'primary' },
-          { label: '업데이트와 함께 활성화', onClick: (e, modal) => self.onSave(true, modal) },
-          { label: '닫기', onClick: (e, modal) => modal.close(true) },
-        ],
-      },
-    };
   }
 
   checkFormValidity() {
@@ -155,14 +157,14 @@ class CreateModal extends React.Component {
     return result;
   }
 
-  onSave(withActivation) {
+  save(withActivation) {
     const self = this;
 
     const result = this.checkFormValidity();
     if (result !== true) {
       if (result.error) {
         this.modal.message(result.error, 'warning');
-        return;
+        return Promise.reject();
       } else if (result.warning && !this.checkWarningOnce) {
         this.checkWarningOnce = true;
         const message = (
@@ -175,7 +177,7 @@ class CreateModal extends React.Component {
           </p>
         );
         this.setState({ saveWarningMessage: message });
-        return;
+        return Promise.reject();
       }
     }
 
@@ -195,16 +197,19 @@ class CreateModal extends React.Component {
     this.checkWarningOnce = false;
     const api = (this.state.mode === 'add') ? Api.addStatus(data) : Api.updateStatus(this.state.id, data);
 
-    api.then(() => {
+    return api.then(() => {
       if (typeof self.props.onSuccess === 'function') {
         self.props.onSuccess();
       }
-      self.modal.close();
-    }).catch(() => self.modal.message('저장 도중 에러가 발생했습니다. 다시 시도해주세요.', 'warning'));
+      return self.modal.close();
+    }).catch((err) => {
+      self.modal.message('저장 도중 에러가 발생했습니다. 다시 시도해주세요.', 'warning');
+      throw err;
+    });
   }
 
   show(mode, data) {
-    this.setState({ mode, saveWarningMessage: null });
+    this.setState({ mode, saveWarningMessage: null, buttons: this.modes[mode].buttons });
     this.resolveData(data);
     this.modal.show();
   }
@@ -240,12 +245,25 @@ class CreateModal extends React.Component {
     this.setState({ deviceTypes }, () => this.onSelectionChanged());
   }
 
+  setButtonDisabled(disabled, callback) {
+    const newButtonsState = this.state.buttons.map(button => Object.assign({}, button, { disabled }));
+    this.setState({ buttons: newButtonsState }, callback);
+  }
+
+  ensureSafeClick(action) {
+    this.setButtonDisabled(true,
+      () => action()
+        .then(() => this.setButtonDisabled(false))
+        .catch(() => this.setButtonDisabled(false)),
+    );
+  }
+
   render() {
     return (
       <Modal
         title={this.modes[this.state.mode].title}
         ref={(modal) => { this.modal = modal; }}
-        buttons={this.modes[this.state.mode].buttons}
+        buttons={this.state.buttons}
       >
         <FormGroup controlId="type">
           <ControlLabel>알림 타입</ControlLabel>
