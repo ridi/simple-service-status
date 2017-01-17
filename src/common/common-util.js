@@ -40,7 +40,7 @@ exports.getClientIp = (request) => {
   const clusterClientIp = request.headers['x-cluster-client-ip'];
   const forwardedAlt = request.headers['x-forwarded'];
   const forwardedFor = request.headers['forwarded-for'];
-  const forwarded = request.headers['forwarded'];
+  const forwarded = request.headers.forwarded;
 
   // remote address check
   const reqConnectionRemoteAddress = request.connection ? request.connection.remoteAddress : null;
@@ -75,17 +75,17 @@ const getComparator = (conditionStr) => {
 
 const parsers = {
   '*': () => ({ comparator: '*' }),
-  '=': (conditionStr) => {
+  '=': (cond) => {
     let execResult;
-    if ((execResult = regex.exec(conditionStr)) !== null) {
+    if ((execResult = regex.exec(cond)) !== null) {
       return { comparator: '=', version: execResult[2] };
     }
     return false;
   },
-  '~': (conditionStr) => {
+  '~': (cond) => {
     const resultItem = { comparator: '~' };
     let execResult;
-    while ((execResult = regex.exec(conditionStr)) !== null) {
+    while ((execResult = regex.exec(cond)) !== null) {
       if (execResult[1] === '>=') {
         resultItem.versionStart = execResult[2];
       } else if (execResult[1] === '<') {
@@ -97,6 +97,12 @@ const parsers = {
     }
     return false;
   },
+};
+
+const stringifier = {
+  '*': () => '*',
+  '=': cond => `=${cond.version}`,
+  '~': cond => `${cond.versionStart ? `>=${cond.versionStart}` : ''} ${cond.versionEnd ? `<${cond.versionEnd}` : ''}`,
 };
 
 /**
@@ -133,16 +139,10 @@ exports.parseSemVersion = (semVerString) => {
  */
 exports.stringifySemVersion = (parsedConditions) => {
   const result = parsedConditions.map((cond) => {
-    switch (cond.comparator) {
-      case '*':
-        return '*';
-      case '=':
-        return `=${cond.version}`;
-      case '~':
-        return `${cond.versionStart ? `>=${cond.versionStart}` : ''} ${cond.versionEnd ? `<${cond.versionEnd}` : ''}`;
-      default:
-        return '';
+    if (stringifier[cond.comparator]) {
+      return stringifier[cond.comparator](cond);
     }
+    return '';
   });
   if (result.includes('*')) {
     return '*';
@@ -170,18 +170,10 @@ exports.camel2snake = (str) => {
  */
 exports.camel2snakeObject = (object) => {
   if (object instanceof Array) {
-    const result = [];
-    for (let i = 0, n = object.length; i < n; i++) {
-      result[i] = exports.camel2snakeObject(object[i]);
-    }
-    return result;
+    return object.map(value => exports.camel2snakeObject(value));
   } else if (object && typeof object === 'object') {
     const result = {};
-    for (let prop in object) {
-      if (Object.prototype.hasOwnProperty.call(object, prop)) {
-        result[exports.camel2snake(prop)] = exports.camel2snakeObject(object[prop]);
-      }
-    }
+    Object.keys(object).forEach((key) => { result[exports.camel2snake(key)] = exports.camel2snakeObject(object[key]); });
     return result;
   }
   return object;
@@ -207,18 +199,10 @@ exports.snake2camel = (str) => {
  */
 exports.snake2camelObject = (object) => {
   if (object instanceof Array) {
-    const result = [];
-    for (let i = 0, n = object.length; i < n; i++) {
-      result[i] = exports.snake2camelObject(object[i]);
-    }
-    return result;
+    return object.map(value => exports.snake2camelObject(value));
   } else if (object && typeof object === 'object') {
     const result = {};
-    for (let prop in object) {
-      if (Object.prototype.hasOwnProperty.call(object, prop)) {
-        result[exports.snake2camel(prop)] = exports.snake2camelObject(object[prop]);
-      }
-    }
+    Object.keys(object).forEach((key) => { result[exports.snake2camel(key)] = exports.snake2camelObject(object[key]); });
     return result;
   }
   return object;

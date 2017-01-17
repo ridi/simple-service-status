@@ -32,8 +32,8 @@ NotifierError.Types = Object.freeze({
   DB: { code: 5001000, message: () => 'DB 에러가 발생했습니다.' },
 });
 
-for (let typeKey in NotifierError.Types) {
-  NotifierError.Types[typeKey].type = typeKey;
-}
+Object.keys(NotifierError.Types).forEach((type) => {
+  NotifierError.Types[type].type = type;
+});
 
 module.exports = NotifierError;

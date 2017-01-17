@@ -20,6 +20,11 @@
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
 
     // 무한루프 while (true) 등의 구문을 허용
-    "no-constant-condition": ["error", { "checkLoops": false }]
+    "no-constant-condition": ["error", { "checkLoops": false }],
+
+    // 테스트 또는 개발환경을 구성하는 파일에서는 devDependency 사용을 허용
+    "import/no-extraneous-dependencies": ["error", {
+      "devDependencies": ["webpack.*.config.js", "*-dev-server.js", "**/*.test.js", "**/*.spec.js"]}
+    ]
   }
 }

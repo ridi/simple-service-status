@@ -1,3 +1,4 @@
+/* global window document */
 require('./style/common.scss');
 
 const React = require('react');

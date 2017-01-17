@@ -133,8 +133,7 @@ exports.addPlugin = (pluginSetting) => {
   plugins.push(pluginSetting);
 };
 
-exports.start = (extraRoutes) => {
-  return server.register(plugins)
+exports.start = extraRoutes => server.register(plugins)
     .then(() => {
       _setAuthStrategy();
       _setViewEngine();
@@ -147,4 +146,3 @@ exports.start = (extraRoutes) => {
       return server;
     })
     .catch((error) => { throw error; });
-};
