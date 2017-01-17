@@ -12,18 +12,15 @@ const moment = require('moment');
  * @param {string} [formatString]
  * @returns {*}
  */
-exports.formatDates = (model, formatString) => {
+exports.formatDates = (model, formatString, utcOffset) => {
   if (model instanceof Array) {
-    for (let i = 0; i < model.length; i++) {
-      model[i] = exports.formatDates(model[i], formatString);
-    }
+    return model.map(item => exports.formatDates(item, formatString, utcOffset));
   } else if (model instanceof Date || model instanceof moment) {
-    return exports.formatDate(model, formatString);
+    return exports.formatDate(model, formatString, utcOffset);
   } else if (model instanceof Object) {
-    const keys = Object.keys(model);
-    for (let i = 0; i < keys.length; i++) {
-      model[keys[i]] = exports.formatDates(model[keys[i]], formatString);
-    }
+    const result = {};
+    Object.keys(model).forEach((key) => { result[key] = exports.formatDates(model[key], formatString, utcOffset); });
+    return result;
   }
   return model;
 };

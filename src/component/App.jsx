@@ -1,3 +1,4 @@
+/* global window */
 const React = require('react');
 
 const Navbar = require('react-bootstrap/lib/Navbar');
@@ -37,7 +38,7 @@ class App extends React.Component {
           </Navbar.Header>
           <Navbar.Collapse>
             <Nav role="navigation" activeKey={this.props.viewName} onSelect={viewName => this.onMenuSelected(viewName)}>
-              {this.props.menus.map(menu => <NavItem eventKey={menu.viewName} href={menu.url}>{menu.title}</NavItem>)}
+              {this.props.menus.map((menu, idx) => <NavItem key={idx} eventKey={menu.viewName} href={menu.url}>{menu.title}</NavItem>)}
             </Nav>
             <Nav pullRight>{button}</Nav>
           </Navbar.Collapse>

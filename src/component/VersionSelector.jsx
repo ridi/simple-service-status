@@ -142,7 +142,11 @@ class VersionSelector extends React.Component {
                 style={value.comparator !== '=' ? { display: 'none' } : {}}
                 disabled={this.props.disabled}
               />
-              <Button className="selector-remove-btn" onClick={() => this.removeCondition(index)} disabled={index === 0 || this.props.disabled}>
+              <Button
+                className="selector-remove-btn"
+                onClick={() => this.removeCondition(index)}
+                disabled={index === 0 || this.props.disabled}
+              >
                 <Glyphicon glyph="remove" />
               </Button>
             </div>

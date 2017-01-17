@@ -72,56 +72,6 @@ class CreateModal extends React.Component {
     this.checkWarningOnce = false;
   }
 
-  checkFormValidity() {
-    const data = this.state;
-    const warning = [];
-
-    if (!data.type) {
-      return { error: '알림 타입을 설정해 주세요.' };
-    }
-    if (data.dateRange.comparator === '~') {
-      if (!data.dateRange.startTime) {
-        return { error: '시작 일시를 지정해 주세요.' };
-      }
-      if (!data.dateRange.endTime) {
-        return { error: '종료 일시를 지정해 주세요.' };
-      }
-      if (moment(data.dateRange.startTime).isAfter(data.dateRange.endTime)) {
-        return { error: '종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.' };
-      }
-      if (moment(data.dateRange.endTime).isBefore(moment.now())) {
-        warning.push('- 설정된 종료 일시가 과거입니다. 활성화 하더라도 알림이 실행되지 않습니다.');
-      }
-    }
-    if (data.deviceTypes.length === 0) {
-      return { error: '디바이스 타입을 하나 이상 선택해 주세요.' };
-    }
-    if (data.contents.trim().length === 0) {
-      return { error: '내용을 입력해 주세요.' };
-    }
-    if (data.deviceTypes.length < 2) {
-      let semVersionValidity = this.checkSemVersionValidity(data.deviceSemVersion);
-      if (semVersionValidity !== true) {
-        return { error: semVersionValidity };
-      }
-      semVersionValidity = this.checkSemVersionValidity(data.appSemVersion);
-      if (semVersionValidity !== true) {
-        return { error: semVersionValidity };
-      }
-    }
-
-    if (data.deviceSemVersion.some(cond => cond.comparator === '*') && data.deviceSemVersion.length > 1) {
-      warning.push('- 설정된 타겟 디바이스 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
-    }
-    if (data.appSemVersion.some(cond => cond.comparator === '*') && data.appSemVersion.length > 1) {
-      warning.push('- 설정된 앱 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
-    }
-    if (warning.length === 0) {
-      return true;
-    }
-    return { warning };
-  }
-
   checkSemVersionValidity(parsedConditions) {
     let result = true;
     parsedConditions.some((cond) => { // for breaking, return true;
@@ -243,6 +193,56 @@ class CreateModal extends React.Component {
 
   onDeviceTypesChanged(deviceTypes) {
     this.setState({ deviceTypes }, () => this.onSelectionChanged());
+  }
+
+  checkFormValidity() {
+    const data = this.state;
+    const warning = [];
+
+    if (!data.type) {
+      return { error: '알림 타입을 설정해 주세요.' };
+    }
+    if (data.dateRange.comparator === '~') {
+      if (!data.dateRange.startTime) {
+        return { error: '시작 일시를 지정해 주세요.' };
+      }
+      if (!data.dateRange.endTime) {
+        return { error: '종료 일시를 지정해 주세요.' };
+      }
+      if (moment(data.dateRange.startTime).isAfter(data.dateRange.endTime)) {
+        return { error: '종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.' };
+      }
+      if (moment(data.dateRange.endTime).isBefore(moment.now())) {
+        warning.push('- 설정된 종료 일시가 과거입니다. 활성화 하더라도 알림이 실행되지 않습니다.');
+      }
+    }
+    if (data.deviceTypes.length === 0) {
+      return { error: '디바이스 타입을 하나 이상 선택해 주세요.' };
+    }
+    if (data.contents.trim().length === 0) {
+      return { error: '내용을 입력해 주세요.' };
+    }
+    if (data.deviceTypes.length < 2) {
+      let semVersionValidity = this.checkSemVersionValidity(data.deviceSemVersion);
+      if (semVersionValidity !== true) {
+        return { error: semVersionValidity };
+      }
+      semVersionValidity = this.checkSemVersionValidity(data.appSemVersion);
+      if (semVersionValidity !== true) {
+        return { error: semVersionValidity };
+      }
+    }
+
+    if (data.deviceSemVersion.some(cond => cond.comparator === '*') && data.deviceSemVersion.length > 1) {
+      warning.push('- 설정된 타겟 디바이스 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
+    }
+    if (data.appSemVersion.some(cond => cond.comparator === '*') && data.appSemVersion.length > 1) {
+      warning.push('- 설정된 앱 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
+    }
+    if (warning.length === 0) {
+      return true;
+    }
+    return { warning };
   }
 
   setButtonDisabled(disabled, callback) {

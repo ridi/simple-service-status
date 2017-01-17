@@ -79,7 +79,7 @@ class Model {
       .then((result) => {
         let data = result.ops;
         if (data) {
-          data = result.ops.map(d => Object.assign({}, d, { _id: d._id.toHexString() }))
+          data = result.ops.map(d => Object.assign({}, d, { _id: d._id.toHexString() }));
         }
         return { data, count: result.result.n };
       })
