@@ -86,7 +86,13 @@ class Modal extends React.Component {
         </RBModal.Body>
         <RBModal.Footer>
           {buttons instanceof Array && buttons.map(button => (
-            <Button onClick={e => button.onClick(e, modal)} bsStyle={button.style || 'default'}>{button.label}</Button>
+            <Button
+              onClick={e => button.onClick(e, modal)}
+              bsStyle={button.style || 'default'}
+              disabled={button.disabled}
+            >
+              {button.label}
+            </Button>
           ))}
         </RBModal.Footer>
       </RBModal>
