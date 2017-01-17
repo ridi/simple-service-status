@@ -59,3 +59,45 @@ test('camel2snakeObject', () => {
   expect(util.camel2snakeObject(camelCaseArray)).toEqual(snakeCaseArray);
   expect(util.camel2snakeObject(camelCaseObject)).toEqual(snakeCaseObject);
 });
+
+const semVersions = [
+  {
+    str: '=2.3',
+    obj: [{ comparator: '=', version: '2.3' }]
+  },
+  {
+    str: '=2',
+    obj: [{ comparator: '=', version: '2' }],
+  },
+  {
+    str: '>=1.2.3 <3.0',
+    obj: [{ comparator: '~', versionStart: '1.2.3', versionEnd: '3.0' }],
+  },
+  {
+    str: '*',
+    obj: [{ comparator: '*' }],
+  },
+  {
+    str: '>=1.2.3 <3.0.0 || <0.1.2 || >=5.1 || =0.0.1',
+    obj: [
+      { comparator: '~', versionStart: '1.2.3', versionEnd: '3.0.0' },
+      { comparator: '~', versionEnd: '0.1.2' },
+      { comparator: '~', versionStart: '5.1' },
+      { comparator: '=', version: '0.0.1' },
+    ],
+  },
+];
+
+test('parseSemVersion', () => {
+  return Promise.all(semVersions.map((version) => {
+    expect(util.parseSemVersion(version.str)).toEqual(version.obj);
+    return Promise.resolve();
+  }));
+});
+
+test('stringifySemVersion', () => {
+  return Promise.all(semVersions.map((version) => {
+    expect(util.stringifySemVersion(version.obj)).toBe(version.str);
+    return Promise.resolve();
+  }));
+});

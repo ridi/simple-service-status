@@ -147,7 +147,7 @@ exports.stringifySemVersion = (parsedConditions) => {
   if (result.includes('*')) {
     return '*';
   }
-  return result.filter(cond => !!cond).join(' || ').trim();
+  return result.filter(cond => !!cond).join(' || ').replace(/\s\s/g, ' ').trim();
 };
 
 /**
