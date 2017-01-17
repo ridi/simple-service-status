@@ -1,6 +1,6 @@
 /* global describe test expect beforeAll afterAll */
 
-const util = require('../../src/common/util');
+const util = require('../../src/common/common-util');
 
 const snakeCaseArray = [
   { id: '1', nick_name: 'nick1', contacts: [{ contact_type: 'phone', value: '000-000-000' }, { contact_type: 'email', value: 'test@email.com' }] },

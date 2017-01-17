@@ -17,7 +17,7 @@ const Modal = require('./Modal');
 const Loading = require('./Loading');
 
 const moment = require('moment');
-const util = require('../common/util');
+const dateUtil = require('../common/date-util');
 const Api = require('../common/api');
 
 const dateFormat = 'YYYY-MM-DD HH:mm';
@@ -72,7 +72,7 @@ class StatusList extends React.Component {
           const start = moment(row.startTime);
           const end = moment(row.endTime);
           const duration = start.from(end, true);
-          return <span>{`${util.formatDate(start, dateFormat)} ~ ${util.formatDate(end, dateFormat)} (${duration})`}</span>;
+          return <span>{`${dateUtil.formatDate(start, dateFormat)} ~ ${dateUtil.formatDate(end, dateFormat)} (${duration})`}</span>;
         },
       },
       {
@@ -174,7 +174,7 @@ class StatusList extends React.Component {
       });
   }
 
-  onChechboxChanged(tabName, checkedItems) {
+  onCheckboxChanged(tabName, checkedItems) {
     const newState = {};
     newState[tabName] = {};
     Object.assign(newState[tabName], this.state[tabName]);
@@ -266,7 +266,7 @@ class StatusList extends React.Component {
               items={currentState.items}
               columns={this.currentTableColumns}
               error={currentState.error}
-              onCheckboxChange={(checkedItems => this.onChechboxChanged('current', checkedItems))}
+              onCheckboxChange={(checkedItems => this.onCheckboxChanged('current', checkedItems))}
               onPageChange={page => this.onPageChanged('current', page)}
               page={currentState.page}
               totalPage={Math.ceil(currentState.totalCount / currentState.countPerPage) || 1}
@@ -301,7 +301,7 @@ class StatusList extends React.Component {
               items={expireState.items}
               columns={this.expiredTableColumns}
               error={expireState.error}
-              onCheckboxChange={checkedItems => this.onChechboxChanged('expired', checkedItems)}
+              onCheckboxChange={checkedItems => this.onCheckboxChanged('expired', checkedItems)}
               showCheckbox
             />
             <div className="text-center">

@@ -23,7 +23,8 @@ const StatusType = require('./repository/StatusType');
 const config = require('./config/server.config');
 const NotifierError = require('./common/Error');
 
-const util = require('./common/util');
+const util = require('./common/common-util');
+const logger = require('winston');
 
 // For JSX transpiling
 require('babel-register');
@@ -53,24 +54,24 @@ const _setAuthStrategy = () => {
       // Check token IP address
       const clientIP = util.getClientIp(request);
       if (clientIP !== decoded.ip) {
-        console.warn(`[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${clientIP}`);
+        logger.warn(`[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${clientIP}`);
         return callback(new NotifierError(NotifierError.Types.AUTH_TOKEN_INVALID), false);
       }
       // Check token expiration
       if (decoded.exp < new Date().getTime()) {
-        console.warn(`[Auth] This auth token is expired.: decoded.exp => ${decoded.exp}, now => ${new Date().getTime()}`);
+        logger.warn(`[Auth] This auth token is expired.: decoded.exp => ${decoded.exp}, now => ${new Date().getTime()}`);
         return callback(new NotifierError(NotifierError.Types.AUTH_TOKEN_EXPIRED), false);
       }
       return User.find({ username: decoded.username })
         .then((account) => {
           if (!account || account.length === 0) {
-            console.warn(`[Auth] This account is not exist.: ${decoded.username}`);
+            logger.warn(`[Auth] This account is not exist.: ${decoded.username}`);
             return callback(new NotifierError(NotifierError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }), false);
           }
           return callback(null, true);
         })
         .catch((e) => {
-          console.error(`[DB] DB error occurred: ${e.message}`);
+          logger.error(`[DB] DB error occurred: ${e.message}`);
           callback(new NotifierError(NotifierError.Types.DB), false);
         });
     },
@@ -125,7 +126,7 @@ const _setInitalData = () => {
       }
     })
     .then(() => Promise.all(promises))
-    .then(result => console.log('[SET INITIAL DATA] success: ', result));
+    .then(result => logger.log('[SET INITIAL DATA] success: ', result));
 };
 
 exports.addPlugin = (pluginSetting) => {
@@ -142,7 +143,7 @@ exports.start = (extraRoutes) => {
     .then(() => _setInitalData())
     .then(() => server.start())
     .then(() => {
-      console.log('Server running at:', server.info.uri);
+      logger.log('Server running at:', server.info.uri);
       return server;
     })
     .catch((error) => { throw error; });

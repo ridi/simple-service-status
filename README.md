@@ -1,6 +1,8 @@
 # Simple Notifier
-[![npm](https://img.shields.io/npm/v/simple-notifier.svg)](https://www.npmjs.com/package/simple-notifier)
 
+[![Build Status](https://travis-ci.org/ridibooks/simple-notifier.svg?branch=master)](https://travis-ci.org/ridibooks/simple-notifier)
+[![npm](https://img.shields.io/npm/v/simple-notifier.svg)](https://www.npmjs.com/package/simple-notifier)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ridibooks/simple-notifier/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ridibooks/simple-notifier/?branch=master)
 
 ## Overview
 
@@ -72,7 +74,7 @@ GET /v1/status/check?device_type=[device_type]&device_version=[device_version]&a
 
 #### Response (JSON)
 
-배열 형태로 전달된다. 질의한 디바이스 타입과 버전에 맞는 알림이 없을 경우 빈 배열이 전달됩니다.
+배열 형태로 전달됩니다. 질의한 디바이스 타입과 버전에 맞는 알림이 없을 경우 빈 배열이 전달됩니다.
 
 | 이름               | 타입                                     | 설명                                                                    |
 | ------------------ | ---------------------------------------- | ----------------------------------------------------------------------- |

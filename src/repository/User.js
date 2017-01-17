@@ -5,7 +5,7 @@
  */
 
 const Model = require('./Model');
-const util = require('../common/util');
+const authUtil = require('../common/auth-util');
 
 class User extends Model {
   constructor() {
@@ -13,7 +13,7 @@ class User extends Model {
   }
 
   add(user) {
-    const encryptPassword = util.encryptPassword(user);
+    const encryptPassword = authUtil.encryptPassword(user);
     return super.add({ username: user.username, password: encryptPassword, role: user.role });
   }
 }

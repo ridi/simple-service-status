@@ -16,7 +16,8 @@ const Selectize = require('react-selectize');
 const moment = require('moment');
 const semver = require('semver');
 
-const util = require('../common/util');
+const util = require('../common/common-util');
+const dateUtil = require('../common/date-util');
 const Api = require('../common/api');
 
 const SimpleSelect = Selectize.SimpleSelect;
@@ -187,14 +188,14 @@ class CreateModal extends React.Component {
       appSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.appSemVersion) : '*',
     };
     if (this.state.dateRange.comparator === '~') {
-      data.startTime = util.formatDate(this.state.dateRange.startTime);
-      data.endTime = util.formatDate(this.state.dateRange.endTime);
+      data.startTime = dateUtil.formatDate(this.state.dateRange.startTime);
+      data.endTime = dateUtil.formatDate(this.state.dateRange.endTime);
     }
 
     this.checkWarningOnce = false;
     const api = (this.state.mode === 'add') ? Api.addStatus(data) : Api.updateStatus(this.state.id, data);
 
-    api.then((response) => {
+    api.then(() => {
       if (typeof self.props.onSuccess === 'function') {
         self.props.onSuccess();
       }
