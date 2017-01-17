@@ -99,7 +99,7 @@ const parsers = {
   },
 };
 
-const stringfier = {
+const stringifier = {
   '*': () => '*',
   '=': cond => `=${cond.version}`,
   '~': cond => `${cond.versionStart ? `>=${cond.versionStart}` : ''} ${cond.versionEnd ? `<${cond.versionEnd}` : ''}`,
@@ -139,8 +139,8 @@ exports.parseSemVersion = (semVerString) => {
  */
 exports.stringifySemVersion = (parsedConditions) => {
   const result = parsedConditions.map((cond) => {
-    if (stringfier[cond.comparator]) {
-      return stringfier[cond.comparator](cond);
+    if (stringifier[cond.comparator]) {
+      return stringifier[cond.comparator](cond);
     }
     return '';
   });

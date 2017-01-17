@@ -23,6 +23,17 @@ const Api = require('../common/api');
 const SimpleSelect = Selectize.SimpleSelect;
 const MultiSelect = Selectize.MultiSelect;
 
+class ValidationError {
+  constructor(message) {
+    this.message = message;
+  }
+}
+class ValidationWarning {
+  constructor(message) {
+    this.message = message;
+  }
+}
+
 class CreateModal extends React.Component {
   constructor(props) {
     super(props);
@@ -69,93 +80,97 @@ class CreateModal extends React.Component {
     };
 
     Object.assign(this.state, this.defaultData);
-    this.checkWarningOnce = false;
+    this.ignoreWarning = false;
   }
 
   checkSemVersionValidity(parsedConditions) {
-    let result = true;
+    let error;
     parsedConditions.some((cond) => { // for breaking, return true;
       if (cond.comparator === '~') {
         if (!cond.versionStart && !cond.versionEnd) {
-          result = '"~"(범위) 조건을 지정한 경우 시작 버전 또는 종료 버전을 반드시 작성해야 합니다.';
+          error = '"~"(범위) 조건을 지정한 경우 시작 버전 또는 종료 버전을 반드시 작성해야 합니다.';
           return true;
         }
         if (cond.versionStart && semver.valid(cond.versionStart) === null) {
-          result = `${cond.versionStart}는 잘못된 버전 문자열입니다.`;
+          error = `${cond.versionStart}는 잘못된 버전 문자열입니다.`;
           return true;
         }
         if (cond.versionEnd && semver.valid(cond.versionEnd) === null) {
-          result = `${cond.versionEnd}는 잘못된 버전 문자열입니다.`;
+          error = `${cond.versionEnd}는 잘못된 버전 문자열입니다.`;
           return true;
         }
         if (cond.versionStart && cond.versionEnd && semver.gte(cond.versionStart, cond.versionEnd)) {
-          result = `범위 조건에서 시작 버전(${cond.versionStart})은 종료 버전(${cond.versionEnd})보다 작은 값이어야 합니다.`;
+          error = `범위 조건에서 시작 버전(${cond.versionStart})은 종료 버전(${cond.versionEnd})보다 작은 값이어야 합니다.`;
         }
       }
       if (cond.comparator === '=') {
         if (!cond.version) {
-          result = '"="(일치) 조건을 지정한 경우 버전을 반드시 작성해야 합니다.';
+          error = '"="(일치) 조건을 지정한 경우 버전을 반드시 작성해야 합니다.';
           return true;
         }
         if (cond.version && semver.valid(cond.version) === null) {
-          result = `${cond.version}는 잘못된 버전 문자열입니다.`;
+          error = `${cond.version}는 잘못된 버전 문자열입니다.`;
           return true;
         }
       }
       return false;
     });
-    return result;
+    if (error) {
+      throw new ValidationError(error);
+    }
+    return true;
   }
 
   save(withActivation) {
     const self = this;
 
-    const result = this.checkFormValidity();
-    if (result !== true) {
-      if (result.error) {
-        this.modal.message(result.error, 'warning');
-        return Promise.reject();
-      } else if (result.warning && !this.checkWarningOnce) {
-        this.checkWarningOnce = true;
-        const message = (
-          <p>
-            저장하시기 전에 아래의 문제(들)를 확인해 주세요.
-            <br />
-            {result.warning.join(<br />)}
-            <br />
-            그래도 계속 하시려면 <strong>저장 버튼</strong>을 다시 누르세요.
-          </p>
-        );
-        this.setState({ saveWarningMessage: message });
-        return Promise.reject();
-      }
-    }
+    return Promise.resolve()
+      .then(() => this.checkFormValidity(this.ignoreWarning))
+      .then(() => {
+        const data = {
+          type: this.state.type.value,
+          deviceTypes: this.state.deviceTypes.map(dt => dt.value),
+          contents: this.state.contents,
+          isActivated: withActivation,
+          deviceSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.deviceSemVersion) : '*',
+          appSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.appSemVersion) : '*',
+        };
+        if (this.state.dateRange.comparator === '~') {
+          data.startTime = dateUtil.formatDate(this.state.dateRange.startTime);
+          data.endTime = dateUtil.formatDate(this.state.dateRange.endTime);
+        }
 
-    const data = {
-      type: this.state.type.value,
-      deviceTypes: this.state.deviceTypes.map(dt => dt.value),
-      contents: this.state.contents,
-      isActivated: withActivation,
-      deviceSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.deviceSemVersion) : '*',
-      appSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.appSemVersion) : '*',
-    };
-    if (this.state.dateRange.comparator === '~') {
-      data.startTime = dateUtil.formatDate(this.state.dateRange.startTime);
-      data.endTime = dateUtil.formatDate(this.state.dateRange.endTime);
-    }
+        this.ignoreWarning = false;
 
-    this.checkWarningOnce = false;
-    const api = (this.state.mode === 'add') ? Api.addStatus(data) : Api.updateStatus(this.state.id, data);
-
-    return api.then(() => {
-      if (typeof self.props.onSuccess === 'function') {
-        self.props.onSuccess();
-      }
-      return self.modal.close();
-    }).catch((err) => {
-      self.modal.message('저장 도중 에러가 발생했습니다. 다시 시도해주세요.', 'warning');
-      throw err;
-    });
+        const api = (this.state.mode === 'add') ? Api.addStatus(data) : Api.updateStatus(this.state.id, data);
+        return api.then(() => {
+          if (typeof self.props.onSuccess === 'function') {
+            self.props.onSuccess();
+          }
+          return self.modal.close();
+        }).catch((err) => {
+          self.modal.message('저장 도중 에러가 발생했습니다. 다시 시도해주세요.', 'warning');
+          throw err;
+        });
+      })
+      .catch((error) => {
+        if (error instanceof ValidationError) {
+          self.modal.message(error.message, 'warning');
+        } else if (error instanceof ValidationWarning) {
+          this.ignoreWarning = true;
+          const message = (
+            <p>
+              저장하시기 전에 아래의 문제(들)를 확인해 주세요.
+              <br />
+              {error.message}
+              <br />
+              그래도 계속 하시려면 <strong>저장 버튼</strong>을 다시 누르세요.
+            </p>
+          );
+          this.setState({ saveWarningMessage: message });
+        }
+        throw new Error(error);
+      });
   }
 
   show(mode, data) {
@@ -195,54 +210,54 @@ class CreateModal extends React.Component {
     this.setState({ deviceTypes }, () => this.onSelectionChanged());
   }
 
-  checkFormValidity() {
+  checkFormValidity(ignoreWarning) {
     const data = this.state;
-    const warning = [];
-
+    // Check errors
     if (!data.type) {
-      return { error: '알림 타입을 설정해 주세요.' };
+      throw new ValidationError('알림 타입을 설정해 주세요.');
     }
     if (data.dateRange.comparator === '~') {
       if (!data.dateRange.startTime) {
-        return { error: '시작 일시를 지정해 주세요.' };
+        throw new ValidationError('시작 일시를 지정해 주세요.');
       }
       if (!data.dateRange.endTime) {
-        return { error: '종료 일시를 지정해 주세요.' };
+        throw new ValidationError('종료 일시를 지정해 주세요.');
       }
       if (moment(data.dateRange.startTime).isAfter(data.dateRange.endTime)) {
-        return { error: '종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.' };
+        throw new ValidationError('종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.');
       }
+    }
+    if (data.deviceTypes.length === 0) {
+      throw new ValidationError('디바이스 타입을 하나 이상 선택해 주세요.');
+    }
+    if (data.contents.trim().length === 0) {
+      throw new ValidationError('내용을 입력해 주세요.');
+    }
+    if (data.deviceTypes.length < 2) {
+      this.checkSemVersionValidity(data.deviceSemVersion);
+      this.checkSemVersionValidity(data.appSemVersion);
+    }
+
+    // Check warnings
+    if (ignoreWarning) {
+      return true;
+    }
+    const warning = [];
+    if (data.dateRange.comparator === '~') {
       if (moment(data.dateRange.endTime).isBefore(moment.now())) {
         warning.push('- 설정된 종료 일시가 과거입니다. 활성화 하더라도 알림이 실행되지 않습니다.');
       }
     }
-    if (data.deviceTypes.length === 0) {
-      return { error: '디바이스 타입을 하나 이상 선택해 주세요.' };
-    }
-    if (data.contents.trim().length === 0) {
-      return { error: '내용을 입력해 주세요.' };
-    }
-    if (data.deviceTypes.length < 2) {
-      let semVersionValidity = this.checkSemVersionValidity(data.deviceSemVersion);
-      if (semVersionValidity !== true) {
-        return { error: semVersionValidity };
-      }
-      semVersionValidity = this.checkSemVersionValidity(data.appSemVersion);
-      if (semVersionValidity !== true) {
-        return { error: semVersionValidity };
-      }
-    }
-
     if (data.deviceSemVersion.some(cond => cond.comparator === '*') && data.deviceSemVersion.length > 1) {
       warning.push('- 설정된 타겟 디바이스 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
     }
     if (data.appSemVersion.some(cond => cond.comparator === '*') && data.appSemVersion.length > 1) {
       warning.push('- 설정된 앱 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
     }
-    if (warning.length === 0) {
-      return true;
+    if (warning.length > 0) {
+      throw new ValidationWarning(warning.join(<br />));
     }
-    return { warning };
+    return true;
   }
 
   setButtonDisabled(disabled, callback) {
