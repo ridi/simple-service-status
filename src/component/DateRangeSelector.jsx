@@ -32,7 +32,6 @@ class DateRangeSelector extends React.Component {
       value: Object.assign({}, this.state.value, changedItem),
     };
     this.setState(newState, () => {
-
       if (typeof this.props.onChange === 'function') {
         this.props.onChange(this.state.value);
       }

@@ -26,14 +26,14 @@ class Settings extends React.Component {
     this.setState({ activeTab }, () => this.refresh(activeTab));
   }
 
-  refresh(tabName) {
+  refresh(/* tabName */) {
     // TODO
   }
 
   render() {
     return (
       <div>
-        <Tabs activeKey={this.state.activeTab} onSelect={activeTab => this.onTabChanged(activeTab)}>
+        <Tabs id="tabsForSettings" activeKey={this.state.activeTab} onSelect={activeTab => this.onTabChanged(activeTab)}>
           <Tab eventKey={'statusType'} title="상태 타입 목록">
             <Row className="table-info">
               <Col xs={6} className="table-info-left">총 {this.props.statusTypes.length}건의 데이터</Col>

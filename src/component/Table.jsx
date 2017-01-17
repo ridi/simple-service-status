@@ -50,13 +50,13 @@ Row.propTypes = {
   columns: React.PropTypes.arrayOf(React.PropTypes.shape({
     key: React.PropTypes.string,
     display: React.PropTypes.func,
-    isChildRow: React.PropTypes.boolean,
+    isChildRow: React.PropTypes.bool,
     title: React.PropTypes.string,
   })).isRequired,
   checked: React.PropTypes.bool,
   onCheckboxChange: React.PropTypes.func,
   className: React.PropTypes.string,
-  showCheckbox: React.PropTypes.boolean,
+  showCheckbox: React.PropTypes.bool,
 };
 
 class ChildRow extends React.Component {
@@ -86,11 +86,11 @@ ChildRow.propTypes = {
   columns: React.PropTypes.arrayOf(React.PropTypes.shape({
     key: React.PropTypes.string,
     display: React.PropTypes.func,
-    isChildRow: React.PropTypes.boolean,
+    isChildRow: React.PropTypes.bool,
     title: React.PropTypes.string,
   })).isRequired,
   colSpan: React.PropTypes.number,
-  showCheckbox: React.PropTypes.boolean,
+  showCheckbox: React.PropTypes.bool,
 };
 
 class Table extends React.Component {
@@ -199,11 +199,11 @@ Table.propTypes = {
   columns: React.PropTypes.arrayOf(React.PropTypes.shape({
     key: React.PropTypes.string,
     display: React.PropTypes.func,
-    isChildRow: React.PropTypes.boolean,
+    isChildRow: React.PropTypes.bool,
     title: React.PropTypes.string,
   })).isRequired,
   onCheckboxChange: React.PropTypes.func,
-  showCheckbox: React.PropTypes.boolean,
+  showCheckbox: React.PropTypes.bool,
 };
 
 module.exports = Table;

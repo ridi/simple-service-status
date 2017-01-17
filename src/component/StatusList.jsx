@@ -143,37 +143,6 @@ class StatusList extends React.Component {
     this.refresh(this.state.activeTab);
   }
 
-  refresh(tabName) {
-    this.setState({ showLoading: true });
-    const table = this.tables[tabName];
-    const newState = {};
-    newState[tabName] = {};
-    Object.assign(newState[tabName], this.state[tabName]);
-
-    const skip = (this.state[tabName].page - 1) * this.state[tabName].countPerPage;
-    const limit = this.state[tabName].countPerPage;
-
-    return Api.getStatus(tabName, skip, limit)
-      .then((response) => {
-        newState[tabName].items = response.data.data;
-        newState[tabName].totalCount = response.data.totalCount;
-        newState[tabName].error = null;
-        newState[tabName].checkedItems = [];
-        this.setState(newState);
-        table.setChecked(false);
-        this.setState({ showLoading: false });
-      })
-      .catch((error) => {
-        newState[tabName].items = [];
-        newState[tabName].totalCount = 0;
-        newState[tabName].error = error;
-        newState[tabName].checkedItems = [];
-        this.setState(newState);
-        table.setChecked(false);
-        this.setState({ showLoading: false });
-      });
-  }
-
   onCheckboxChanged(tabName, checkedItems) {
     const newState = {};
     newState[tabName] = {};
@@ -210,6 +179,37 @@ class StatusList extends React.Component {
     }
   }
 
+  refresh(tabName) {
+    this.setState({ showLoading: true });
+    const table = this.tables[tabName];
+    const newState = {};
+    newState[tabName] = {};
+    Object.assign(newState[tabName], this.state[tabName]);
+
+    const skip = (this.state[tabName].page - 1) * this.state[tabName].countPerPage;
+    const limit = this.state[tabName].countPerPage;
+
+    return Api.getStatus(tabName, skip, limit)
+      .then((response) => {
+        newState[tabName].items = response.data.data;
+        newState[tabName].totalCount = response.data.totalCount;
+        newState[tabName].error = null;
+        newState[tabName].checkedItems = [];
+        this.setState(newState);
+        table.setChecked(false);
+        this.setState({ showLoading: false });
+      })
+      .catch((error) => {
+        newState[tabName].items = [];
+        newState[tabName].totalCount = 0;
+        newState[tabName].error = error;
+        newState[tabName].checkedItems = [];
+        this.setState(newState);
+        table.setChecked(false);
+        this.setState({ showLoading: false });
+      });
+  }
+
   startToRemove() {
     this.modals.removeModal.show();
   }
@@ -242,24 +242,58 @@ class StatusList extends React.Component {
     const expireState = this.state.expired;
     return (
       <div>
-        <Tabs activeKey={this.state.activeTab} onSelect={activeTab => this.onTabChanged(activeTab)}>
+        <Tabs id="tabsForStatus" activeKey={this.state.activeTab} onSelect={activeTab => this.onTabChanged(activeTab)}>
           <Tab eventKey={'current'} title="현재 공지사항 목록">
             <ButtonToolbar>
               <ButtonGroup>
-                <Button onClick={() => this.showModal('add')} bsSize="small" disabled={currentState.buttonDisabled.add}>등록</Button>
-                <Button onClick={() => this.showModal('add', currentState.checkedItems[0])} bsSize="small" disabled={currentState.buttonDisabled.clone}>복제</Button>
+                <Button
+                  onClick={() => this.showModal('add')}
+                  bsSize="small"
+                  disabled={currentState.buttonDisabled.add}
+                >
+                  등록
+                </Button>
+                <Button
+                  onClick={() => this.showModal('add', currentState.checkedItems[0])}
+                  bsSize="small"
+                  disabled={currentState.buttonDisabled.clone}
+                >
+                  복제
+                </Button>
               </ButtonGroup>
-              <Button onClick={() => this.showModal('modify', currentState.checkedItems[0])} bsSize="small" disabled={currentState.buttonDisabled.modify}>수정</Button>
+              <Button
+                onClick={() => this.showModal('modify', currentState.checkedItems[0])}
+                bsSize="small"
+                disabled={currentState.buttonDisabled.modify}
+              >
+                수정
+              </Button>
               <ButtonGroup>
-                <Button onClick={() => this.startToSetActivation(true)} bsSize="small" disabled={currentState.buttonDisabled.activate}>활성화</Button>
-                <Button onClick={() => this.startToSetActivation(false)} bsSize="small" disabled={currentState.buttonDisabled.activate}>비활성화</Button>
+                <Button
+                  onClick={() => this.startToSetActivation(true)}
+                  bsSize="small"
+                  disabled={currentState.buttonDisabled.activate}
+                >
+                  활성화
+                </Button>
+                <Button
+                  onClick={() => this.startToSetActivation(false)}
+                  bsSize="small"
+                  disabled={currentState.buttonDisabled.activate}
+                >
+                  비활성화
+                </Button>
               </ButtonGroup>
-              <Button onClick={() => this.startToRemove()} bsSize="small" disabled={currentState.buttonDisabled.remove}>삭제</Button>
+              <Button onClick={() => this.startToRemove()} bsSize="small" disabled={currentState.buttonDisabled.remove}>
+                삭제
+              </Button>
             </ButtonToolbar>
 
             <Row className="table-info">
               <Col xs={6} className="table-info-left">총 {currentState.totalCount || 0}건의 데이터</Col>
-              <Col xs={6} className="table-info-right">{currentState.page} / {Math.ceil(currentState.totalCount / currentState.countPerPage) || 1} 페이지</Col>
+              <Col xs={6} className="table-info-right">
+                {currentState.page} / {Math.ceil(currentState.totalCount / currentState.countPerPage) || 1} 페이지
+              </Col>
             </Row>
             <Table
               ref={(t) => { this.tables.current = t; }}
@@ -285,16 +319,38 @@ class StatusList extends React.Component {
           <Tab eventKey={'expired'} title="만료된 공지사항 목록">
             <ButtonToolbar>
               <ButtonGroup>
-                <Button onClick={() => this.showModal('add')} bsSize="small" disabled={expireState.buttonDisabled.add}>등록</Button>
-                <Button onClick={() => this.showModal('add', expireState.checkedItems[0])} bsSize="small" disabled={expireState.buttonDisabled.clone}>복제</Button>
+                <Button
+                  onClick={() => this.showModal('add')}
+                  bsSize="small"
+                  disabled={expireState.buttonDisabled.add}
+                >
+                  등록
+                </Button>
+                <Button
+                  onClick={() => this.showModal('add', expireState.checkedItems[0])}
+                  bsSize="small"
+                  disabled={expireState.buttonDisabled.clone}
+                >
+                  복제
+                </Button>
               </ButtonGroup>
-              <Button onClick={() => this.showModal('modify', expireState.checkedItems[0])} bsSize="small" disabled={expireState.buttonDisabled.modify}>수정</Button>
-              <Button onClick={() => this.startToRemove()} bsSize="small" disabled={expireState.buttonDisabled.remove}>삭제</Button>
+              <Button
+                onClick={() => this.showModal('modify', expireState.checkedItems[0])}
+                bsSize="small"
+                disabled={expireState.buttonDisabled.modify}
+              >
+                수정
+              </Button>
+              <Button onClick={() => this.startToRemove()} bsSize="small" disabled={expireState.buttonDisabled.remove}>
+                삭제
+              </Button>
             </ButtonToolbar>
 
             <Row className="table-info">
               <Col xs={6} className="table-info-left">총 {expireState.totalCount || 0}건의 데이터</Col>
-              <Col xs={6} className="table-info-right">{expireState.page} / {Math.ceil(expireState.totalCount / expireState.countPerPage) || 1} 페이지</Col>
+              <Col xs={6} className="table-info-right">
+                {expireState.page} / {Math.ceil(expireState.totalCount / expireState.countPerPage) || 1} 페이지
+              </Col>
             </Row>
             <Table
               ref={(t) => { this.tables.expired = t; }}
@@ -331,9 +387,13 @@ class StatusList extends React.Component {
           ref={(m) => { this.modals.activationModal = m; }}
           mode={'confirm'}
           title={this.state.activationMode ? '활성화 확인' : '비활성화 확인'}
-          onConfirm={() => this.setActivation(this.state.activeTab, this.state.activationMode, this.state[this.state.activeTab].checkedItems)}
+          onConfirm={() => this.setActivation(this.state.activeTab, this.state.activationMode,
+            this.state[this.state.activeTab].checkedItems)}
         >
-          <p>{this.state[this.state.activeTab].checkedItems.length} 건의 데이터를 {this.state.activationMode ? '활성화' : '비활성화'} 하시겠습니까?</p>
+          <p>
+            {this.state[this.state.activeTab].checkedItems.length} 건의 데이터를
+            {this.state.activationMode ? '활성화' : '비활성화'} 하시겠습니까?
+          </p>
         </Modal>
         <Loading show={this.state.showLoading} />
       </div>
@@ -341,11 +401,11 @@ class StatusList extends React.Component {
   }
 }
 StatusList.propTypes = {
-  statusTypes: React.PropTypes.arrayOf(React.PropTypes.objectOf({
+  statusTypes: React.PropTypes.arrayOf(React.PropTypes.shape({
     label: React.PropTypes.string,
     value: React.PropTypes.string,
   })).isRequired,
-  deviceTypes: React.PropTypes.arrayOf(React.PropTypes.objectOf({
+  deviceTypes: React.PropTypes.arrayOf(React.PropTypes.shape({
     label: React.PropTypes.string,
     value: React.PropTypes.string,
   })).isRequired,

@@ -1,3 +1,4 @@
+/* global window */
 const React = require('react');
 const Form = require('react-bootstrap/lib/Form');
 const FormGroup = require('react-bootstrap/lib/FormGroup');
@@ -26,8 +27,8 @@ class Login extends React.Component {
         this.setState({ errorMessage: null });
         window.location.href = search ? search[1] : '/';
       })
-      .catch((e) => {
-        this.setState({ errorMessage: (e && e.response && e.response.data) ? e.response.data.message : null });
+      .catch((err) => {
+        this.setState({ errorMessage: (err && err.response && err.response.data) ? err.response.data.message : null });
       });
   }
 
@@ -35,14 +36,24 @@ class Login extends React.Component {
     return (
       <Col xs={6} xsOffset={3} md={4} mdOffset={4}>
         <Alert style={{ display: this.state.errorMessage ? 'block' : 'none' }} bsStyle="warning">{this.state.errorMessage}</Alert>
-        <Form onSubmit={(e) => this.onSubmit(e)}>
+        <Form onSubmit={e => this.onSubmit(e)}>
           <FormGroup controlId="username">
             <ControlLabel>사용자 이름</ControlLabel>
-            <FormControl type="text" name="username" value={this.state.username} onChange={e => this.setState({ username: e.target.value })} placeholder="사용자 이름을 입력하세요" />
+            <FormControl
+              type="text"
+              name="username"
+              value={this.state.username}
+              onChange={e => this.setState({ username: e.target.value })} placeholder="사용자 이름을 입력하세요"
+            />
           </FormGroup>
           <FormGroup controlId="password">
             <ControlLabel>패스워드</ControlLabel>
-            <FormControl type="password" name="password" value={this.state.password} onChange={e => this.setState({ password: e.target.value })} placeholder="패스워드를 입력하세요" />
+            <FormControl
+              type="password"
+              name="password"
+              value={this.state.password}
+              onChange={e => this.setState({ password: e.target.value })} placeholder="패스워드를 입력하세요"
+            />
           </FormGroup>
           <FormGroup>
             <Button type="submit">Submit</Button>
