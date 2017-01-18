@@ -10,10 +10,15 @@
   "scripts": {
     "prestart": "npm run webpack:dev",
     "start": "node webpack-dev-server.js",
-    "test": "jest --verbose",
+    "test": "jest",
     "webpack:dev": "webpack --config=./webpack.dev.config.js -p",
     "webpack:prod": "webpack --config=./webpack.prod.config.js -p",
     "heroku-postbuild": "npm run webpack:prod"
+  },
+  "jest": {
+    "verbose": true,
+    "collectCoverage": true,
+    "coverageReporters": ["clover"]
   },
   "keywords": [
     "notifier"
