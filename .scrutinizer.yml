@@ -5,7 +5,7 @@ build:
     mongodb: '3.2'
   tests:
     override:
-      - eslint-run .eslintrc
+      - eslint-run "**/*.js **/*.jsx"
       -
         command: 'npm test'
         coverage:
