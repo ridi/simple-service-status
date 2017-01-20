@@ -1,6 +1,7 @@
 class NotifierError extends Error {
   constructor(type, context, originalError) {
     super(type.message(context));
+    this.name = 'NotifierError';
     this.type = type.type;
     this.errorCode = type.code;
     this.message = type.message(context);
@@ -29,7 +30,7 @@ NotifierError.Types = Object.freeze({
   FORBIDDEN_OPERATION: { code: 403200, message: () => '허가되지 않은 작업입니다.' },
   INVALID_PARAMS: { code: 400000, message: () => '파라미터가 잘못되었습니다.' },
   SERVER: { code: 500000, message: context => `서버 에러가 발생했습니다${context.message ? `: ${context.message}` : '.'}` },
-  DB: { code: 5001000, message: () => 'DB 에러가 발생했습니다.' },
+  DB: { code: 500100, message: () => 'DB 에러가 발생했습니다.' },
 });
 
 Object.keys(NotifierError.Types).forEach((type) => {
