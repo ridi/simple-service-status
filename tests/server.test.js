@@ -22,9 +22,13 @@ const user1 = {
   password: 'testuser',
 };
 
+const validPassword = 'valid-password';
+const shortPassword = 'short';
+
 describe('User', () => {
   let id;
-  const url = `${config.url.apiPrefix}/login`;
+  const loginUrl = `${config.url.apiPrefix}/login`;
+  const changePasswordUrl = `${config.url.apiPrefix}/passwords`;
 
   beforeAll(() => User.add(user1).then((result) => {
     id = result.data[0]._id;
@@ -32,7 +36,7 @@ describe('User', () => {
 
   test('login success', () => {
     return serverPromise.then((server) => {
-      return server.inject({ url, method: 'POST', payload: user1 }).then((response) => {
+      return server.inject({ url: loginUrl, method: 'POST', payload: user1 }).then((response) => {
         expect(response.statusCode).toBe(200);
         const payload = JSON.parse(response.payload);
         expect(payload).toBeDefined();
@@ -43,11 +47,50 @@ describe('User', () => {
 
   test('login fail', () => {
     return serverPromise.then((server) => {
-      return server.inject({ url, method: 'POST', payload: { username: 'testuser', password: 'no-testuser' } }).then((response) => {
+      return server.inject({
+        url: loginUrl,
+        method: 'POST',
+        payload: { username: user1.username, password: `no-${user1.password}` }
+      }).then((response) => {
         expect(response.statusCode).toBe(401);
         const payload = JSON.parse(response.payload);
         expect(payload).toBeDefined();
         expect(payload.success).toBe(false);
+       });
+    });
+  });
+
+  test('change password', () => {
+    return serverPromise.then((server) => {
+      return server.inject({
+        url: changePasswordUrl,
+        method: 'PUT',
+        payload: { password: validPassword },
+        credentials: { username: 'testuser' },
+      }).then((response) => {
+        expect(response.statusCode).toBe(200);
+      });
+    });
+  });
+
+  test('change password without authentication', () => {
+    return serverPromise.then((server) => {
+      return server.inject({ url: changePasswordUrl, method: 'PUT', payload: { password: shortPassword } })
+        .then((response) => {
+          expect(response.statusCode).toBe(401);
+        });
+    });
+  });
+
+  test('change password with invalid password', () => {
+    return serverPromise.then((server) => {
+      return server.inject({
+        url: changePasswordUrl,
+        method: 'PUT',
+        payload: { password: shortPassword },
+        credentials: { username: 'testuser' },
+      }).then((response) => {
+        expect(response.statusCode).toBe(400);
       });
     });
   });

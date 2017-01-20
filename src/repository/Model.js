@@ -95,7 +95,7 @@ class Model {
 
   updateWithQuery(query, model) {
     return this.runQuery(collection => collection.findOneAndUpdate(query, { $set: model }))
-      .then(result => ({ data: [{ _id: result.value._id }], count: 1 }))
+      .then(result => ({ data: [{ _id: result.value._id.toHexString() }], count: 1 }))
       .catch((error) => {
         logger.error(error);
         throw new NotifierError(NotifierError.Types.DB, {}, error);
