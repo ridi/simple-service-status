@@ -11,7 +11,7 @@ class Layout extends React.Component {
           <link rel="stylesheet" href="/public/assets/client.bundle.css" />
         </head>
         <body>
-          <div id="app-main" />
+          <div id="app-main">{this.props.children}</div>
           <script id="app-state" dangerouslySetInnerHTML={{ __html: this.props.state }} />
           <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" />
           <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" />

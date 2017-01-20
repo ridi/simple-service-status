@@ -1,29 +1,33 @@
 const React = require('react');
 
+const Row = require('react-bootstrap/lib/Row');
 const Col = require('react-bootstrap/lib/Col');
+const Layout = require('./Layout');
 
 class Error extends React.Component {
   render() {
     return (
-      <Col xs={10} md={6} xsOffset={1} mdOffset={3}>
-        <div>{this.props.statusCode}</div>
-        <div>{this.props.errorTitle}</div>
-        <div>{this.props.errorMessage}</div>
-      </Col>
+      <Layout>
+        <div className="error-panel">
+          <div className="error-status">{this.props.statusCode}</div>
+          <div className="error-code">{this.props.code}</div>
+          <div className="error-detail">{this.props.message}</div>
+        </div>
+      </Layout>
     );
   }
 }
 
 Error.defaultProps = {
   statusCode: 0,
-  errorTitle: 'Unknown Error',
-  errorMessage: '',
+  code: 'Unknown Error',
+  message: '',
 };
 
 Error.propTypes = {
   statusCode: React.PropTypes.number,
-  errorTitle: React.PropTypes.string,
-  errorMessage: React.PropTypes.string,
+  code: React.PropTypes.string,
+  message: React.PropTypes.string,
 };
 
 module.exports = Error;

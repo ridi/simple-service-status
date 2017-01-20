@@ -32,7 +32,7 @@ module.exports = [
     path: '/',
     handler: (request, reply) => Promise.all([StatusType.find(), DeviceType.find()])
       .then(([statusTypes, deviceTypes]) => view(request, reply, 'StatusList', { statusTypes, deviceTypes }))
-      .catch(error => view(request, reply, 'Error', { error })),
+      .catch(error => reply(error)),
   },
   {
     method: 'GET',
@@ -41,7 +41,7 @@ module.exports = [
       StatusType.find(),
       DeviceType.find(),
     ]).then(([statusTypes, deviceTypes]) => view(request, reply, 'Settings', { statusTypes, deviceTypes }))
-      .catch(error => view(request, reply, 'Error', { error })),
+      .catch(error => reply(error)),
   },
   {
     method: 'GET',

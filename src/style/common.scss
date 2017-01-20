@@ -405,3 +405,18 @@ label {
     }
   }
 }
+
+.error-panel {
+  text-align: center;
+  margin-top: 100px;
+  .error-status {
+    font-size: 40px;
+    font-weight: 200;
+  }
+  .error-code {
+    font-size: 24px;
+  }
+  .error-message {
+    font-size: 24px;
+  }
+}

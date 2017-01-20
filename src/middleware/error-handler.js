@@ -62,6 +62,7 @@ const onUIError = (request, reply, options) => {
       return reply.redirect(`/login?redirect=${request.path || '/'}`).unstate('token');
     case 404:
     case 500:
+      responseBody.statusCode = statusCode;
       return reply.view(options.errorView, responseBody).code(statusCode);
     default:
       return null;
@@ -71,7 +72,7 @@ const onUIError = (request, reply, options) => {
 const onError = (request, reply, options) => {
   const isApi = request.path.includes(options.apiPrefix);
   return isApi
-    ? onApiError(request, reply, options)
+    ? onApiError(request, reply)
     : onUIError(request, reply, options);
 };
 
