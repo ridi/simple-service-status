@@ -8,7 +8,6 @@ const util = require('../common/common-util');
 
 const defaultOptions = Object.freeze({
   apiPrefix: '/api',
-  errorView: 'error',
 });
 
 const register = (server, opts, next) => {

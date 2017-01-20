@@ -63,5 +63,10 @@ module.exports = [
     path: '/logout',
     handler: (request, reply) => reply.redirect('/login').unstate('token'),
   },
+  {
+    method: 'GET',
+    path: '/change-password',
+    handler: (request, reply) => view(request, reply, 'ChangePassword'),
+  },
 ];
 

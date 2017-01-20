@@ -40,6 +40,20 @@ module.exports = [
     },
   },
   {
+    method: 'PUT',
+    path: `${config.apiPrefix}/passwords`,
+    handler: (request, reply) => User.updatePassword(request.auth.credentials.username, request.payload.password)
+      .then(result => reply(result))
+      .catch(err => reply(err)),
+    config: {
+      validate: {
+        payload: {
+          password: Joi.string().min(8).required(),
+        },
+      },
+    },
+  },
+  {
     method: 'GET',
     path: `${config.statusApiPrefix}`,
     handler: (request, reply) => {

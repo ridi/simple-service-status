@@ -35,7 +35,8 @@ class Login extends React.Component {
   render() {
     return (
       <Col xs={6} xsOffset={3} md={4} mdOffset={4}>
-        <Alert style={{ display: this.state.errorMessage ? 'block' : 'none' }} bsStyle="warning">{this.state.errorMessage}</Alert>
+        <Alert style={{ display: this.state.errorMessage ? 'block' : 'none' }} bsStyle="danger">{this.state.errorMessage}</Alert>
+        <Alert bsStyle="info">로그인이 필요한 서비스입니다.</Alert>
         <Form onSubmit={e => this.onSubmit(e)}>
           <FormGroup controlId="username">
             <ControlLabel>사용자 이름</ControlLabel>

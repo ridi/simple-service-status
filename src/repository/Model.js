@@ -90,8 +90,12 @@ class Model {
   }
 
   update(id, model) {
-    return this.runQuery(collection => collection.updateOne({ _id: ObjectID(id) }, { $set: model }))
-      .then(result => ({ data: [{ _id: id }], count: result.result.nModified }))
+    return this.updateWithQuery({ _id: ObjectID(id) }, model);
+  }
+
+  updateWithQuery(query, model) {
+    return this.runQuery(collection => collection.findOneAndUpdate(query, { $set: model }))
+      .then(result => ({ data: [{ _id: result.value._id }], count: 1 }))
       .catch((error) => {
         logger.error(error);
         throw new NotifierError(NotifierError.Types.DB, {}, error);
