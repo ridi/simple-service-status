@@ -12,7 +12,8 @@ const inert = require('inert');
 const HapiAuthJwt2 = require('hapi-auth-jwt2');
 const HapiReactViews = require('hapi-react-views');
 const HapiErrorHandler = require('./middleware/error-handler');
-const HapiTransform = require('./middleware/transform');
+const HapiTransformer = require('./middleware/transformer');
+const HapiAuthChecker = require('./middleware/auth-info-checker');
 
 const apiRouter = require('./router/api-router');
 const baseRouter = require('./router/ui-router');
@@ -44,7 +45,12 @@ const plugins = [
   { register: inert },
   { register: HapiAuthJwt2 },
   { register: HapiErrorHandler, options: { apiPrefix: config.url.apiPrefix, errorView: 'Error' } },
-  { register: HapiTransform, options: { apiPrefix: config.url.apiPrefix } },
+  { register: HapiAuthChecker,
+    options: {
+      excludeUrlPatterns: [new RegExp(`^${config.url.apiPrefix}`), new RegExp('^/logout')],
+    },
+  },
+  { register: HapiTransformer, options: { apiPrefix: config.url.apiPrefix } },
 ];
 
 const _setAuthStrategy = () => {
@@ -63,12 +69,12 @@ const _setAuthStrategy = () => {
         return callback(new NotifierError(NotifierError.Types.AUTH_TOKEN_EXPIRED), false);
       }
       return User.find({ username: decoded.username })
-        .then((account) => {
-          if (!account || account.length === 0) {
+        .then((accounts) => {
+          if (!accounts || accounts.length === 0) {
             logger.warn(`[Auth] This account is not exist.: ${decoded.username}`);
             return callback(new NotifierError(NotifierError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }), false);
           }
-          return callback(null, true);
+          return callback(null, true, accounts[0]);
         })
         .catch((e) => {
           logger.error(`[DB] DB error occurred: ${e.message}`);
