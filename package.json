@@ -43,7 +43,7 @@
     "hapi-auth-jwt2": "^7.2.4",
     "hapi-react-views": "^9.2.1",
     "inert": "^4.0.3",
-    "joi": "^10.0.6",
+    "joi": "^10.2.0",
     "jsonwebtoken": "^7.2.1",
     "moment": "^2.17.1",
     "mongodb": "^2.2.16",

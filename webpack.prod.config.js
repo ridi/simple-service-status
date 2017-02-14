@@ -27,9 +27,12 @@ module.exports = {
     new ExtractTextPlugin(config.outputCssFileName, { allChunks: true }),
   ],
   resolve: {
-    extensions: ['', '.js', '.jsx'],
+    extensions: ['', '.js', '.jsx', '.json'],
   },
   module: {
+    preLoaders: [
+      { test: /\.json$/, loader: 'json' },
+    ],
     loaders: [
       {
         test: /\.(js|jsx)$/,
