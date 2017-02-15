@@ -89,9 +89,17 @@ class Model {
       });
   }
 
-  update(id, model) {
-    return this.runQuery(collection => collection.updateOne({ _id: ObjectID(id) }, { $set: model }))
-      .then(result => ({ data: [{ _id: id }], count: result.result.nModified }))
+  update(id, model, unset) {
+    return this.updateWithQuery({ _id: ObjectID(id) }, model, unset);
+  }
+
+  updateWithQuery(query, model, unset) {
+    const option = { $set: model };
+    if (unset) {
+      option.$unset = unset;
+    }
+    return this.runQuery(collection => collection.findOneAndUpdate(query, option))
+      .then(result => ({ data: [{ _id: result.value._id.toHexString() }], count: 1 }))
       .catch((error) => {
         logger.error(error);
         throw new NotifierError(NotifierError.Types.DB, {}, error);
