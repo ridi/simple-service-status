@@ -122,6 +122,16 @@ class StatusList extends React.Component {
         },
       },
       {
+        title: '관련 URL',
+        isChildRow: true,
+        display: (row) => {
+          if (!row.url) {
+            return '';
+          }
+          return <span><a href={row.url} target="_blank" rel="noopener noreferrer">{row.url}</a></span>;
+        },
+      },
+      {
         title: '내용',
         isChildRow: true,
         display: (row) => {

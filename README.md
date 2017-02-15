@@ -87,6 +87,7 @@ GET /v1/status/check?device_type=[device_type]&device_version=[device_version]&a
 | is_activated       | boolean                                  | 알림 활성화 여부 (항상 true)                                            |
 | device_sem_version | string                                   | 대상 디바이스 플랫폼 버전 비교 기준 (SemVer를 따름)                     |
 | app_sem_version    | string                                   | 대상 뷰어 앱 버전 비교 기준 (SemVer를 따름)                             |
+| url                | string                                   | 관련 URL                                                                |
 
 #### Example
 
@@ -110,7 +111,8 @@ GET /api/v1/status/check?device_type=android&device_version=3.5.6&app_version=3.
             "device_sem_version": ">=1.0.0  || =7.0.0-alpha.1",
             "app_sem_version": "<3.0.0 || =6.0.0",
             "start_time": "2017-01-13T11:40:55+09:00",
-            "end_time": "2017-01-13T13:40:55+09:00"
+            "end_time": "2017-01-13T13:40:55+09:00",
+            "url": "http://..."
         }
     ],
     "success": true
