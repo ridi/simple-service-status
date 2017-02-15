@@ -142,11 +142,15 @@ module.exports = [
     path: `${config.statusApiPrefix}/{statusId}`,
     handler: (request, reply) => {
       const status = Object.assign({}, request.payload);
-      if (status.startTime && status.endTime) {
-        status.startTime = new Date(Date.parse(status.startTime));
-        status.endTime = new Date(Date.parse(status.endTime));
+      let unset;
+      if (!status.startTime && !status.endTime) {
+        unset = { startTime: 1, endTime: 1 };
+      } else {
+        status.startTime = (status.startTime) ? new Date(Date.parse(status.startTime)) : undefined;
+        status.endTime = (status.endTime) ? new Date(Date.parse(status.endTime)) : undefined;
       }
-      Status.update(request.params.statusId, status)
+
+      Status.update(request.params.statusId, status, unset)
         .then(result => reply(result))
         .catch(err => reply(err));
     },

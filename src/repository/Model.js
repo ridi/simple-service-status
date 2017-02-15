@@ -89,12 +89,17 @@ class Model {
       });
   }
 
-  update(id, model) {
-    return this.updateWithQuery({ _id: ObjectID(id) }, model);
+  update(id, model, unset) {
+    return this.updateWithQuery({ _id: ObjectID(id) }, model, unset);
   }
 
-  updateWithQuery(query, model) {
-    return this.runQuery(collection => collection.findOneAndUpdate(query, { $set: model }))
+  updateWithQuery(query, model, unset) {
+    const option = { $set: model };
+    if (unset) {
+      option.$unset = unset;
+    }
+    return this.runQuery(collection => collection.findOneAndUpdate(query, option))
+
       .then(result => ({ data: [{ _id: result.value._id.toHexString() }], count: 1 }))
       .catch((error) => {
         logger.error(error);

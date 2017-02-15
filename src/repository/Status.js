@@ -63,8 +63,8 @@ class Status extends Model {
     });
   }
 
-  update(id, model) {
-    return super.update(id, model).then((result) => {
+  update(id, model, unset) {
+    return super.update(id, model, unset).then((result) => {
       cache.del('status');
       return result;
     });

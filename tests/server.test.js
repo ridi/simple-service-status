@@ -145,6 +145,16 @@ const statusDataToBeUpdated = {
   app_sem_version: '>=4.5.6 || =1.2.3',
   start_time: moment().format(),
   end_time: moment().add(3, 'hours').format(),
+  url: 'http://127.0.0.1',
+};
+
+const statusDataToBeUpdatedForAllDay = {
+  type: 'routineInspection',
+  device_types: ['paper', 'ios'],
+  contents: 'routineInspection-added1-updated1',
+  is_activated: true,
+  device_sem_version: '>=1.2.3',
+  app_sem_version: '>=4.5.6 || =1.2.3',
 };
 
 describe('status', () => {
@@ -257,8 +267,35 @@ describe('status', () => {
             expect(result[0].deviceTypes).toEqual(statusDataToBeUpdated.device_types);
             expect(result[0].deviceSemVersion).toBe(statusDataToBeUpdated.device_sem_version);
             expect(result[0].appSemVersion).toBe(statusDataToBeUpdated.app_sem_version);
+            expect(result[0].url).toBe(statusDataToBeUpdated.url);
             expect(moment(result[0].startTime).format()).toBe(statusDataToBeUpdated.start_time);
             expect(moment(result[0].endTime).format()).toBe(statusDataToBeUpdated.end_time);
+          });
+      });
+    });
+
+    test('update status for all day', () => {
+      return serverPromise.then((server) => {
+        return server.inject({
+          url: `${url}/${statusDataToBeAdded.id}`,
+          method: 'PUT',
+          payload: statusDataToBeUpdatedForAllDay,
+          credentials: { username: 'admin' },
+        }).then((response) => {
+          expect(response.statusCode).toBe(200);
+          const payload = JSON.parse(response.payload);
+          expect(payload.success).toBe(true);
+          expect(payload.data[0].id).toBe(statusDataToBeAdded.id);
+          return payload;
+        }).then(payload => Status.find({ _id: payload.data[0].id }))
+          .then((result) => {
+            expect(result.length).toBe(1);
+            expect(result[0].contents).toBe(statusDataToBeUpdatedForAllDay.contents);
+            expect(result[0].deviceTypes).toEqual(statusDataToBeUpdatedForAllDay.device_types);
+            expect(result[0].deviceSemVersion).toBe(statusDataToBeUpdatedForAllDay.device_sem_version);
+            expect(result[0].appSemVersion).toBe(statusDataToBeUpdatedForAllDay.app_sem_version);
+            expect(result[0].startTime).toBe(undefined);
+            expect(result[0].endTime).toBe(undefined);
           });
       });
     });
