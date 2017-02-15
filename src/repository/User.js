@@ -14,7 +14,12 @@ class User extends Model {
 
   add(user) {
     const encryptPassword = authUtil.encryptPassword(user);
-    return super.add({ username: user.username, password: encryptPassword, role: user.role });
+    return super.add(Object.assign({}, user, { password: encryptPassword }));
+  }
+
+  updatePassword(username, newPassword) {
+    const encryptPassword = authUtil.encryptPassword({ username, password: newPassword });
+    return super.updateWithQuery({ username }, { password: encryptPassword, isTemporary: false });
   }
 }
 

@@ -99,6 +99,7 @@ class Model {
       option.$unset = unset;
     }
     return this.runQuery(collection => collection.findOneAndUpdate(query, option))
+
       .then(result => ({ data: [{ _id: result.value._id.toHexString() }], count: 1 }))
       .catch((error) => {
         logger.error(error);

@@ -40,6 +40,20 @@ module.exports = [
     },
   },
   {
+    method: 'PUT',
+    path: `${config.apiPrefix}/passwords`,
+    handler: (request, reply) => User.updatePassword(request.auth.credentials.username, request.payload.password)
+      .then(result => reply(result))
+      .catch(err => reply(err)),
+    config: {
+      validate: {
+        payload: {
+          password: Joi.string().min(8).required(),
+        },
+      },
+    },
+  },
+  {
     method: 'GET',
     path: `${config.statusApiPrefix}`,
     handler: (request, reply) => {
@@ -116,6 +130,7 @@ module.exports = [
           deviceSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),
           appSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),
           type: Joi.string().required(),
+          url: Joi.string().uri().allow(''),
           contents: Joi.string(),
           isActivated: Joi.boolean().required(),
         },
@@ -151,6 +166,7 @@ module.exports = [
           deviceSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),
           appSemVersion: Joi.string().regex(/^(([*>=<]{1,2}[0-9A-Za-z.-]*[\s]*)[\s|]*)+$/).required(),
           type: Joi.string().required(),
+          url: Joi.string().uri().allow(''),
           contents: Joi.string(),
           isActivated: Joi.boolean().required(),
         },

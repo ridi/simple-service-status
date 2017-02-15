@@ -25,6 +25,12 @@ axios.defaults.headers.put['Content-Type'] = 'application/json';
 exports.login = data => axios.post('/login', data);
 
 /**
+ *
+ * @param data
+ */
+exports.changePassword = data => axios.put('/passwords', data);
+
+/**
  * Get status(notification) list
  * @param {string} filter - filter name: 'current' or 'expired'
  * @param {number} skip - numbers of records to be skipped
