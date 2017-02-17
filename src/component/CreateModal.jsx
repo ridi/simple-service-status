@@ -3,6 +3,7 @@ const React = require('react');
 const Modal = require('./Modal');
 const VersionSelector = require('./VersionSelector');
 const DateRangeSelector = require('./DateRangeSelector');
+const RichEditor = require('./RichEditor');
 
 const FormGroup = require('react-bootstrap/lib/FormGroup');
 const ControlLabel = require('react-bootstrap/lib/ControlLabel');
@@ -24,6 +25,8 @@ const Joi = require('joi');
 const SimpleSelect = Selectize.SimpleSelect;
 const MultiSelect = Selectize.MultiSelect;
 
+const EMPTY_CONTENTS_VALUE = '<p><br></p>';
+
 class ValidationError {
   constructor(message) {
     this.message = message;
@@ -44,7 +47,7 @@ class CreateModal extends React.Component {
       type: props.options.statusTypes[0],
       startTime: moment(),
       endTime: moment().add(2, 'hours'),
-      deviceTypes: [],
+      deviceTypes: props.options.deviceTypes,
       title: '',
       contents: '',
       url: '',
@@ -220,9 +223,6 @@ class CreateModal extends React.Component {
   checkFormValidity(ignoreWarning) {
     const data = this.state;
     // Check errors
-    if (data.title.trim().length === 0) {
-      throw new ValidationError('제목을 입력해 주세요.');
-    }
     if (!data.type) {
       throw new ValidationError('알림 타입을 설정해 주세요.');
     }
@@ -237,11 +237,14 @@ class CreateModal extends React.Component {
         throw new ValidationError('종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.');
       }
     }
+    if (!data.title || data.title.trim().length === 0) {
+      throw new ValidationError('제목을 입력해 주세요.');
+    }
+    if (!data.contents || data.contents.trim().length === 0 || data.contents.trim() === EMPTY_CONTENTS_VALUE) {
+      throw new ValidationError('내용을 입력해 주세요.');
+    }
     if (data.deviceTypes.length === 0) {
       throw new ValidationError('디바이스 타입을 하나 이상 선택해 주세요.');
-    }
-    if (data.contents.trim().length === 0) {
-      throw new ValidationError('내용을 입력해 주세요.');
     }
     if (data.url) {
       if (Joi.validate(data.url, Joi.string().uri().allow('')).error) {
@@ -295,15 +298,6 @@ class CreateModal extends React.Component {
         ref={(modal) => { this.modal = modal; }}
         buttons={this.state.buttons}
       >
-        <FormGroup controlId="content">
-          <ControlLabel>제목</ControlLabel>
-          <FormControl
-            componentClass="input"
-            value={this.state.title}
-            onChange={e => this.setState({ title: e.target.value })}
-            placeholder="제목"
-          />
-        </FormGroup>
         <FormGroup controlId="type">
           <ControlLabel>알림 타입</ControlLabel>
           <SimpleSelect
@@ -323,6 +317,21 @@ class CreateModal extends React.Component {
         <Row>
           <HelpBlock>시작/종료 일시의 기본값은 현재부터 2시간으로 설정되어 있습니다.</HelpBlock>
         </Row>
+        <FormGroup controlId="content">
+          <ControlLabel>알림 내용</ControlLabel>
+          <FormControl
+            componentClass="input"
+            value={this.state.title}
+            onChange={e => this.setState({ title: e.target.value })}
+            placeholder="제목"
+          />
+          <RichEditor
+            value={this.state.contents}
+            onChange={contents => this.setState({ contents })}
+            placeholder="내용"
+          />
+        </FormGroup>
+
         <FormGroup controlId="deviceTypes">
           <ControlLabel>타겟 디바이스 타입</ControlLabel>
           <MultiSelect
@@ -358,15 +367,6 @@ class CreateModal extends React.Component {
             value={this.state.url}
             onChange={e => this.setState({ url: e.target.value })}
             placeholder="관련 URL"
-          />
-        </FormGroup>
-        <FormGroup controlId="content">
-          <ControlLabel>내용</ControlLabel>
-          <FormControl
-            componentClass="textarea"
-            value={this.state.contents}
-            onChange={e => this.setState({ contents: e.target.value })}
-            placeholder="내용"
           />
         </FormGroup>
         <Alert style={{ display: this.state.saveWarningMessage ? 'block' : 'none' }} bsStyle="warning">

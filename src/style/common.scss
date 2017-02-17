@@ -224,7 +224,7 @@ label {
     margin-top: -10px;
     margin-bottom: 15px;
     font-size: 0.9em;
-    color: #cccccc;
+    color: #afafaf;
   }
 }
 .navbar {
@@ -416,4 +416,34 @@ label {
   .error-message {
     font-size: 24px;
   }
+}
+
+// Draft-js
+
+.editor-root {
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 5px;
+  margin-top: 5px;
+}
+.editor-root .btn-toolbar {
+  margin: 0;
+}
+.DraftEditor-root {
+  cursor: text;
+  font-weight: 300;
+  font-size: 14px;
+  margin-top: 5px;
+  border-top: 1px solid #eee;
+}
+.DraftEditor-root .public-DraftEditorPlaceholder-root {
+  margin-bottom: -34px;
+  padding: 7px;
+  color: #999999;
+}
+.DraftEditor-root .public-DraftEditor-content {
+  min-height: 50px;
+  max-height: 120px;
+  overflow: auto;
+  padding: 7px;
 }

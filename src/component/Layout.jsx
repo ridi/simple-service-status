@@ -6,6 +6,7 @@ class Layout extends React.Component {
       <html lang="ko">
         <head>
           <title>긴급 공지사항 등록 시스템</title>
+          <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, user-scalable=no" />
           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
           <link rel="stylesheet" href="/public/assets/client.bundle.css" />
@@ -14,6 +15,7 @@ class Layout extends React.Component {
           <div id="app-main">{this.props.children}</div>
           <script id="app-state" dangerouslySetInnerHTML={{ __html: this.props.state }} />
           <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" />
+          <script src="https://use.fontawesome.com/5e6940792d.js"></script>
           <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" />
           <script src="https://unpkg.com/react@15.4.1/dist/react.min.js" />
           <script src="https://unpkg.com/react-dom@15.4.1/dist/react-dom.min.js" />

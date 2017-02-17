@@ -132,7 +132,7 @@ class StatusList extends React.Component {
           if (!row.contents) {
             return '';
           }
-          return <span>{row.contents.split(/(\r\n|\n|\r)/gm).map(line => <p>{line}</p>)}</span>;
+          return <span dangerouslySetInnerHTML={{ __html: row.contents }} />;
         },
       },
       {
@@ -392,7 +392,7 @@ class StatusList extends React.Component {
         <Modal
           ref={(m) => { this.modals.removeModal = m; }}
           mode={'confirm'}
-          modalTitle="삭제 확인"
+          title="삭제 확인"
           onConfirm={() => this.remove(this.state.activeTab, this.state[this.state.activeTab].checkedItems)}
         >
           <p>{this.state[this.state.activeTab].checkedItems.length} 건의 데이터를 삭제하시겠습니까?</p>
@@ -400,7 +400,7 @@ class StatusList extends React.Component {
         <Modal
           ref={(m) => { this.modals.activationModal = m; }}
           mode={'confirm'}
-          modalTitle={this.state.activationMode ? '활성화 확인' : '비활성화 확인'}
+          title={this.state.activationMode ? '활성화 확인' : '비활성화 확인'}
           onConfirm={() => this.setActivation(this.state.activeTab, this.state.activationMode,
             this.state[this.state.activeTab].checkedItems)}
         >
