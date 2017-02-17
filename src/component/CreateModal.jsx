@@ -45,6 +45,7 @@ class CreateModal extends React.Component {
       startTime: moment(),
       endTime: moment().add(2, 'hours'),
       deviceTypes: [],
+      title: '',
       contents: '',
       url: '',
       dateRange: { comparator: '~', startTime: moment(), endTime: moment().add(2, 'hours') },
@@ -54,7 +55,7 @@ class CreateModal extends React.Component {
 
     this.modes = Object.freeze({
       add: {
-        title: '새로운 알림 등록',
+        modalTitle: '새로운 알림 등록',
         buttons: [
           { label: '저장', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
           { label: '저장과 함께 활성화', onClick: () => self.ensureSafeClick(() => self.save(true)), disabled: false },
@@ -62,7 +63,7 @@ class CreateModal extends React.Component {
         ],
       },
       modify: {
-        title: '알림 업데이트',
+        modalTitle: '알림 업데이트',
         buttons: [
           { label: '업데이트', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
           { label: '업데이트와 함께 활성화', onClick: () => self.ensureSafeClick(() => self.save(true)), disabled: false },
@@ -72,7 +73,7 @@ class CreateModal extends React.Component {
     });
 
     this.state = {
-      title: '새로운 알림 등록',
+      modalTitle: '새로운 알림 등록',
       mode: 'add',
       startTimeState: null,
       endTimeState: null,
@@ -130,6 +131,7 @@ class CreateModal extends React.Component {
       .then(() => this.checkFormValidity(this.ignoreWarning))
       .then(() => {
         const data = {
+          title: this.state.title,
           type: this.state.type.value,
           deviceTypes: this.state.deviceTypes.map(dt => dt.value),
           url: this.state.url,
@@ -188,6 +190,7 @@ class CreateModal extends React.Component {
     if (data) {
       newData = {
         id: data.id,
+        title: data.title,
         type: this.props.options.statusTypes.find(o => o.value === data.type),
         deviceTypes: this.props.options.deviceTypes.filter(o => data.deviceTypes.includes(o.value)),
         dateRange: {
@@ -217,6 +220,9 @@ class CreateModal extends React.Component {
   checkFormValidity(ignoreWarning) {
     const data = this.state;
     // Check errors
+    if (data.title.trim().length === 0) {
+      throw new ValidationError('제목을 입력해 주세요.');
+    }
     if (!data.type) {
       throw new ValidationError('알림 타입을 설정해 주세요.');
     }
@@ -285,10 +291,19 @@ class CreateModal extends React.Component {
   render() {
     return (
       <Modal
-        title={this.modes[this.state.mode].title}
+        title={this.modes[this.state.mode].modalTitle}
         ref={(modal) => { this.modal = modal; }}
         buttons={this.state.buttons}
       >
+        <FormGroup controlId="content">
+          <ControlLabel>제목</ControlLabel>
+          <FormControl
+            componentClass="input"
+            value={this.state.title}
+            onChange={e => this.setState({ title: e.target.value })}
+            placeholder="제목"
+          />
+        </FormGroup>
         <FormGroup controlId="type">
           <ControlLabel>알림 타입</ControlLabel>
           <SimpleSelect

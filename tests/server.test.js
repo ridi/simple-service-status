@@ -1,5 +1,5 @@
 /** global: jest */
-/* global jest describe test expect beforeAll afterAll */
+/* global jest describe test expect beforeAll afterAll jasmine */
 
 const fs = require('fs');
 // Load local environments
@@ -14,6 +14,7 @@ const config = require('../src/config/server.config');
 const moment = require('moment');
 
 jest.dontMock('console');
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;  // 10s
 
 const serverPromise = Server.start();
 
@@ -134,6 +135,8 @@ const statusDataToBeAdded = {
   app_sem_version: '*',
   start_time: moment().format(),
   end_time: moment().add(2, 'hours').format(),
+  url: 'http://localhost:8080/added1',
+  title: 'title-added1',
 };
 
 const statusDataToBeUpdated = {
@@ -145,7 +148,8 @@ const statusDataToBeUpdated = {
   app_sem_version: '>=4.5.6 || =1.2.3',
   start_time: moment().format(),
   end_time: moment().add(3, 'hours').format(),
-  url: 'http://127.0.0.1',
+  url: 'http://localhost:8080/added1-updated1',
+  title: 'title-added1-updated1',
 };
 
 const statusDataToBeUpdatedForAllDay = {
@@ -155,6 +159,8 @@ const statusDataToBeUpdatedForAllDay = {
   is_activated: true,
   device_sem_version: '>=1.2.3',
   app_sem_version: '>=4.5.6 || =1.2.3',
+  url: 'http://localhost:8080/added1-updated1',
+  title: 'title-added1-updated1',
 };
 
 describe('status', () => {
@@ -242,6 +248,8 @@ describe('status', () => {
           const payload = JSON.parse(response.payload);
           expect(payload.success).toBe(true);
           expect(payload.data[0].contents).toBe(statusDataToBeAdded.contents);
+          expect(payload.data[0].url).toBe(statusDataToBeAdded.url);
+          expect(payload.data[0].title).toBe(statusDataToBeAdded.title);
           statusDataToBeAdded.id = payload.data[0].id;
         });
       });
@@ -270,6 +278,7 @@ describe('status', () => {
             expect(result[0].url).toBe(statusDataToBeUpdated.url);
             expect(moment(result[0].startTime).format()).toBe(statusDataToBeUpdated.start_time);
             expect(moment(result[0].endTime).format()).toBe(statusDataToBeUpdated.end_time);
+            expect(result[0].title).toBe(statusDataToBeUpdated.title);
           });
       });
     });
@@ -296,6 +305,7 @@ describe('status', () => {
             expect(result[0].appSemVersion).toBe(statusDataToBeUpdatedForAllDay.app_sem_version);
             expect(result[0].startTime).toBe(undefined);
             expect(result[0].endTime).toBe(undefined);
+            expect(result[0].title).toBe(statusDataToBeUpdatedForAllDay.title);
           });
       });
     });

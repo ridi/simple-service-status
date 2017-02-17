@@ -79,6 +79,7 @@ GET /v1/status/check?device_type=[device_type]&device_version=[device_version]&a
 | 이름               | 타입                                     | 설명                                                                    |
 | ------------------ | ---------------------------------------- | ----------------------------------------------------------------------- |
 | id                 | string                                   | 상태 ID                                                                 |
+| title              | string                                   | 알림 제목                                                               |
 | type               | enum (serviceFailure, routineInspection) | 상태 종류 (serviceFailure: 서버 문제, routineInspection: 정기 점검)     |
 | device_types       | array                                    | 알림의 대상 디바이스 종류                                               |
 | start_time         | string (ISO 8601 포맷)                   | 알림 시작 시간 (timezone 포함) - 설정되어 있지 않은 경우 모든 기간 대상 |
@@ -112,7 +113,8 @@ GET /api/v1/status/check?device_type=android&device_version=3.5.6&app_version=3.
             "app_sem_version": "<3.0.0 || =6.0.0",
             "start_time": "2017-01-13T11:40:55+09:00",
             "end_time": "2017-01-13T13:40:55+09:00",
-            "url": "http://..."
+            "url": "http://...",
+            "title": "..."
         }
     ],
     "success": true
