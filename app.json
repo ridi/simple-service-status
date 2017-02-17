@@ -1,0 +1,29 @@
+{
+  "name": "simple-notifier",
+  "scripts": {
+  },
+  "env": {
+    "ALLOWED_IP": {
+      "required": true
+    },
+    "MONGODB_URI": {
+      "required": true
+    },
+    "NPM_CONFIG_PRODUCTION": {
+      "required": true
+    },
+    "SECRET_KEY": {
+      "required": true
+    }
+  },
+  "formation": {
+  },
+  "addons": [
+    "mongolab"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
