@@ -64,6 +64,26 @@ class StatusList extends React.Component {
 
     this.expiredTableColumns = [
       {
+        title: '상태 타입',
+        display: (row) => {
+          if (!row.type) {
+            return '';
+          }
+          let typeLabel = 'Unknown';
+          for (let i = 0; i < self.props.statusTypes.length; i++) {
+            if (row.type === self.props.statusTypes[i].value) {
+              typeLabel = self.props.statusTypes[i].label;
+              break;
+            }
+          }
+          return <span>{typeLabel}</span>;
+        },
+      },
+      {
+        title: '제목',
+        display: row => <span>{row.title}</span>,
+      },
+      {
         title: '기간',
         display: (row) => {
           if (!row.startTime || !row.endTime) {
@@ -106,19 +126,13 @@ class StatusList extends React.Component {
         },
       },
       {
-        title: '상태 타입',
+        title: '내용',
+        isChildRow: true,
         display: (row) => {
-          if (!row.type) {
+          if (!row.contents) {
             return '';
           }
-          let typeLabel = 'Unknown';
-          for (let i = 0; i < self.props.statusTypes.length; i++) {
-            if (row.type === self.props.statusTypes[i].value) {
-              typeLabel = self.props.statusTypes[i].label;
-              break;
-            }
-          }
-          return <span>{typeLabel}</span>;
+          return <span dangerouslySetInnerHTML={{ __html: row.contents }} />;
         },
       },
       {
@@ -129,16 +143,6 @@ class StatusList extends React.Component {
             return '';
           }
           return <span><a href={row.url} target="_blank" rel="noopener noreferrer">{row.url}</a></span>;
-        },
-      },
-      {
-        title: '내용',
-        isChildRow: true,
-        display: (row) => {
-          if (!row.contents) {
-            return '';
-          }
-          return <span>{row.contents.split(/(\r\n|\n|\r)/gm).map(line => <p>{line}</p>)}</span>;
         },
       },
     ];
