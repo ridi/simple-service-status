@@ -9,7 +9,7 @@ const DeviceType = require('../repository/DeviceType');
 
 const menus = [
   { viewName: 'StatusList', title: '공지사항 관리', url: '/' },
-  { viewName: 'Settings', title: '설정', url: '/settings' },
+  { viewName: 'SettingList', title: '설정', url: '/settings' },
 ];
 
 function view(request, reply, childViewName, context) {
@@ -37,10 +37,8 @@ module.exports = [
   {
     method: 'GET',
     path: '/settings',
-    handler: (request, reply) => Promise.all([
-      StatusType.find(),
-      DeviceType.find(),
-    ]).then(([statusTypes, deviceTypes]) => view(request, reply, 'Settings', { statusTypes, deviceTypes }))
+    handler: (request, reply) => Promise.all([StatusType.find(), DeviceType.find()])
+      .then(([statusTypes, deviceTypes]) => view(request, reply, 'SettingList', { statusTypes, deviceTypes }))
       .catch(error => reply(error)),
   },
   {

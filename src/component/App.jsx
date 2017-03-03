@@ -33,7 +33,7 @@ class App extends React.Component {
       <div>
         <Navbar expanded={this.state.navExpanded} onToggle={navExpanded => this.setState({ navExpanded })}>
           <Navbar.Header>
-            <Navbar.Brand>긴급 공지사항 등록 시스템</Navbar.Brand>
+            <Navbar.Brand><a href="/">긴급 공지사항 등록 시스템</a></Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>
           <Navbar.Collapse>
@@ -52,6 +52,13 @@ class App extends React.Component {
     );
   }
 }
+
+App.defaultProps = {
+  auth: {
+    isAuthenticated: false,
+  },
+  menus: [],
+};
 
 App.propTypes = {
   viewName: React.PropTypes.string.isRequired,

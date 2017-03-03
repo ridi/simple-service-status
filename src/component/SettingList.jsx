@@ -63,6 +63,11 @@ class Settings extends React.Component {
   }
 }
 
+Settings.defaultProps = {
+  statusTypes: [],
+  deviceTypes: [],
+};
+
 Settings.propTypes = {
   statusTypes: React.PropTypes.arrayOf(React.PropTypes.shape({
     label: React.PropTypes.string.isRequired,

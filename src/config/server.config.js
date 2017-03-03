@@ -28,6 +28,7 @@ const configs = {
     publicPrefix: '/public/assets',
     apiPrefix: `/${API_CONTEXT}/v${API_VERSION}`,
     statusApiPrefix: `/${API_CONTEXT}/v${API_VERSION}/status`,
+    statusTypeApiPrefix: `/${API_CONTEXT}/v${API_VERSION}/status-types`,
     loginUI: '/login',
   },
   build: {
