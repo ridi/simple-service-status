@@ -84,3 +84,33 @@ exports.activateStatus = statusId => axios.put(`/status/${statusId}/activate`);
  * @param {string} statusId
  */
 exports.deactivateStatus = statusId => axios.put(`/status/${statusId}/deactivate`);
+
+/**
+ * Get status type list
+ */
+exports.getStatusTypes = () => axios.get('/status-types');
+
+/**
+ * Add a status type
+ * @param {Object} data
+ *    - {string} label
+ *    - {string} value
+ *    - {string} template
+ */
+exports.addStatusType = data => axios.post('/status-types', data);
+
+/**
+ * Update a status type
+ * @param {string} statusTypeId
+ * @param {Object} data
+ *    - {string} label
+ *    - {string} value
+ *    - {string} template
+ */
+exports.updateStatusType = (statusTypeId, data) => axios.put(`/status-types/${statusTypeId}`, data);
+
+/**
+ * Remove a status type
+ * @param {string} statusId
+ */
+exports.removeStatusType = statusTypeId => axios.delete(`/status-types/${statusTypeId}`);

@@ -172,6 +172,7 @@ class Table extends React.Component {
             columns={mainCols}
             onCheckboxChange={(isChecked, targetItem) => this.onCheckboxChanged(isChecked, targetItem)}
             checked={checked}
+            showCheckbox={this.props.showCheckbox}
           />
         );
       });
@@ -194,6 +195,12 @@ class Table extends React.Component {
     );
   }
 }
+
+Table.defaultProps = {
+  onCheckboxChange: () => {},
+  showCheckbox: false,
+};
+
 Table.propTypes = {
   items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
   columns: React.PropTypes.arrayOf(React.PropTypes.shape({

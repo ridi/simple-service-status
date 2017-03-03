@@ -37,9 +37,7 @@ module.exports = [
   {
     method: 'GET',
     path: '/settings',
-    handler: (request, reply) => Promise.all([StatusType.find(), DeviceType.find()])
-      .then(([statusTypes, deviceTypes]) => view(request, reply, 'SettingList', { statusTypes, deviceTypes }))
-      .catch(error => reply(error)),
+    handler: (request, reply) => view(request, reply, 'SettingList', {}),
   },
   {
     method: 'GET',

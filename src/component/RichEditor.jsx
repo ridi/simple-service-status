@@ -80,6 +80,18 @@ class RichEditor extends React.Component {
     this.setState({ buttons: newButtons });
   }
 
+  setContent(html) {
+    let editorState;
+    if (html) {
+      const blocks = Draft.convertFromHTML(html);
+      const contentState = ContentState.createFromBlockArray(blocks.contentBlocks, blocks.entityMap);
+      editorState = EditorState.createWithContent(contentState);
+    } else {
+      editorState = EditorState.createEmpty();
+    }
+    this.setState({ editorState });
+  }
+
   render() {
     return (
       <div className="editor-root">

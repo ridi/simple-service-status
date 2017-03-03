@@ -38,7 +38,7 @@ const datesObjects = [
     expected3: [
       { date1: '2016-03-23 10', date2: ['2016-03-23 10'] },
       { date3: 'string', date4: ['2016-03-23 10'] },
-    ]
+    ],
   },
 ];
 

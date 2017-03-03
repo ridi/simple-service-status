@@ -21,6 +21,11 @@ class Loading extends React.Component {
     return <div className={`loading-backdrop fade ${this.props.show ? 'in' : ''}`} style={this.state.style}><div className="loading" /></div>;
   }
 }
+
+Loading.defaultProps = {
+  show: false,
+};
+
 Loading.propTypes = {
   show: React.PropTypes.bool,
 };
