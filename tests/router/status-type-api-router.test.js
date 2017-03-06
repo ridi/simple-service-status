@@ -182,7 +182,7 @@ describe('statusType', () => {
       });
     });
 
-    test('remove status', () => {
+    test('remove status type', () => {
       return serverPromise.then((server) => {
         const remove1 = server.inject({
           url: `${url}/${statusTypeToBeAdded.id}`,

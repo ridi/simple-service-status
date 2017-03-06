@@ -97,8 +97,8 @@ class Settings extends React.Component {
     newState[tabName] = {};
     Object.assign(newState[tabName], this.state[tabName]);
 
-    return Api.getStatusTypes()
-      .then((response) => {
+    const api = (tabName === 'statusType') ? Api.getStatusTypes() : Api.getDeviceTypes();
+    return api.then((response) => {
         newState[tabName].items = response.data.data;
         newState[tabName].totalCount = response.data.totalCount;
         newState[tabName].error = null;

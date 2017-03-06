@@ -49,7 +49,7 @@ class CreateModal extends React.Component {
       endTime: moment().add(2, 'hours'),
       deviceTypes: props.options.deviceTypes,
       title: '',
-      contents: '',
+      contents: props.options.statusTypes[0].template || '',
       url: '',
       dateRange: { comparator: '~', startTime: moment(), endTime: moment().add(2, 'hours') },
       deviceSemVersion: [{ comparator: '*' }],

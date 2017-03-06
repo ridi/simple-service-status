@@ -29,6 +29,7 @@ const configs = {
     apiPrefix: `/${API_CONTEXT}/v${API_VERSION}`,
     statusApiPrefix: `/${API_CONTEXT}/v${API_VERSION}/status`,
     statusTypeApiPrefix: `/${API_CONTEXT}/v${API_VERSION}/status-types`,
+    deviceTypeApiPrefix: `/${API_CONTEXT}/v${API_VERSION}/device-types`,
     loginUI: '/login',
   },
   build: {

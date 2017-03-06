@@ -5,6 +5,10 @@
  */
 const Model = require('./Model');
 
-class DeviceType extends Model {}
+class DeviceType extends Model {
+  constructor() {
+    super('devicetype', [{ key: { value: 1 }, unique: true }]);
+  }
+}
 
 module.exports = new DeviceType();

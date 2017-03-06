@@ -111,6 +111,34 @@ exports.updateStatusType = (statusTypeId, data) => axios.put(`/status-types/${st
 
 /**
  * Remove a status type
- * @param {string} statusId
+ * @param {string} statusTypeId
  */
 exports.removeStatusType = statusTypeId => axios.delete(`/status-types/${statusTypeId}`);
+
+/**
+ * Get device type list
+ */
+exports.getDeviceTypes = () => axios.get('/device-types');
+
+/**
+ * Add a device type
+ * @param {Object} data
+ *    - {string} label
+ *    - {string} value
+ */
+exports.addDeviceType = data => axios.post('/device-types', data);
+
+/**
+ * Update a device type
+ * @param {string} deviceTypeId
+ * @param {Object} data
+ *    - {string} label
+ *    - {string} value
+ */
+exports.updateDeviceType = (deviceTypeId, data) => axios.put(`/device-types/${deviceTypeId}`, data);
+
+/**
+ * Remove a device type
+ * @param {string} deviceTypeId
+ */
+exports.removeDeviceType = deviceTypeId => axios.delete(`/device-types/${deviceTypeId}`);
