@@ -15,7 +15,10 @@ const HapiErrorHandler = require('./middleware/error-handler');
 const HapiTransformer = require('./middleware/transformer');
 const HapiAuthChecker = require('./middleware/auth-info-checker');
 
-const apiRouter = require('./router/api-router');
+const commonApiRouter = require('./router/common-api-router');
+const statusApiRouter = require('./router/status-api-router');
+const statusTypeApiRouter = require('./router/status-type-api-router');
+const deviceTypeApiRouter = require('./router/device-type-api-router');
 const baseRouter = require('./router/ui-router');
 const User = require('./repository/User');
 const DeviceType = require('./repository/DeviceType');
@@ -110,7 +113,10 @@ const _setRoutes = (extraRoutes) => {
       auth: false,
     },
   });
-  server.route(apiRouter);
+  server.route(commonApiRouter);
+  server.route(statusApiRouter);
+  server.route(statusTypeApiRouter);
+  server.route(deviceTypeApiRouter);
   server.route(baseRouter);
   if (extraRoutes) {
     server.route(extraRoutes);

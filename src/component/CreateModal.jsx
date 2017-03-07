@@ -49,7 +49,7 @@ class CreateModal extends React.Component {
       endTime: moment().add(2, 'hours'),
       deviceTypes: props.options.deviceTypes,
       title: '',
-      contents: '',
+      contents: props.options.statusTypes[0].template || '',
       url: '',
       dateRange: { comparator: '~', startTime: moment(), endTime: moment().add(2, 'hours') },
       deviceSemVersion: [{ comparator: '*' }],
@@ -84,6 +84,8 @@ class CreateModal extends React.Component {
       saveWarningMessage: null,
       buttons: this.modes.add,
     };
+
+    this.contentEditor = null;
 
     Object.assign(this.state, this.defaultData);
     this.ignoreWarning = false;
@@ -157,7 +159,11 @@ class CreateModal extends React.Component {
           }
           return self.modal.close();
         }).catch((err) => {
-          self.modal.message('저장 도중 에러가 발생했습니다. 다시 시도해주세요.', 'warning');
+          let message = '저장 도중 에러가 발생했습니다. 다시 시도해주세요.';
+          if (err.response && err.response.data && err.response.data.message) {
+            message = err.response.data.message;
+          }
+          self.modal.message(message, 'warning');
           throw err;
         });
       })
@@ -218,6 +224,16 @@ class CreateModal extends React.Component {
 
   onDeviceTypesChanged(deviceTypes) {
     this.setState({ deviceTypes }, () => this.onSelectionChanged());
+  }
+
+  onStatusTypesChanged(type) {
+    // 값이 변경될 때만 불리는 것이 아니라 클릭만 해도 불리기 때문에, 이전 상태값과의 비교가 필요.
+    if (this.state.type !== type) {
+      this.setState({ type });
+      if (type.template && this.contentEditor) {
+        this.contentEditor.setContent(type.template);
+      }
+    }
   }
 
   checkFormValidity(ignoreWarning) {
@@ -302,7 +318,7 @@ class CreateModal extends React.Component {
           <ControlLabel>알림 타입</ControlLabel>
           <SimpleSelect
             value={this.state.type}
-            onValueChange={type => this.setState({ type })}
+            onValueChange={type => this.onStatusTypesChanged(type)}
             placeholder="알림 타입을 선택하세요"
             options={this.props.options.statusTypes}
           />
@@ -326,6 +342,7 @@ class CreateModal extends React.Component {
             placeholder="제목"
           />
           <RichEditor
+            ref={(e) => { this.contentEditor = e; }}
             value={this.state.contents}
             onChange={contents => this.setState({ contents })}
             placeholder="내용"

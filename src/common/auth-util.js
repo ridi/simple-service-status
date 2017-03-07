@@ -18,10 +18,10 @@ const crypto = require('crypto');
  * @param {number} ttl - time to live in millisecond
  * @returns {*}
  */
-exports.generateToken = (account, ttl) => JWT.sign({
+exports.generateToken = (account, ttl = config.auth.tokenTTL) => JWT.sign({
   username: account.username,
   role: account.role,
-  exp: new Date().getTime() + (ttl || config.auth.tokenTTL),
+  exp: new Date().getTime() + ttl,
   ip: account.ip,
 }, process.env.SECRET_KEY || config.auth.secretKey);
 

@@ -242,6 +242,9 @@ label {
     @media (min-width: 768px) {
       margin-right: 20px;
     }
+    &:hover, &:focus {
+      color: #ececec;
+    }
   }
   .navbar-nav {
     & > li > a {
