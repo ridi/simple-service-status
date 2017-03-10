@@ -56,7 +56,8 @@ class RichEditor extends React.Component {
   onChange(editorState) {
     this.setState({ editorState });
     this.changeButtonState(this.getCurrent(editorState));
-    this.props.onChange(stateToHTML(editorState.getCurrentContent()));
+    // TODO remove replace(/\n/g, '') after this PR(sstur/draft-js-export-html#66) is merged
+    this.props.onChange(stateToHTML(editorState.getCurrentContent(), { prettyPrint: false }).replace(/\n/g, ''));
   }
 
   getCurrent(editorState) {
