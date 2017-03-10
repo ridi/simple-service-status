@@ -19,16 +19,11 @@ const ContentState = Draft.ContentState;
 const RichUtils = Draft.RichUtils;
 const stateToHTML = Exporter.stateToHTML;
 
-const STYLE_MAP = Object.freeze({
-  STRIKE_THROUGH: {
-    textDecoration: 'line-through',
-  },
-});
 const DEFAULT_BUTTON = Object.freeze({
   BOLD: false,
   ITALIC: false,
   UNDERLINE: false,
-  STRIKE_THROUGH: false,
+  STRIKETHROUGH: false,
   'unordered-list-item': false,
   'ordered-list-item': false,
 });
@@ -101,7 +96,7 @@ class RichEditor extends React.Component {
             <Button bsSize="small" active={this.state.buttons.BOLD} onMouseDown={() => this.onToggleInlineStyle('BOLD')}><i className="fa fa-bold" aria-hidden="true" /></Button>
             <Button bsSize="small" active={this.state.buttons.ITALIC} onMouseDown={() => this.onToggleInlineStyle('ITALIC')}><i className="fa fa-italic" aria-hidden="true" /></Button>
             <Button bsSize="small" active={this.state.buttons.UNDERLINE} onMouseDown={() => this.onToggleInlineStyle('UNDERLINE')}><i className="fa fa-underline" aria-hidden="true" /></Button>
-            <Button bsSize="small" active={this.state.buttons.STRIKE_THROUGH} onMouseDown={() => this.onToggleInlineStyle('STRIKE_THROUGH')}><i className="fa fa-strikethrough" aria-hidden="true" /></Button>
+            <Button bsSize="small" active={this.state.buttons.STRIKETHROUGH} onMouseDown={() => this.onToggleInlineStyle('STRIKETHROUGH')}><i className="fa fa-strikethrough" aria-hidden="true" /></Button>
           </ButtonGroup>
           <ButtonGroup>
             <Button bsSize="small" active={this.state.buttons['unordered-list-item']} onMouseDown={() => this.onToggleBlockType('unordered-list-item')}><i className="fa fa-list-ul" aria-hidden="true" /></Button>
@@ -114,7 +109,6 @@ class RichEditor extends React.Component {
           onChange={s => this.onChange(s)}
           onTab={e => this.onTab(e)}
           placeholder={this.props.placeholder}
-          customStyleMap={STYLE_MAP}
         />
       </div>
     );
