@@ -58,6 +58,7 @@ const configs = {
       { label: 'Android', value: 'android' },
       { label: 'iOS', value: 'ios' },
       { label: 'Paper', value: 'paper' },
+      { label: 'Paper Lite', value: 'paper_lite' },
       { label: 'QT', value: 'qt' },
     ],
     statusTypes: [
