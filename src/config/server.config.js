@@ -59,7 +59,7 @@ const configs = {
       { label: 'iOS', value: 'ios' },
       { label: 'Paper', value: 'paper' },
       { label: 'Paper Lite', value: 'paper_lite' },
-      { label: 'QT', value: 'qt' },
+      { label: 'PC/Mac', value: 'qt' },
     ],
     statusTypes: [
       { label: '서버 문제', value: 'serviceFailure' },
