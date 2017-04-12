@@ -85,7 +85,7 @@ class RichEditor extends React.Component {
     } else {
       editorState = EditorState.createEmpty();
     }
-    this.setState({ editorState });
+    this.onChange(editorState);
   }
 
   render() {

@@ -4,3 +4,4 @@
 /public/
 webpack-assets.json
 /coverage/
+/dist/

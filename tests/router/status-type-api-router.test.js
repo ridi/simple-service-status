@@ -13,7 +13,7 @@ const StatusType = require('../../src/repository/StatusType');
 const config = require('../../src/config/server.config.js');
 
 jest.dontMock('console');
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;  // 10s
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;  // 20s
 
 const serverPromise = Server.start();
 
