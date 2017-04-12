@@ -309,10 +309,23 @@ label {
     }
   }
   &.multi-select.default.root-node {
+    .value-wrapper ~ .value-wrapper {
+      margin-left: 2px;
+    }
     .simple-value {
       background: #ebecf1;
       border: 1px solid #6b81b6;
       color: #6b81b6;
+      &.item-removable {
+        button {
+          border-left: 1px solid #c5c5c5;
+          border-top: 0;
+          border-bottom: 0;
+          border-right: 0;
+          background-color: inherit;
+          color: inherit;
+        }
+      }
     }
     .react-selectize-control {
       .react-selectize-search-field-and-selected-values {
@@ -449,4 +462,11 @@ label {
   max-height: 120px;
   overflow: auto;
   padding: 7px;
+}
+
+// Modal
+.modal-dialog {
+  .modal-lg {
+    min-width: 520px;
+  }
 }

@@ -19,20 +19,27 @@ class VersionSelector extends React.Component {
     super(props);
     this.state = {
       values: [defaultCondition],
+      addButtonDisabled: false,
     };
     this.focusInputs = {};
   }
 
   componentWillReceiveProps(newProps) {
     if (newProps.values) {
-      this.setState({ values: newProps.values });
+      this.setState({
+        values: newProps.values,
+        addButtonDisabled: newProps.values.some(val => val.comparator === '*'),
+      });
     }
   }
 
   onVersionChanged(index, changedItem) {
     const newValues = this.state.values.slice();
     newValues[index] = Object.assign({}, this.state.values[index], changedItem);
-    this.setState({ values: newValues }, () => {
+    this.setState({
+      values: newValues,
+      addButtonDisabled: newValues.some(val => val.comparator === '*'),
+    }, () => {
       if (changedItem.comparator && this.focusInputs[index][changedItem.comparator]) {
         ReactDOM.findDOMNode(this.focusInputs[index][changedItem.comparator]).focus();
       }
@@ -114,7 +121,7 @@ class VersionSelector extends React.Component {
                 type="text"
                 value={value.versionStart}
                 onChange={e => this.onVersionChanged(index, { versionStart: e.target.value })}
-                placeholder=">= 시작 버전"
+                placeholder=">= 시작 버전 (X.Y.Z 형태)"
                 disabled={this.props.disabled}
                 style={value.comparator !== '~' ? { display: 'none' } : {}}
               />
@@ -123,7 +130,7 @@ class VersionSelector extends React.Component {
                 type="text"
                 value={value.versionEnd}
                 onChange={e => this.onVersionChanged(index, { versionEnd: e.target.value })}
-                placeholder="< 끝 버전"
+                placeholder="< 끝 버전 (X.Y.Z 형태)"
                 disabled={this.props.disabled}
                 style={value.comparator !== '~' ? { display: 'none' } : {}}
               />
@@ -138,7 +145,7 @@ class VersionSelector extends React.Component {
                 type="text"
                 value={value.version}
                 onChange={e => this.onVersionChanged(index, { version: e.target.value })}
-                placeholder="= 일치하는 버전"
+                placeholder="= 일치하는 버전 (X.Y.Z 형태)"
                 style={value.comparator !== '=' ? { display: 'none' } : {}}
                 disabled={this.props.disabled}
               />
@@ -147,15 +154,19 @@ class VersionSelector extends React.Component {
                 onClick={() => this.removeCondition(index)}
                 disabled={index === 0 || this.props.disabled}
               >
-                <Glyphicon glyph="remove" />
+                &#x2715;
               </Button>
             </div>
           );
         })}
         <Row>
           <Col xs={12}>
-            <Button className="selector-add-btn" onClick={() => this.addCondition()} disabled={this.props.disabled}>
-              <Glyphicon glyph="plus" /> 조건 추가하기 (OR)
+            <Button
+              className="selector-add-btn"
+              onClick={() => this.addCondition()}
+              disabled={this.props.disabled || this.state.addButtonDisabled}
+            >
+              + 조건 추가 (OR)
             </Button>
           </Col>
         </Row>

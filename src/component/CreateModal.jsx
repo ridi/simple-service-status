@@ -356,6 +356,16 @@ class CreateModal extends React.Component {
             onValuesChange={deviceTypes => this.onDeviceTypesChanged(deviceTypes)}
             placeholder="디바이스 타입을 선택하세요"
             options={this.props.options.deviceTypes}
+            renderValue={item =>
+              <div className="simple-value item-removable">
+                <span>{item.label}</span>
+                <button
+                  onClick={() => this.setState({
+                    deviceTypes: this.state.deviceTypes.filter(t => t.value !== item.value),
+                  })}
+                >x</button>
+              </div>
+            }
           />
         </FormGroup>
         <Row>
