@@ -463,3 +463,10 @@ label {
   overflow: auto;
   padding: 7px;
 }
+
+// Modal
+.modal-dialog {
+  .modal-lg {
+    min-width: 520px;
+  }
+}
