@@ -360,9 +360,7 @@ class CreateModal extends React.Component {
               <div className="simple-value item-removable">
                 <span>{item.label}</span>
                 <button
-                  onClick={() => this.setState({
-                    deviceTypes: this.state.deviceTypes.filter(t => t.value !== item.value),
-                  })}
+                  onClick={() => this.onDeviceTypesChanged(this.state.deviceTypes.filter(t => t.value !== item.value))}
                 >x</button>
               </div>
             }
