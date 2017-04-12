@@ -82,11 +82,11 @@ const statusDataToBeUpdatedForAllDay = {
   title: 'title-added1-updated1',
 };
 
+const makeUrl = check => `${config.url.statusApiPrefix}/check?device_type=${check.deviceType}&device_version=${check.deviceVersion}&app_version=${check.appVersion}`;
+
 describe('status', () => {
   describe('checkStatus', () => {
     let ids = [];
-
-    const makeUrl = check => `${config.url.statusApiPrefix}/check?device_type=${check.deviceType}&device_version=${check.deviceVersion}&app_version=${check.appVersion}`;
 
     beforeAll(() => {
       return Promise.all([
@@ -150,6 +150,54 @@ describe('status', () => {
     });
 
     afterAll(() => Promise.all(ids.map(id => Status.remove(id))));
+  });
+
+  describe('ordering by startTime ASC', () => {
+    let added;
+    const statusData = {
+      type: 'routineInspection',
+      deviceTypes: ['android', 'ios'],
+      contents: 'routineInspection-test1',
+      isActivated: true,
+      deviceSemVersion: '*',
+      appSemVersion: '*',
+      startTime: new Date(),
+      endTime: new Date(new Date().getTime() + 3600000),
+    };
+    beforeAll(() => {
+      const items = [];
+      for (let i = 0; i < 10; i++) {
+        items.push(Object.assign({}, statusData, {
+          startTime: new Date(new Date().getTime() - Math.floor((Math.random() * 3600000))),
+        }));
+      }
+
+      return Promise.all(items.map(item => Status.add(item)))
+        .then((results) => {
+          added = results.map(result => result.data[0]._id);
+        });
+    });
+
+    test('ordering by startTime ASC', () => {
+      return serverPromise.then((server) => {
+        return server.inject({ url: makeUrl(check2) }).then((response) => {
+          expect(response.statusCode).toBe(200);
+          const payload = JSON.parse(response.payload);
+          expect(payload.data).toBeDefined();
+          expect(payload.data.length).toBeGreaterThanOrEqual(10);
+
+          let previous;
+          payload.data.forEach((d) => {
+            if (previous) {
+              expect(new Date(d.start_time).getTime()).toBeGreaterThanOrEqual(new Date(previous.start_time).getTime());
+            }
+            previous = d;
+          });
+        });
+      });
+    });
+
+    afterAll(() => Promise.all(added.map(id => Status.remove(id))));
   });
 
   describe('status CRUD', () => {

@@ -20,11 +20,11 @@ class Status extends Model {
     return super.find(query, sort, skip, limit);
   }
 
-  findWithCache(query) {
+  findWithCache(query, sort = {}) {
     return Promise.resolve().then(() => {
       const list = cache.get('status');
       if (list === undefined) {
-        return this.find(query).then(((result) => {
+        return this.find(query, sort).then(((result) => {
           cache.set('status', result);
           return result;
         }));
@@ -33,7 +33,7 @@ class Status extends Model {
     });
   }
 
-  findWithComparators(deviceType, deviceVersion, appVersion) {
+  findWithComparators(deviceType, deviceVersion, appVersion, sort) {
     const self = this;
     const now = new Date();
     if (deviceVersion !== '*' && !semver.valid(deviceVersion)) {
@@ -49,7 +49,7 @@ class Status extends Model {
         { startTime: { $lte: now }, endTime: { $gt: now }, isActivated: true },
         { startTime: { $exists: false }, endTime: { $exists: false }, isActivated: true },
       ],
-    }).then(results => results.filter(
+    }, sort).then(results => results.filter(
       result => (deviceType === '*' || result.deviceTypes.includes(deviceType))
         && self._isSatisfiedVersion(result.deviceSemVersion, deviceVersion)
         && self._isSatisfiedVersion(result.appSemVersion, appVersion)
