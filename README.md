@@ -12,20 +12,20 @@ Simple Notifiers는 특정 앱/플랫폼 버전을 지정하여 공지사항을 
 버전 비교를 위해서 내부적으로 [SemVer](http://semver.org/)를 사용하고 있습니다.
 자세한 비교 방식을 확인하시려면 [SemVer Calculator](https://semver.npmjs.com/)를 참조하세요.
 
-## Development
-
-### Prerequisite
+## Prerequisite
 
 - [Node](https://nodejs.org/ko/) 6.9.1 버전 이상 설치
 - [MongoDB](https://www.mongodb.com/) 설치
 
-### Install
+## Install
 
 ```
 $ git clone git@github.com:ridibooks/viewer-notification.git [target directory]
 $ cd [taget directory]
 $ npm install
 ```
+
+## Run
 
 ### Make .env file
 
@@ -41,10 +41,15 @@ SECRET_KEY=secret_key
 
 ### Run
 
-다음을 실행하면 서버(포트 번호: 8080)와 모듈 핫 리로딩을 위한 서버(포트 번호: 3000)가 함께 구동됩니다.
-
+For development
 ```
-npm start
+# 다음을 실행하면 서버(포트 번호: 8080)와 모듈 핫 리로딩을 위한 서버(포트 번호: 3000)가 함께 구동됩니다.
+npm run start:dev
+```
+
+For production
+```
+npm run start
 ```
 
 구동 후 [http://localhost:8080](http://localhost:8080)으로 접속하면 관리 UI로 연결됩니다.

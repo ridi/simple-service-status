@@ -3,7 +3,7 @@
   "rules": {
     // 테스트 또는 개발환경을 구성하는 파일에서는 devDependency 사용을 허용
     "import/no-extraneous-dependencies": ["error", {
-      "devDependencies": ["webpack.*.config.js", "*-dev-server.js", "**/*.test.js", "**/*.spec.js"]}
+      "devDependencies": ["webpack.*.config.js", "*-dev-server.js", "**/*.test.js", "**/*.spec.js", "gulpfile.js"]}
     ]
   }
 }

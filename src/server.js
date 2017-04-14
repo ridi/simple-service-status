@@ -2,10 +2,13 @@
  * Server main
  *
  * @since 1.0.0
- *
  */
 
-const Hapi = require('hapi');
+require('dotenv').config();
+require('babel-register');
+require('babel-polyfill');
+
+import Hapi from 'hapi';
 
 const vision = require('vision');
 const inert = require('inert');
@@ -29,10 +32,6 @@ const NotifierError = require('./common/Error');
 
 const util = require('./common/common-util');
 const logger = require('winston');
-
-// For JSX transpiling
-require('babel-register');
-require('babel-polyfill');
 
 const server = new Hapi.Server();
 server.connection({ port: process.env.PORT || config.defaults.port });
@@ -92,27 +91,15 @@ const _setAuthStrategy = () => {
 
 const _setViewEngine = () => {
   server.views({
-    engines: { jsx: HapiReactViews },
+    engines: { jsx: HapiReactViews, js: HapiReactViews },
     relativeTo: __dirname,
     path: config.directory.component,
+    defaultExtension: 'js',
   });
 };
 
 const _setRoutes = (extraRoutes) => {
   // for static assets
-  server.route({
-    method: 'GET',
-    path: `${config.url.publicPrefix}/{param*}`,
-    handler: {
-      directory: {
-        path: config.directory.public,
-        listing: false,
-      },
-    },
-    config: {
-      auth: false,
-    },
-  });
   server.route(commonApiRouter);
   server.route(statusApiRouter);
   server.route(statusTypeApiRouter);

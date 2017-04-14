@@ -1,11 +1,8 @@
 /** global: jest */
 /* global jest describe test expect beforeAll afterAll jasmine */
 
-const fs = require('fs');
 // Load local environments
-if (fs.existsSync(`${__dirname}/../../.env`)) {
-  require('node-env-file')(`${__dirname}/../../.env`);
-}
+require('dotenv').config();
 process.env.PORT = 9000;
 
 const Server = require('../../src/server');
