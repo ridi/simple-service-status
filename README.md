@@ -39,7 +39,7 @@ MONGODB_URI=mongodb://your.domain:port/database_name
 SECRET_KEY=secret_key
 ```
 
-### Run
+### Run Script
 
 For development
 ```
@@ -49,12 +49,12 @@ npm run start:dev
 
 For production
 ```
-npm run start
+npm start
 ```
 
 구동 후 [http://localhost:8080](http://localhost:8080)으로 접속하면 관리 UI로 연결됩니다.
 
-### Test
+## Test
 
 ```
 npm test
