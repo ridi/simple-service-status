@@ -5,3 +5,5 @@
 webpack-assets.json
 /coverage/
 /dist/
+npm-debug.log
+

@@ -22,7 +22,7 @@ const configs = {
   },
   directory: {
     component: 'component',
-    public: 'public',
+    public: 'dist/public/',
   },
   url: {
     publicPrefix: '/public/assets',
@@ -33,17 +33,13 @@ const configs = {
     loginUI: '/login',
   },
   build: {
-    entry: './src/client.js',
-    webpackEntry: `webpack-hot-middleware/client?path=http://0.0.0.0:${WEBPACK_SERVER_PORT}/__webpack_hmr&timeout=10000`,
+    sourceDirectory: 'src',
+    clientEntry: './client.js',
+    serverEntry: 'index.js',
     webpackServerPort: WEBPACK_SERVER_PORT,
-    webpackAssetsFileName: 'webpack-assets.json',
-    webpackAssetsDirName: '',
-    outputDirectoryName: 'public',
-    outputJsFileName: 'client.bundle.js',
-    outputCssFileName: 'client.bundle.css',
-    publicUrlPrefix: '/public/build',
-    hotUpdateChunkFileName: 'hot-update.js',
-    hotUpdateMainFileName: 'hot-update.json',
+    clientOutputDirectoryName: 'dist/public',
+    serverOutputDirectoryName: 'dist',
+    clientOutputJsFileName: 'client.bundle.js',
   },
   initialData: {
     users: [
