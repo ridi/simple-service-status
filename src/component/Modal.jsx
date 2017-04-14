@@ -1,9 +1,10 @@
-const React = require('react');
-const PropTypes = require('prop-types');
-
-const Button = require('react-bootstrap/lib/Button');
-const RBModal = require('react-bootstrap/lib/Modal');
-const Alert = require('react-bootstrap/lib/Alert');
+import React from 'react';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  Modal as RBModal,
+  Alert,
+} from 'react-bootstrap';
 
 const MODE_PRESET = {
   default: {
@@ -27,7 +28,7 @@ const MODE_PRESET = {
   },
 };
 
-class Modal extends React.Component {
+export default class Modal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -118,6 +119,3 @@ Modal.propTypes = {
     style: PropTypes.oneOf(['default', 'primary', 'success', 'info', 'warning', 'danger', 'link']),
   }),
 };
-
-module.exports = Modal;
-

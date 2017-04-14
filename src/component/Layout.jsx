@@ -1,8 +1,8 @@
-const React = require('react');
-const PropTypes = require('prop-types');
-const config = require('../config/server.config');
+import React from 'react';
+import PropTypes from 'prop-types';
+import config from '../config/server.config';
 
-class Layout extends React.Component {
+export default class Layout extends React.Component {
   render() {
     return (
       <html lang="ko">
@@ -29,7 +29,5 @@ class Layout extends React.Component {
 }
 
 Layout.propTypes = {
-  state: PropTypes.string,
+  state: PropTypes.string.isRequired,
 };
-
-module.exports = Layout;

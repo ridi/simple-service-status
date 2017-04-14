@@ -1,20 +1,21 @@
-const React = require('react');
-const PropTypes = require('prop-types');
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const FormControl = require('react-bootstrap/lib/FormControl');
-const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
-const ButtonGroup = require('react-bootstrap/lib/ButtonGroup');
-const Button = require('react-bootstrap/lib/Button');
-const OverlayTrigger = require('react-bootstrap/lib/OverlayTrigger');
-const Tooltip = require('react-bootstrap/lib/Tooltip');
+import {
+  FormControl,
+  ButtonToolbar,
+  ButtonGroup,
+  Button,OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
 
-const DateTime = require('react-datetime');
+import DateTime from 'react-datetime';
 
 const dateFormat = 'YYYY-MM-DD';
 const timeFormat = 'HH:mm';
 const defaultCondition = { comparator: '~' };
 
-class DateRangeSelector extends React.Component {
+export default class DateRangeSelector extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -110,5 +111,3 @@ DateRangeSelector.propTypes = {
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
 };
-
-module.exports = DateRangeSelector;

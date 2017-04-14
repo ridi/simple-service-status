@@ -1,23 +1,25 @@
-const React = require('react');
-const PropTypes = require('prop-types');
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const Table = require('./Table');
-const Loading = require('./Loading');
-const StatusTypeCreateModal = require('./StatusTypeCreateModal');
-const Modal = require('./Modal');
+import {
+  Tabs,
+  Tab,
+  Row,
+  Col,
+  ButtonToolbar,
+  Button,
+} from 'react-bootstrap';
 
-const Tabs = require('react-bootstrap/lib/Tabs');
-const Tab = require('react-bootstrap/lib/Tab');
-const Row = require('react-bootstrap/lib/Row');
-const Col = require('react-bootstrap/lib/Col');
-const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
-const Button = require('react-bootstrap/lib/Button');
+import Table from './Table';
+import Loading from './Loading';
+import StatusTypeCreateModal from './StatusTypeCreateModal';
+import Modal from './Modal';
 
-const Api = require('../common/api');
+import Api from '../common/api';
 
 // TODO TableTab 컴포넌트 만들어서 공통화 하기
 
-class Settings extends React.Component {
+export default class Settings extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -217,5 +219,3 @@ Settings.propTypes = {
     value: PropTypes.string.isRequired,
   })),
 };
-
-module.exports = Settings;

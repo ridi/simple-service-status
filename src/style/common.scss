@@ -2,6 +2,7 @@
 @import '../../node_modules/react-datetime/css/react-datetime.css';
 
 $default-background-color: #4e8bbf;
+$error-color: #ef6767;
 
 :global {
   body {
@@ -167,6 +168,65 @@ $default-background-color: #4e8bbf;
       box-shadow: none;
     }
   }
+  .form-group {
+    .form-control-feedback {
+      color: #afafaf;
+      width: auto;
+      height: 18px;
+      line-height: inherit;
+      position: relative;
+      text-align: right;
+      margin-bottom: -18px;
+      font-family: inherit;
+      top: 0 !important;
+      &:before {
+        content: none;
+      }
+    }
+    &.has-success {
+      .form-control {
+        border: 1px solid #cccccc;
+        box-shadow: none;
+      }
+      .checkbox,
+      .checkbox-inline,
+      &.checkbox label,
+      &.checkbox-inline label,
+      .control-label,
+      .help-block,
+      .radio,
+      .radio-inline,
+      &.radio label,
+      &.radio-inline label {
+        color: #4e8bbf;
+      }
+    }
+    &.has-error {
+      .form-control-wrap {
+        border: 1px solid $error-color;
+        padding: 4px;
+      }
+      .form-control {
+        border: 1px solid #cccccc;
+        box-shadow: none;
+      }
+      .form-control-feedback {
+        color: $error-color;
+      }
+      .checkbox,
+      .checkbox-inline,
+      &.checkbox label,
+      &.checkbox-inline label,
+      .control-label,
+      .help-block,
+      .radio,
+      .radio-inline,
+      &.radio label,
+      &.radio-inline label {
+        color: $error-color;
+      }
+    }
+  }
   .btn {
     &.btn-default {
       color: #5a5a5a;
@@ -290,6 +350,9 @@ $default-background-color: #4e8bbf;
   .react-selectize {
     &.root-node.default {
       width: auto;
+      height: auto;
+      padding: 0;
+      border:0;
       .react-selectize-control {
         padding: 0;
         background-color: #fff !important;
@@ -310,6 +373,9 @@ $default-background-color: #4e8bbf;
         .react-selectize-search-field-and-selected-values {
           padding-left: 10px;
         }
+      }
+      .dropdown-menu {
+        height: auto;
       }
     }
     &.root-node.default.disabled {
@@ -350,9 +416,9 @@ $default-background-color: #4e8bbf;
     .selector-item {
       display: flex;
       align-content: stretch;
-      margin-bottom: 4px;
       border-radius: 2px;
       border: 1px solid #ccc;
+      margin-bottom: 4px;
       .selector-comparator {
         width: 120px;
         margin: 0;
@@ -371,6 +437,9 @@ $default-background-color: #4e8bbf;
             }
           }
         }
+      }
+      &:last-child {
+        margin-bottom: 0;
       }
       .selector-inputs {
         flex-grow: 1;

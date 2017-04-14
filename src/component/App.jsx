@@ -1,14 +1,15 @@
 /* global window */
-const React = require('react');
-const PropTypes = require('prop-types');
+import React from 'react';
+import PropTypes from 'prop-types';
+import {
+  Navbar,
+  Nav,
+  NavItem,
+  Grid,
+  Row,
+} from 'react-bootstrap';
 
-const Navbar = require('react-bootstrap/lib/Navbar');
-const Nav = require('react-bootstrap/lib/Nav');
-const NavItem = require('react-bootstrap/lib/NavItem');
-const Grid = require('react-bootstrap/lib/Grid');
-const Row = require('react-bootstrap/lib/Row');
-
-class App extends React.Component {
+export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { navExpanded: false };
@@ -21,7 +22,7 @@ class App extends React.Component {
   }
 
   render() {
-    const ChildComponent = require(`./${this.props.viewName}`);
+    const ChildComponent = require(`./${this.props.viewName}`).default;
     const children = React.createElement(ChildComponent, this.props);
     let button;
     if (this.props.auth && this.props.auth.isAuthenticated) {
@@ -73,5 +74,3 @@ App.propTypes = {
     title: PropTypes.string.isRequired,
   })),
 };
-
-module.exports = App;

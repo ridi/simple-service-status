@@ -1,11 +1,9 @@
-const React = require('react');
-const PropTypes = require('prop-types');
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const Row = require('react-bootstrap/lib/Row');
-const Col = require('react-bootstrap/lib/Col');
-const Layout = require('./Layout');
+import Layout from './Layout';
 
-class Error extends React.Component {
+export default class Error extends React.Component {
   render() {
     return (
       <Layout>
@@ -30,5 +28,3 @@ Error.propTypes = {
   code: PropTypes.string,
   message: PropTypes.string,
 };
-
-module.exports = Error;

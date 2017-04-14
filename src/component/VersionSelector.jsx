@@ -1,21 +1,22 @@
-const React = require('react');
-const PropTypes = require('prop-types');
-const ReactDOM = require('react-dom');
+import React from 'react';
+import PropTypes from 'prop-types';
+import ReactDOM from 'react-dom';
 
-const Row = require('react-bootstrap/lib/Row');
-const Col = require('react-bootstrap/lib/Col');
-const FormControl = require('react-bootstrap/lib/FormControl');
-const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
-const ButtonGroup = require('react-bootstrap/lib/ButtonGroup');
-const Button = require('react-bootstrap/lib/Button');
-const Glyphicon = require('react-bootstrap/lib/Glyphicon');
-const OverlayTrigger = require('react-bootstrap/lib/OverlayTrigger');
-const Tooltip = require('react-bootstrap/lib/Tooltip');
+import {
+  Row,
+  Col,
+  FormControl,
+  ButtonToolbar,
+  ButtonGroup,
+  Button,
+  OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
 
 const defaultCondition = { comparator: '*' };
 const defaultConditionAdded = { comparator: '~' };
 
-class VersionSelector extends React.Component {
+export default class VersionSelector extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -186,5 +187,3 @@ VersionSelector.propTypes = {
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
 };
-
-module.exports = VersionSelector;
