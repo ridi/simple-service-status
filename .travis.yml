@@ -7,3 +7,10 @@ branches:
   only:
   - production
   - master
+deploy:
+  provider: npm
+  email: kyungmi.k@ridi.com
+  api_key:
+    secure: YipL5ehNtE96BqMWLnNTchoDg8kctQ8tvWWCJFJuctpD7HRRLzzyMyx29u2kWv0yjyQMYwo6GttAvihpoTxcsClGeKRdQbRvJubpe90v5LMtoREcCpFWcgtT6/fTOgEnaG5qOPzLhGVJ0kYiMYbrjjGj3Rue9addvf0HXrAI8jdeMAJoXfcIrrVCUeWU/pGrvI0Z7DG5JClA6WnkDLqDNvUoxeiqpo/rPcq81Wf/3EpqlNHkJ7k1t0YBemjMao1/y3OYdufUJfZqT1gXb6oDMxBgKhNfqrF7poK9hSrXPmFXDYUQMHENfW6IJKehI15+9dvRUgLH3bprn5VvRXnyVr9USfbO25j+6zGnyENphStGzfnrktunfQ482G72LVgskClygomZ2+B3xbbrUjV2jKCdk6LMfHCgG1hX65vBuXJhq8LdyH8mUEZdiHY9PI7GCCMzZ7MYEw7z7pJK8Im/irThBypzSIDsXrABblQZL4i3eSSJJSDykbGM6Q47zTvgi6m/s/KH6WPm7P1FCupBKbpzGA/Xb35y/uQyVZWUXqmq0b59rnvfD0C03PtEm8j07hwGN4zsjBBCdY85sk0RpPBjbnK4NmpbtlTHY76dpumJg4TkcZXjq3SAHkgmf0mtXQzsOqTYVvgjzKLb0CeJgkH9ZAzlt8j+rShbYPY7xRM=
+  on:
+    tags: true
