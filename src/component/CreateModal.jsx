@@ -1,4 +1,5 @@
 const React = require('react');
+const PropTypes = require('prop-types');
 
 const Modal = require('./Modal');
 const VersionSelector = require('./VersionSelector');
@@ -403,7 +404,7 @@ class CreateModal extends React.Component {
 }
 
 CreateModal.propTypes = {
-  options: React.PropTypes.objectOf(React.PropTypes.arrayOf(React.PropTypes.objectOf(React.PropTypes.string))),
+  options: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string))),
 };
 
 module.exports = CreateModal;

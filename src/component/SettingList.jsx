@@ -1,4 +1,5 @@
 const React = require('react');
+const PropTypes = require('prop-types');
 
 const Table = require('./Table');
 const Loading = require('./Loading');
@@ -207,13 +208,13 @@ Settings.defaultProps = {
 };
 
 Settings.propTypes = {
-  statusTypes: React.PropTypes.arrayOf(React.PropTypes.shape({
-    label: React.PropTypes.string.isRequired,
-    value: React.PropTypes.string.isRequired,
+  statusTypes: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
   })),
-  deviceTypes: React.PropTypes.arrayOf(React.PropTypes.shape({
-    label: React.PropTypes.string.isRequired,
-    value: React.PropTypes.string.isRequired,
+  deviceTypes: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
   })),
 };
 

@@ -1,4 +1,5 @@
 const React = require('react');
+const PropTypes = require('prop-types');
 
 const Modal = require('./Modal');
 const RichEditor = require('./RichEditor');
@@ -185,7 +186,7 @@ StatusTypeCreateModal.defaultProps = {
 };
 
 StatusTypeCreateModal.propTypes = {
-  onSuccess: React.PropTypes.func,
+  onSuccess: PropTypes.func,
 };
 
 module.exports = StatusTypeCreateModal;

@@ -1,4 +1,5 @@
 const React = require('react');
+const PropTypes = require('prop-types');
 
 const Button = require('react-bootstrap/lib/Button');
 const RBModal = require('react-bootstrap/lib/Modal');
@@ -105,16 +106,16 @@ Modal.defaultProps = {
 };
 
 Modal.propTypes = {
-  title: React.PropTypes.string.isRequired,
-  size: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]),
-  mode: React.PropTypes.oneOf(['default', 'alert', 'confirm']),
-  onConfirm: React.PropTypes.func,
-  onCancel: React.PropTypes.func,
-  onClose: React.PropTypes.func,
-  buttons: React.PropTypes.shape({
-    label: React.PropTypes.string.isRequired,
-    onClick: React.PropTypes.func,
-    style: React.PropTypes.oneOf(['default', 'primary', 'success', 'info', 'warning', 'danger', 'link']),
+  title: PropTypes.string.isRequired,
+  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  mode: PropTypes.oneOf(['default', 'alert', 'confirm']),
+  onConfirm: PropTypes.func,
+  onCancel: PropTypes.func,
+  onClose: PropTypes.func,
+  buttons: PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    onClick: PropTypes.func,
+    style: PropTypes.oneOf(['default', 'primary', 'success', 'info', 'warning', 'danger', 'link']),
   }),
 };
 

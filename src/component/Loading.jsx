@@ -1,4 +1,5 @@
 const React = require('react');
+const PropTypes = require('prop-types');
 
 class Loading extends React.Component {
   constructor(props) {
@@ -27,7 +28,7 @@ Loading.defaultProps = {
 };
 
 Loading.propTypes = {
-  show: React.PropTypes.bool,
+  show: PropTypes.bool,
 };
 
 module.exports = Loading;

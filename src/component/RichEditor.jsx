@@ -6,6 +6,7 @@
  */
 
 const React = require('react');
+const PropTypes = require('prop-types');
 const Draft = require('draft-js');
 const Exporter = require('draft-js-export-html');
 
@@ -116,9 +117,9 @@ class RichEditor extends React.Component {
 }
 
 RichEditor.propTypes = {
-  onChange: React.PropTypes.func,
-  value: React.PropTypes.string,
-  placeholder: React.PropTypes.string,
+  onChange: PropTypes.func,
+  value: PropTypes.string,
+  placeholder: PropTypes.string,
 };
 RichEditor.defaultProps = {
   onChange: () => {},

@@ -1,4 +1,5 @@
 const React = require('react');
+const PropTypes = require('prop-types');
 const config = require('../config/server.config');
 
 class Layout extends React.Component {
@@ -28,7 +29,7 @@ class Layout extends React.Component {
 }
 
 Layout.propTypes = {
-  state: React.PropTypes.string,
+  state: PropTypes.string,
 };
 
 module.exports = Layout;

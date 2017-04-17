@@ -1,4 +1,5 @@
 const React = require('react');
+const PropTypes = require('prop-types');
 
 const Row = require('react-bootstrap/lib/Row');
 const Col = require('react-bootstrap/lib/Col');
@@ -25,9 +26,9 @@ Error.defaultProps = {
 };
 
 Error.propTypes = {
-  statusCode: React.PropTypes.number,
-  code: React.PropTypes.string,
-  message: React.PropTypes.string,
+  statusCode: PropTypes.number,
+  code: PropTypes.string,
+  message: PropTypes.string,
 };
 
 module.exports = Error;
