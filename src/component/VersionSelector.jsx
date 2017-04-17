@@ -1,4 +1,5 @@
 const React = require('react');
+const PropTypes = require('prop-types');
 const ReactDOM = require('react-dom');
 
 const Row = require('react-bootstrap/lib/Row');
@@ -176,14 +177,14 @@ class VersionSelector extends React.Component {
 }
 
 VersionSelector.propTypes = {
-  values: React.PropTypes.arrayOf(React.PropTypes.shape({
-    comparator: React.PropTypes.string.isRequired,
-    versionStart: React.PropTypes.string,
-    versionEnd: React.PropTypes.string,
-    version: React.PropTypes.string,
+  values: PropTypes.arrayOf(PropTypes.shape({
+    comparator: PropTypes.string.isRequired,
+    versionStart: PropTypes.string,
+    versionEnd: PropTypes.string,
+    version: PropTypes.string,
   })),
-  onChange: React.PropTypes.func,
-  disabled: React.PropTypes.bool,
+  onChange: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 module.exports = VersionSelector;

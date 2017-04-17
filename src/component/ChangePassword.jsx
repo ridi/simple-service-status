@@ -1,5 +1,6 @@
 /* global window */
 const React = require('react');
+const PropTypes = require('prop-types');
 const Form = require('react-bootstrap/lib/Form');
 const FormGroup = require('react-bootstrap/lib/FormGroup');
 const ControlLabel = require('react-bootstrap/lib/ControlLabel');
@@ -74,7 +75,7 @@ ChangePassword.defaultProps = {
 };
 
 ChangePassword.propTypes = {
-  errorMessage: React.PropTypes.string,
+  errorMessage: PropTypes.string,
 };
 
 module.exports = ChangePassword;

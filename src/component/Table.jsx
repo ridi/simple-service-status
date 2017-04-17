@@ -1,4 +1,5 @@
 const React = require('react');
+const PropTypes = require('prop-types');
 
 const BSTable = require('react-bootstrap/lib/Table');
 const Checkbox = require('react-bootstrap/lib/Checkbox');
@@ -22,10 +23,10 @@ class Column extends React.Component {
   }
 }
 Column.propTypes = {
-  item: React.PropTypes.object.isRequired,
-  options: React.PropTypes.shape({
-    key: React.PropTypes.string,
-    display: React.PropTypes.func,
+  item: PropTypes.object.isRequired,
+  options: PropTypes.shape({
+    key: PropTypes.string,
+    display: PropTypes.func,
   }).isRequired,
 };
 
@@ -46,17 +47,17 @@ class Row extends React.Component {
   }
 }
 Row.propTypes = {
-  item: React.PropTypes.object.isRequired,
-  columns: React.PropTypes.arrayOf(React.PropTypes.shape({
-    key: React.PropTypes.string,
-    display: React.PropTypes.func,
-    isChildRow: React.PropTypes.bool,
-    title: React.PropTypes.string,
+  item: PropTypes.object.isRequired,
+  columns: PropTypes.arrayOf(PropTypes.shape({
+    key: PropTypes.string,
+    display: PropTypes.func,
+    isChildRow: PropTypes.bool,
+    title: PropTypes.string,
   })).isRequired,
-  checked: React.PropTypes.bool,
-  onCheckboxChange: React.PropTypes.func,
-  className: React.PropTypes.string,
-  showCheckbox: React.PropTypes.bool,
+  checked: PropTypes.bool,
+  onCheckboxChange: PropTypes.func,
+  className: PropTypes.string,
+  showCheckbox: PropTypes.bool,
 };
 
 class ChildRow extends React.Component {
@@ -82,15 +83,15 @@ class ChildRow extends React.Component {
   }
 }
 ChildRow.propTypes = {
-  item: React.PropTypes.object.isRequired,
-  columns: React.PropTypes.arrayOf(React.PropTypes.shape({
-    key: React.PropTypes.string,
-    display: React.PropTypes.func,
-    isChildRow: React.PropTypes.bool,
-    title: React.PropTypes.string,
+  item: PropTypes.object.isRequired,
+  columns: PropTypes.arrayOf(PropTypes.shape({
+    key: PropTypes.string,
+    display: PropTypes.func,
+    isChildRow: PropTypes.bool,
+    title: PropTypes.string,
   })).isRequired,
-  colSpan: React.PropTypes.number,
-  showCheckbox: React.PropTypes.bool,
+  colSpan: PropTypes.number,
+  showCheckbox: PropTypes.bool,
 };
 
 class Table extends React.Component {
@@ -202,15 +203,15 @@ Table.defaultProps = {
 };
 
 Table.propTypes = {
-  items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
-  columns: React.PropTypes.arrayOf(React.PropTypes.shape({
-    key: React.PropTypes.string,
-    display: React.PropTypes.func,
-    isChildRow: React.PropTypes.bool,
-    title: React.PropTypes.string,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  columns: PropTypes.arrayOf(PropTypes.shape({
+    key: PropTypes.string,
+    display: PropTypes.func,
+    isChildRow: PropTypes.bool,
+    title: PropTypes.string,
   })).isRequired,
-  onCheckboxChange: React.PropTypes.func,
-  showCheckbox: React.PropTypes.bool,
+  onCheckboxChange: PropTypes.func,
+  showCheckbox: PropTypes.bool,
 };
 
 module.exports = Table;

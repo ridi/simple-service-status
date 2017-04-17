@@ -1,5 +1,6 @@
 /* global window */
 const React = require('react');
+const PropTypes = require('prop-types');
 
 const Navbar = require('react-bootstrap/lib/Navbar');
 const Nav = require('react-bootstrap/lib/Nav');
@@ -61,15 +62,15 @@ App.defaultProps = {
 };
 
 App.propTypes = {
-  viewName: React.PropTypes.string.isRequired,
-  auth: React.PropTypes.shape({
-    isAuthenticated: React.PropTypes.bool,
-    username: React.PropTypes.string,
+  viewName: PropTypes.string.isRequired,
+  auth: PropTypes.shape({
+    isAuthenticated: PropTypes.bool,
+    username: PropTypes.string,
   }),
-  menus: React.PropTypes.arrayOf(React.PropTypes.shape({
-    viewName: React.PropTypes.string.isRequired,
-    url: React.PropTypes.string.isRequired,
-    title: React.PropTypes.string.isRequired,
+  menus: PropTypes.arrayOf(PropTypes.shape({
+    viewName: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
   })),
 };
 

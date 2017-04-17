@@ -1,4 +1,5 @@
 const React = require('react');
+const PropTypes = require('prop-types');
 
 const Table = require('./Table');
 const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
@@ -415,13 +416,13 @@ class StatusList extends React.Component {
   }
 }
 StatusList.propTypes = {
-  statusTypes: React.PropTypes.arrayOf(React.PropTypes.shape({
-    label: React.PropTypes.string,
-    value: React.PropTypes.string,
+  statusTypes: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    value: PropTypes.string,
   })).isRequired,
-  deviceTypes: React.PropTypes.arrayOf(React.PropTypes.shape({
-    label: React.PropTypes.string,
-    value: React.PropTypes.string,
+  deviceTypes: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    value: PropTypes.string,
   })).isRequired,
 };
 

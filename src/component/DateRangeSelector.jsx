@@ -1,4 +1,5 @@
 const React = require('react');
+const PropTypes = require('prop-types');
 
 const FormControl = require('react-bootstrap/lib/FormControl');
 const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
@@ -101,13 +102,13 @@ class DateRangeSelector extends React.Component {
 }
 
 DateRangeSelector.propTypes = {
-  value: React.PropTypes.shape({
-    comparator: React.PropTypes.string.isRequired,
-    startTime: React.PropTypes.string,
-    endTime: React.PropTypes.string,
+  value: PropTypes.shape({
+    comparator: PropTypes.string.isRequired,
+    startTime: PropTypes.string,
+    endTime: PropTypes.string,
   }),
-  onChange: React.PropTypes.func,
-  disabled: React.PropTypes.bool,
+  onChange: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 module.exports = DateRangeSelector;
