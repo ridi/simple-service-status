@@ -53,7 +53,7 @@ export default class CreateModal extends React.Component {
         buttons: [
           { label: '저장', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
           { label: '저장과 함께 활성화', onClick: () => self.ensureSafeClick(() => self.save(true)), disabled: false },
-          { label: '닫기', onClick: (e, modal) => modal.close(true), disabled: false },
+          { label: '닫기', disabled: false, isClose: true },
         ],
       },
       modify: {
@@ -61,7 +61,7 @@ export default class CreateModal extends React.Component {
         buttons: [
           { label: '업데이트', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
           { label: '업데이트와 함께 활성화', onClick: () => self.ensureSafeClick(() => self.save(true)), disabled: false },
-          { label: '닫기', onClick: (e, modal) => modal.close(true), disabled: false },
+          { label: '닫기', disabled: false, isClose: true },
         ],
       },
     });
@@ -239,7 +239,7 @@ export default class CreateModal extends React.Component {
 
   validateForm() {
     const isValid = this.form.validate();
-    this.setButtonDisabled(!isValid);
+    this.setButtonDisabled(!isValid, true);
   }
   
   validate(id) {
@@ -321,13 +321,15 @@ export default class CreateModal extends React.Component {
     return true;
   }
 
-  setButtonDisabled(disabled, callback) {
-    const newButtonsState = this.state.buttons.map(button => Object.assign({}, button, { disabled }));
+  setButtonDisabled(disabled, excludeCloseButton, callback) {
+    const newButtonsState = this.state.buttons.map((button) => {
+      return (excludeCloseButton && button.isClose) ? button : Object.assign({}, button, { disabled });
+    });
     this.setState({ buttons: newButtonsState }, callback);
   }
 
   ensureSafeClick(action) {
-    this.setButtonDisabled(true,
+    this.setButtonDisabled(true, false,
       () => action()
         .then(() => this.setButtonDisabled(false))
         .catch(() => this.setButtonDisabled(false)),

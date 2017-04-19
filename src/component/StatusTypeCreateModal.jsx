@@ -32,14 +32,14 @@ export default class StatusTypeCreateModal extends React.Component {
         modalTitle: '새로운 알림 타입 등록',
         buttons: [
           { label: '저장', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
-          { label: '닫기', onClick: (e, modal) => modal.close(true), disabled: false },
+          { label: '닫기', disabled: false, isClose: true },
         ],
       },
       modify: {
         modalTitle: '알림 타입 업데이트',
         buttons: [
           { label: '업데이트', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
-          { label: '닫기', onClick: (e, modal) => modal.close(true), disabled: false },
+          { label: '닫기', disabled: false, isClose: true },
         ],
       },
     });
@@ -54,14 +54,16 @@ export default class StatusTypeCreateModal extends React.Component {
     Object.assign(this.state, this.defaultData);
   }
 
-  setButtonDisabled(disabled, callback) {
-    const newButtonsState = this.state.buttons.map(button => Object.assign({}, button, { disabled }));
+  setButtonDisabled(disabled, excludeCloseButton, callback) {
+    const newButtonsState = this.state.buttons.map((button) => {
+      return (excludeCloseButton && button.isClose) ? button : Object.assign({}, button, { disabled });
+    });
     this.setState({ buttons: newButtonsState }, callback);
   }
 
   validateForm() {
     const isValid = this.form.validate();
-    this.setButtonDisabled(!isValid);
+    this.setButtonDisabled(!isValid, true);
   }
 
   validate(id) {
@@ -100,7 +102,6 @@ export default class StatusTypeCreateModal extends React.Component {
     const self = this;
 
     return Promise.resolve()
-      //.then(() => this.checkFormValidity())
       .then(() => {
         const data = {
           label: this.state.label,
@@ -136,7 +137,7 @@ export default class StatusTypeCreateModal extends React.Component {
   }
 
   ensureSafeClick(action) {
-    this.setButtonDisabled(true,
+    this.setButtonDisabled(true, false,
       () => action()
         .then(() => this.setButtonDisabled(false))
         .catch(() => this.setButtonDisabled(false)),

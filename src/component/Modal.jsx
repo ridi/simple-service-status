@@ -89,7 +89,7 @@ export default class Modal extends React.Component {
         <RBModal.Footer>
           {buttons instanceof Array && buttons.map(button => (
             <Button
-              onClick={e => button.onClick(e, modal)}
+              onClick={(e) => { button.isClose ? this.close(true) : button.onClick(e, modal); }}
               bsStyle={button.style || 'default'}
               disabled={button.disabled}
             >
