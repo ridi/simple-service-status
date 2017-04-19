@@ -1,8 +1,9 @@
-const React = require('react');
-const PropTypes = require('prop-types');
-
-const BSTable = require('react-bootstrap/lib/Table');
-const Checkbox = require('react-bootstrap/lib/Checkbox');
+import React from 'react';
+import PropTypes from 'prop-types';
+import {
+  Table as BSTable,
+  Checkbox,
+} from 'react-bootstrap';
 
 class Column extends React.Component {
   render() {
@@ -94,7 +95,7 @@ ChildRow.propTypes = {
   showCheckbox: PropTypes.bool,
 };
 
-class Table extends React.Component {
+export default class Table extends React.Component {
   constructor(props) {
     super(props);
 
@@ -213,6 +214,3 @@ Table.propTypes = {
   onCheckboxChange: PropTypes.func,
   showCheckbox: PropTypes.bool,
 };
-
-module.exports = Table;
-

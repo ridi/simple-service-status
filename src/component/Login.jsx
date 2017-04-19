@@ -1,17 +1,19 @@
 /* global window */
-const React = require('react');
-const PropTypes = require('prop-types');
-const Form = require('react-bootstrap/lib/Form');
-const FormGroup = require('react-bootstrap/lib/FormGroup');
-const ControlLabel = require('react-bootstrap/lib/ControlLabel');
-const FormControl = require('react-bootstrap/lib/FormControl');
-const Button = require('react-bootstrap/lib/Button');
-const Col = require('react-bootstrap/lib/Col');
-const Alert = require('react-bootstrap/lib/Alert');
+import React from 'react';
+import PropTypes from 'prop-types';
+import {
+  Form,
+  FormGroup,
+  ControlLabel,
+  FormControl,
+  Button,
+  Col,
+  Alert,
+} from 'react-bootstrap';
 
-const Api = require('../common/api');
+import Api from '../common/api';
 
-class Login extends React.Component {
+export default class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -73,5 +75,3 @@ Login.defaultProps = {
 Login.propTypes = {
   errorMessage: PropTypes.string,
 };
-
-module.exports = Login;

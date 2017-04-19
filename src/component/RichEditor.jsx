@@ -5,20 +5,21 @@
  * @since 1.0.0
  */
 
-const React = require('react');
-const PropTypes = require('prop-types');
-const Draft = require('draft-js');
-const Exporter = require('draft-js-export-html');
+import React from 'react';
+import PropTypes from 'prop-types';
+import Draft from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
 
-const Button = require('react-bootstrap/lib/Button');
-const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
-const ButtonGroup = require('react-bootstrap/lib/ButtonGroup');
+import {
+  Button,
+  ButtonToolbar,
+  ButtonGroup,
+} from 'react-bootstrap';
 
 const Editor = Draft.Editor;
 const EditorState = Draft.EditorState;
 const ContentState = Draft.ContentState;
 const RichUtils = Draft.RichUtils;
-const stateToHTML = Exporter.stateToHTML;
 
 const DEFAULT_BUTTON = Object.freeze({
   BOLD: false,
@@ -29,7 +30,7 @@ const DEFAULT_BUTTON = Object.freeze({
   'ordered-list-item': false,
 });
 
-class RichEditor extends React.Component {
+export default class RichEditor extends React.Component {
   constructor(props) {
     super(props);
     let editorState;
@@ -126,5 +127,3 @@ RichEditor.defaultProps = {
   value: '',
   placeholder: '',
 };
-
-module.exports = RichEditor;

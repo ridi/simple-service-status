@@ -1,25 +1,22 @@
-const React = require('react');
-const PropTypes = require('prop-types');
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const Modal = require('./Modal');
-const RichEditor = require('./RichEditor');
+import {
+  FormGroup,
+  ControlLabel,
+  FormControl,
+  HelpBlock,
+  Row,
+  Alert,
+} from 'react-bootstrap';
 
-const FormGroup = require('react-bootstrap/lib/FormGroup');
-const ControlLabel = require('react-bootstrap/lib/ControlLabel');
-const FormControl = require('react-bootstrap/lib/FormControl');
-const HelpBlock = require('react-bootstrap/lib/HelpBlock');
-const Row = require('react-bootstrap/lib/Row');
-const Alert = require('react-bootstrap/lib/Alert');
+import Modal from './Modal';
+import RichEditor from './RichEditor';
+import Api from '../common/api';
+import ValidationField from './form/ValidationField';
+import ValidationForm, { ValidationError } from './form/ValidationForm';
 
-const Api = require('../common/api');
-
-class ValidationError {
-  constructor(message) {
-    this.message = message;
-  }
-}
-
-class StatusTypeCreateModal extends React.Component {
+export default class StatusTypeCreateModal extends React.Component {
   constructor(props) {
     super(props);
     const self = this;
@@ -35,14 +32,14 @@ class StatusTypeCreateModal extends React.Component {
         modalTitle: '새로운 알림 타입 등록',
         buttons: [
           { label: '저장', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
-          { label: '닫기', onClick: (e, modal) => modal.close(true), disabled: false },
+          { label: '닫기', disabled: false, isClose: true },
         ],
       },
       modify: {
         modalTitle: '알림 타입 업데이트',
         buttons: [
           { label: '업데이트', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
-          { label: '닫기', onClick: (e, modal) => modal.close(true), disabled: false },
+          { label: '닫기', disabled: false, isClose: true },
         ],
       },
     });
@@ -57,21 +54,34 @@ class StatusTypeCreateModal extends React.Component {
     Object.assign(this.state, this.defaultData);
   }
 
-  setButtonDisabled(disabled, callback) {
-    const newButtonsState = this.state.buttons.map(button => Object.assign({}, button, { disabled }));
+  setButtonDisabled(disabled, excludeCloseButton, callback) {
+    const newButtonsState = this.state.buttons.map((button) => {
+      return (excludeCloseButton && button.isClose) ? button : Object.assign({}, button, { disabled });
+    });
     this.setState({ buttons: newButtonsState }, callback);
   }
 
-  checkFormValidity() {
+  validateForm() {
+    const isValid = this.form.validate();
+    this.setButtonDisabled(!isValid, true);
+  }
+
+  validate(id) {
     const data = this.state;
-    // Check errors
-    if (!data.label) {
-      throw new ValidationError('상태 타입의 라벨을 설정해 주세요.');
+    switch (id) {
+      case 'label':
+        if (!data.label) {
+          throw new ValidationError('상태 타입의 라벨을 설정해 주세요.');
+        }
+        break;
+      case 'value':
+        if (!data.value) {
+          throw new ValidationError('상태 타입의 값을 설정해 주세요.');
+        }
+        break;
+      default:
+        break;
     }
-    if (!data.value) {
-      throw new ValidationError('상태 타입의 값을 설정해 주세요.');
-    }
-    return true;
   }
 
   resolveData(data) {
@@ -85,14 +95,13 @@ class StatusTypeCreateModal extends React.Component {
         template: data.template,
       };
     }
-    this.setState(Object.assign({}, this.defaultData, newData));
+    this.setState(Object.assign({}, this.defaultData, newData), () => this.validateForm());
   }
 
   save() {
     const self = this;
 
     return Promise.resolve()
-      .then(() => this.checkFormValidity())
       .then(() => {
         const data = {
           label: this.state.label,
@@ -128,7 +137,7 @@ class StatusTypeCreateModal extends React.Component {
   }
 
   ensureSafeClick(action) {
-    this.setButtonDisabled(true,
+    this.setButtonDisabled(true, false,
       () => action()
         .then(() => this.setButtonDisabled(false))
         .catch(() => this.setButtonDisabled(false)),
@@ -142,37 +151,47 @@ class StatusTypeCreateModal extends React.Component {
         ref={(modal) => { this.modal = modal; }}
         buttons={this.state.buttons}
       >
-        <FormGroup controlId="label">
-          <ControlLabel>상태 타입 라벨</ControlLabel>
-          <FormControl
-            componentClass="input"
-            value={this.state.label}
-            onChange={e => this.setState({ label: e.target.value })}
-            placeholder="라벨"
-          />
-        </FormGroup>
+        <ValidationForm ref={(form) => { this.form = form; }}>
+          <ValidationField
+            controlId="label"
+            required
+            label="상태 타입 라벨"
+            validate={() => this.validate('label')}
+          >
+            <FormControl
+              componentClass="input"
+              value={this.state.label}
+              onChange={e => this.setState({ label: e.target.value }, () => this.validateForm())}
+              placeholder="라벨"
+            />
+          </ValidationField>
 
-        <FormGroup controlId="value">
-          <ControlLabel>상태 타입 값</ControlLabel>
-          <FormControl
-            componentClass="input"
-            value={this.state.value}
-            onChange={e => this.setState({ value: e.target.value })}
-            placeholder="값"
-          />
-        </FormGroup>
+          <ValidationField
+            controlId="value"
+            label="상태 타입 값"
+            required
+            validate={() => this.validate('value')}
+          >
+            <FormControl
+              componentClass="input"
+              value={this.state.value}
+              onChange={e => this.setState({ value: e.target.value }, () => this.validateForm())}
+              placeholder="값"
+            />
+          </ValidationField>
 
-        <FormGroup controlId="template">
-          <ControlLabel>상태 타입 템플릿</ControlLabel>
-          <RichEditor
-            value={this.state.template}
-            onChange={template => this.setState({ template })}
-            placeholder="템플릿"
-          />
-        </FormGroup>
-        <Row>
-          <HelpBlock>설정한 템플릿 내용은 새로운 알림을 생성할 때 알림 내용의 기본값으로 사용됩니다.</HelpBlock>
-        </Row>
+          <FormGroup controlId="template">
+            <ControlLabel>상태 타입 템플릿</ControlLabel>
+            <RichEditor
+              value={this.state.template}
+              onChange={template => this.setState({ template })}
+              placeholder="템플릿"
+            />
+          </FormGroup>
+          <Row>
+            <HelpBlock>설정한 템플릿 내용은 새로운 알림을 생성할 때 알림 내용의 기본값으로 사용됩니다.</HelpBlock>
+          </Row>
+        </ValidationForm>
         <Alert style={{ display: this.state.saveWarningMessage ? 'block' : 'none' }} bsStyle="warning">
           {this.state.saveWarningMessage}
         </Alert>
@@ -188,6 +207,3 @@ StatusTypeCreateModal.defaultProps = {
 StatusTypeCreateModal.propTypes = {
   onSuccess: PropTypes.func,
 };
-
-module.exports = StatusTypeCreateModal;
-

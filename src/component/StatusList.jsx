@@ -1,25 +1,25 @@
-const React = require('react');
-const PropTypes = require('prop-types');
+import React from 'react';
+import PropTypes from 'prop-types';
+import {
+  ButtonToolbar,
+  ButtonGroup,
+  Button,
+  Label,
+  Row,
+  Col,
+  Pagination,
+  Tabs,
+  Tab,
+} from 'react-bootstrap';
+import moment from 'moment';
+import Table from './Table';
 
-const Table = require('./Table');
-const ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
-const ButtonGroup = require('react-bootstrap/lib/ButtonGroup');
-const Button = require('react-bootstrap/lib/Button');
-const Label = require('react-bootstrap/lib/Label');
-const Row = require('react-bootstrap/lib/Row');
-const Col = require('react-bootstrap/lib/Col');
-const Pagination = require('react-bootstrap/lib/Pagination');
+import CreateModal from './CreateModal';
+import Modal from './Modal';
+import Loading from './Loading';
 
-const Tabs = require('react-bootstrap/lib/Tabs');
-const Tab = require('react-bootstrap/lib/Tab');
-
-const CreateModal = require('./CreateModal');
-const Modal = require('./Modal');
-const Loading = require('./Loading');
-
-const moment = require('moment');
-const dateUtil = require('../common/date-util');
-const Api = require('../common/api');
+import dateUtil from '../common/date-util';
+import Api from '../common/api';
 
 const dateFormat = 'YYYY-MM-DD HH:mm';
 
@@ -45,7 +45,7 @@ const defaultTabState = Object.freeze({
 
 const ASTERISK = '✱';
 
-class StatusList extends React.Component {
+export default class StatusList extends React.Component {
   constructor(props) {
     super(props);
     const self = this;
@@ -425,6 +425,3 @@ StatusList.propTypes = {
     value: PropTypes.string,
   })).isRequired,
 };
-
-module.exports = StatusList;
-

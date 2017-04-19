@@ -1,45 +1,35 @@
-const React = require('react');
-const PropTypes = require('prop-types');
+import React from 'react';
+import PropTypes from 'prop-types';
+import {
+  FormControl,
+  HelpBlock,
+  Row,
+  Alert,
+} from 'react-bootstrap';
+import { SimpleSelect, MultiSelect } from 'react-selectize';
+import moment from 'moment';
+import semver from 'semver';
+import Joi from 'joi';
 
-const Modal = require('./Modal');
-const VersionSelector = require('./VersionSelector');
-const DateRangeSelector = require('./DateRangeSelector');
-const RichEditor = require('./RichEditor');
-
-const FormGroup = require('react-bootstrap/lib/FormGroup');
-const ControlLabel = require('react-bootstrap/lib/ControlLabel');
-const FormControl = require('react-bootstrap/lib/FormControl');
-const HelpBlock = require('react-bootstrap/lib/HelpBlock');
-const Row = require('react-bootstrap/lib/Row');
-const Alert = require('react-bootstrap/lib/Alert');
-
-const Selectize = require('react-selectize');
-
-const moment = require('moment');
-const semver = require('semver');
-
-const util = require('../common/common-util');
-const dateUtil = require('../common/date-util');
-const Api = require('../common/api');
-const Joi = require('joi');
-
-const SimpleSelect = Selectize.SimpleSelect;
-const MultiSelect = Selectize.MultiSelect;
+import Modal from './Modal';
+import VersionSelector from './VersionSelector';
+import DateRangeSelector from './DateRangeSelector';
+import RichEditor from './RichEditor';
+import util from '../common/common-util';
+import dateUtil from '../common/date-util';
+import Api from '../common/api';
+import ValidationField from './form/ValidationField';
+import ValidationForm, { ValidationError } from './form/ValidationForm';
 
 const EMPTY_CONTENTS_VALUE = '<p><br></p>';
 
-class ValidationError {
-  constructor(message) {
-    this.message = message;
-  }
-}
 class ValidationWarning {
   constructor(message) {
     this.message = message;
   }
 }
 
-class CreateModal extends React.Component {
+export default class CreateModal extends React.Component {
   constructor(props) {
     super(props);
     const self = this;
@@ -63,7 +53,7 @@ class CreateModal extends React.Component {
         buttons: [
           { label: '저장', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
           { label: '저장과 함께 활성화', onClick: () => self.ensureSafeClick(() => self.save(true)), disabled: false },
-          { label: '닫기', onClick: (e, modal) => modal.close(true), disabled: false },
+          { label: '닫기', disabled: false, isClose: true },
         ],
       },
       modify: {
@@ -71,7 +61,7 @@ class CreateModal extends React.Component {
         buttons: [
           { label: '업데이트', onClick: () => self.ensureSafeClick(() => self.save(false)), style: 'primary', disabled: false },
           { label: '업데이트와 함께 활성화', onClick: () => self.ensureSafeClick(() => self.save(true)), disabled: false },
-          { label: '닫기', onClick: (e, modal) => modal.close(true), disabled: false },
+          { label: '닫기', disabled: false, isClose: true },
         ],
       },
     });
@@ -87,7 +77,7 @@ class CreateModal extends React.Component {
     };
 
     this.contentEditor = null;
-
+    this.form = null;
     Object.assign(this.state, this.defaultData);
     this.ignoreWarning = false;
   }
@@ -216,7 +206,10 @@ class CreateModal extends React.Component {
       };
     }
 
-    this.setState(Object.assign({}, this.defaultData, newData), () => this.onSelectionChanged());
+    this.setState(Object.assign({}, this.defaultData, newData), () => {
+      this.onSelectionChanged();
+      this.validateForm();
+    });
   }
 
   onSelectionChanged() {
@@ -224,54 +217,87 @@ class CreateModal extends React.Component {
   }
 
   onDeviceTypesChanged(deviceTypes) {
-    this.setState({ deviceTypes }, () => this.onSelectionChanged());
+    this.setState({ deviceTypes }, () => {
+      this.onSelectionChanged();
+      this.validateForm();
+    });
   }
 
   onStatusTypesChanged(type) {
     // 값이 변경될 때만 불리는 것이 아니라 클릭만 해도 불리기 때문에, 이전 상태값과의 비교가 필요.
     if (this.state.type !== type) {
-      this.setState({ type });
-      if (type.template && this.contentEditor) {
+      this.setState({ type }, () => this.validateForm());
+      if (type && type.template && this.contentEditor) {
         this.contentEditor.setContent(type.template);
       }
     }
   }
 
+  onDateRangeChanged(dateRange) {
+    this.setState({ dateRange }, () => this.validateForm());
+  }
+
+  validateForm() {
+    const isValid = this.form.validate();
+    this.setButtonDisabled(!isValid, true);
+  }
+  
+  validate(id) {
+    const data = this.state;
+    switch (id) {
+      case 'type':
+        if (!data.type) {
+          throw new ValidationError('알림 타입을 설정해 주세요.');
+        }
+        break;
+      case 'dateRange':
+        if (data.dateRange.comparator === '~') {
+          if (!data.dateRange.startTime) {
+            throw new ValidationError('시작 일시를 지정해 주세요.');
+          }
+          if (!data.dateRange.endTime) {
+            throw new ValidationError('종료 일시를 지정해 주세요.');
+          }
+          if (moment(data.dateRange.startTime).isAfter(data.dateRange.endTime)) {
+            throw new ValidationError('종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.');
+          }
+        }
+        break;
+      case 'content':
+        if (!data.title || data.title.trim().length === 0) {
+          throw new ValidationError('제목을 입력해 주세요.');
+        }
+        if (!data.contents || data.contents.trim().length === 0 || data.contents.trim() === EMPTY_CONTENTS_VALUE) {
+          throw new ValidationError('내용을 입력해 주세요.');
+        }
+        break;
+      case 'deviceTypes':
+        if (data.deviceTypes.length === 0) {
+          throw new ValidationError('디바이스 타입을 하나 이상 선택해 주세요.');
+        }
+        break;
+      case 'deviceVersion':
+        if (data.deviceTypes.length < 2) {
+          this.checkSemVersionValidity(data.deviceSemVersion);
+        }
+        break;
+      case 'appVersion':
+        if (data.deviceTypes.length < 2) {
+          this.checkSemVersionValidity(data.appSemVersion);
+        }
+        break;
+      case 'url':
+        if (Joi.validate(data.url, Joi.string().uri().allow('')).error) {
+          throw new ValidationError('잘못된 URL 패턴입니다.');
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
   checkFormValidity(ignoreWarning) {
     const data = this.state;
-    // Check errors
-    if (!data.type) {
-      throw new ValidationError('알림 타입을 설정해 주세요.');
-    }
-    if (data.dateRange.comparator === '~') {
-      if (!data.dateRange.startTime) {
-        throw new ValidationError('시작 일시를 지정해 주세요.');
-      }
-      if (!data.dateRange.endTime) {
-        throw new ValidationError('종료 일시를 지정해 주세요.');
-      }
-      if (moment(data.dateRange.startTime).isAfter(data.dateRange.endTime)) {
-        throw new ValidationError('종료 일시가 시작 일시보다 빠릅니다. 확인해 주세요.');
-      }
-    }
-    if (!data.title || data.title.trim().length === 0) {
-      throw new ValidationError('제목을 입력해 주세요.');
-    }
-    if (!data.contents || data.contents.trim().length === 0 || data.contents.trim() === EMPTY_CONTENTS_VALUE) {
-      throw new ValidationError('내용을 입력해 주세요.');
-    }
-    if (data.deviceTypes.length === 0) {
-      throw new ValidationError('디바이스 타입을 하나 이상 선택해 주세요.');
-    }
-    if (data.url) {
-      if (Joi.validate(data.url, Joi.string().uri().allow('')).error) {
-        throw new ValidationError('잘못된 URL 패턴입니다.');
-      }
-    }
-    if (data.deviceTypes.length < 2) {
-      this.checkSemVersionValidity(data.deviceSemVersion);
-      this.checkSemVersionValidity(data.appSemVersion);
-    }
 
     // Check warnings
     if (ignoreWarning) {
@@ -295,13 +321,15 @@ class CreateModal extends React.Component {
     return true;
   }
 
-  setButtonDisabled(disabled, callback) {
-    const newButtonsState = this.state.buttons.map(button => Object.assign({}, button, { disabled }));
+  setButtonDisabled(disabled, excludeCloseButton, callback) {
+    const newButtonsState = this.state.buttons.map((button) => {
+      return (excludeCloseButton && button.isClose) ? button : Object.assign({}, button, { disabled });
+    });
     this.setState({ buttons: newButtonsState }, callback);
   }
 
   ensureSafeClick(action) {
-    this.setButtonDisabled(true,
+    this.setButtonDisabled(true, false,
       () => action()
         .then(() => this.setButtonDisabled(false))
         .catch(() => this.setButtonDisabled(false)),
@@ -309,103 +337,138 @@ class CreateModal extends React.Component {
   }
 
   render() {
-    return (
+    const rendered = (
       <Modal
         title={this.modes[this.state.mode].modalTitle}
         ref={(modal) => { this.modal = modal; }}
         buttons={this.state.buttons}
       >
-        <FormGroup controlId="type">
-          <ControlLabel>알림 타입</ControlLabel>
-          <SimpleSelect
-            value={this.state.type}
-            onValueChange={type => this.onStatusTypesChanged(type)}
-            placeholder="알림 타입을 선택하세요"
-            options={this.props.options.statusTypes}
-          />
-        </FormGroup>
-        <FormGroup controlId="type">
-          <ControlLabel>알림 시작/종료 일시</ControlLabel>
-          <DateRangeSelector
-            value={this.state.dateRange}
-            onChange={(dateRange => this.setState({ dateRange }))}
-          />
-        </FormGroup>
-        <Row>
-          <HelpBlock>시작/종료 일시의 기본값은 현재부터 2시간으로 설정되어 있습니다.</HelpBlock>
-        </Row>
-        <FormGroup controlId="content">
-          <ControlLabel>알림 내용</ControlLabel>
-          <FormControl
-            componentClass="input"
-            value={this.state.title}
-            onChange={e => this.setState({ title: e.target.value })}
-            placeholder="제목"
-          />
-          <RichEditor
-            ref={(e) => { this.contentEditor = e; }}
-            value={this.state.contents}
-            onChange={contents => this.setState({ contents })}
-            placeholder="내용"
-          />
-        </FormGroup>
-
-        <FormGroup controlId="deviceTypes">
-          <ControlLabel>타겟 디바이스 타입</ControlLabel>
-          <MultiSelect
-            values={this.state.deviceTypes}
-            onValuesChange={deviceTypes => this.onDeviceTypesChanged(deviceTypes)}
-            placeholder="디바이스 타입을 선택하세요"
-            options={this.props.options.deviceTypes}
-            renderValue={item =>
-              <div className="simple-value item-removable">
-                <span>{item.label}</span>
-                <button
-                  onClick={() => this.onDeviceTypesChanged(this.state.deviceTypes.filter(t => t.value !== item.value))}
-                >x</button>
-              </div>
-            }
-          />
-        </FormGroup>
-        <Row>
-          <HelpBlock>타겟 디바이스를 여러 개 선택할 경우 타겟 디바이스 버전과 앱 버전을 설정할 수 없습니다.</HelpBlock>
-        </Row>
-        <FormGroup controlId="deviceVersion" style={{ display: this.state.versionSelectorDisabled ? 'none' : 'block' }}>
-          <ControlLabel>타겟 디바이스 버전</ControlLabel>
-          <VersionSelector
-            values={this.state.deviceSemVersion}
-            onChange={(deviceSemVersion => this.setState({ deviceSemVersion }))}
-            disabled={this.state.versionSelectorDisabled}
-          />
-        </FormGroup>
-        <FormGroup controlId="appVersion" style={{ display: this.state.versionSelectorDisabled ? 'none' : 'block' }}>
-          <ControlLabel>앱 버전</ControlLabel>
-          <VersionSelector
-            values={this.state.appSemVersion}
-            onChange={(appSemVersion => this.setState({ appSemVersion }))}
-            disabled={this.state.versionSelectorDisabled}
-          />
-        </FormGroup>
-        <FormGroup controlId="content">
-          <ControlLabel>관련 URL</ControlLabel>
-          <FormControl
-            componentClass="input"
-            value={this.state.url}
-            onChange={e => this.setState({ url: e.target.value })}
-            placeholder="관련 URL"
-          />
-        </FormGroup>
+        <ValidationForm ref={(f) => { this.form = f; }}>
+          <ValidationField controlId="type" label="알림 타입" required validate={() => this.validate('type')}>
+            <FormControl
+              componentClass={SimpleSelect}
+              value={this.state.type}
+              onValueChange={type => this.onStatusTypesChanged(type)}
+              placeholder="알림 타입을 선택하세요"
+              options={this.props.options.statusTypes}
+            />
+          </ValidationField>
+          <ValidationField
+            controlId="dateRange"
+            label="알림 시작종료 일시"
+            required
+            validate={() => this.validate('dateRange')}
+          >
+            <FormControl
+              componentClass={DateRangeSelector}
+              value={this.state.dateRange}
+              onChange={dateRange => this.onDateRangeChanged(dateRange)}
+            />
+          </ValidationField>
+          <Row>
+            <HelpBlock>시작/종료 일시의 기본값은 현재부터 2시간으로 설정되어 있습니다.</HelpBlock>
+          </Row>
+          <ValidationField
+            controlId="content"
+            required
+            label="알림 내용"
+            validate={() => this.validate('content')}
+          >
+            <FormControl
+              componentClass="input"
+              value={this.state.title}
+              onChange={e => this.setState({ title: e.target.value }, () => this.validateForm())}
+              placeholder="제목"
+            />
+            <FormControl
+              componentClass={RichEditor}
+              inputRef={(e) => { this.contentEditor = e; }}
+              value={this.state.contents}
+              onChange={contents => this.setState({ contents }, () => this.validateForm())}
+              placeholder="내용"
+            />
+          </ValidationField>
+          <ValidationField
+            controlId="deviceTypes"
+            label="타겟 디바이스 타입"
+            required
+            validate={() => this.validate('deviceTypes')}
+          >
+            <FormControl
+              componentClass={MultiSelect}
+              values={this.state.deviceTypes}
+              onValuesChange={deviceTypes => this.onDeviceTypesChanged(deviceTypes)}
+              placeholder="디바이스 타입을 선택하세요"
+              options={this.props.options.deviceTypes}
+              renderValue={item =>
+                <div className="simple-value item-removable">
+                  <span>{item.label}</span>
+                  <button
+                    onClick={() => this.onDeviceTypesChanged(this.state.deviceTypes.filter(t => t.value !== item.value))}
+                  >x</button>
+                </div>
+              }
+            />
+          </ValidationField>
+          <Row>
+            <HelpBlock>타겟 디바이스를 여러 개 선택할 경우 타겟 디바이스 버전과 앱 버전을 설정할 수 없습니다.</HelpBlock>
+          </Row>
+          <ValidationField
+            controlId="deviceVersion"
+            style={{ display: this.state.versionSelectorDisabled ? 'none' : 'block' }}
+            label="타겟 디바이스 버전"
+            required
+            validate={() => this.validate('deviceVersion')}
+          >
+            <FormControl
+              componentClass={VersionSelector}
+              values={this.state.deviceSemVersion}
+              onChange={(deviceSemVersion => this.setState({ deviceSemVersion }, () => this.validateForm()))}
+              disabled={this.state.versionSelectorDisabled}
+            />
+          </ValidationField>
+          <ValidationField
+            controlId="appVersion"
+            style={{ display: this.state.versionSelectorDisabled ? 'none' : 'block' }}
+            label="앱 버전"
+            required
+            validate={() => this.validate('appVersion')}
+          >
+            <FormControl
+              componentClass={VersionSelector}
+              values={this.state.appSemVersion}
+              onChange={(appSemVersion => this.setState({ appSemVersion }, () => this.validateForm()))}
+              disabled={this.state.versionSelectorDisabled}
+            />
+          </ValidationField>
+          <ValidationField
+            controlId="url"
+            label="관련 URL"
+            validate={() => this.validate('url')}
+          >
+            <FormControl
+              componentClass="input"
+              value={this.state.url}
+              onChange={e => this.setState({ url: e.target.value }, () => this.validateForm())}
+              placeholder="관련 URL"
+            />
+          </ValidationField>
+        </ValidationForm>
         <Alert style={{ display: this.state.saveWarningMessage ? 'block' : 'none' }} bsStyle="warning">
           {this.state.saveWarningMessage}
         </Alert>
       </Modal>
     );
+    return rendered;
   }
 }
 
-CreateModal.propTypes = {
-  options: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string))),
+CreateModal.defaultProps = {
+  options: {},
+  onSuccess: () => {},
 };
 
-module.exports = CreateModal;
-
+CreateModal.propTypes = {
+  options: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string))),
+  onSuccess: PropTypes.func,
+};

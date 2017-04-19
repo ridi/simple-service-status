@@ -1,7 +1,7 @@
-const React = require('react');
-const PropTypes = require('prop-types');
+import React from 'react';
+import PropTypes from 'prop-types';
 
-class Loading extends React.Component {
+export default class Loading extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -30,5 +30,3 @@ Loading.defaultProps = {
 Loading.propTypes = {
   show: PropTypes.bool,
 };
-
-module.exports = Loading;
