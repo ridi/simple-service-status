@@ -185,10 +185,12 @@ describe('status', () => {
 
           let previous;
           payload.data.forEach((d) => {
-            if (previous) {
+            if (previous && previous.start_time && d.start_time) {
               expect(new Date(d.start_time).getTime()).toBeGreaterThanOrEqual(new Date(previous.start_time).getTime());
             }
-            previous = d;
+            if (d.start_time) {
+              previous = d;
+            }
           });
         });
       });
