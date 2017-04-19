@@ -41,7 +41,6 @@ export default class CreateModal extends React.Component {
       deviceTypes: props.options.deviceTypes,
       title: '',
       contents: props.options.statusTypes[0].template || '',
-      url: '',
       dateRange: { comparator: '~', startTime: moment(), endTime: moment().add(2, 'hours') },
       deviceSemVersion: [{ comparator: '*' }],
       appSemVersion: [{ comparator: '*' }],
@@ -130,7 +129,6 @@ export default class CreateModal extends React.Component {
           title: this.state.title,
           type: this.state.type.value,
           deviceTypes: this.state.deviceTypes.map(dt => dt.value),
-          url: this.state.url,
           contents: this.state.contents,
           isActivated: withActivation,
           deviceSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.deviceSemVersion) : '*',
@@ -198,7 +196,6 @@ export default class CreateModal extends React.Component {
           startTime: moment(data.startTime),
           endTime: moment(data.endTime),
         },
-        url: data.url,
         contents: data.contents,
         isActivated: data.isActivated,
         deviceSemVersion: util.parseSemVersion(data.deviceSemVersion),
@@ -284,11 +281,6 @@ export default class CreateModal extends React.Component {
       case 'appVersion':
         if (data.deviceTypes.length < 2) {
           this.checkSemVersionValidity(data.appSemVersion);
-        }
-        break;
-      case 'url':
-        if (Joi.validate(data.url, Joi.string().uri().allow('')).error) {
-          throw new ValidationError('잘못된 URL 패턴입니다.');
         }
         break;
       default:
@@ -439,18 +431,6 @@ export default class CreateModal extends React.Component {
               values={this.state.appSemVersion}
               onChange={(appSemVersion => this.setState({ appSemVersion }, () => this.validateForm()))}
               disabled={this.state.versionSelectorDisabled}
-            />
-          </ValidationField>
-          <ValidationField
-            controlId="url"
-            label="관련 URL"
-            validate={() => this.validate('url')}
-          >
-            <FormControl
-              componentClass="input"
-              value={this.state.url}
-              onChange={e => this.setState({ url: e.target.value }, () => this.validateForm())}
-              placeholder="관련 URL"
             />
           </ValidationField>
         </ValidationForm>
