@@ -1,4 +1,4 @@
-/**
+ /**
  * Status model
  *
  * @since 1.0.0
@@ -13,7 +13,7 @@ const cache = new Cache({ stdTTL: 60, checkperiod: 30 });
 
 class Status extends Model {
   constructor() {
-    super('status', [{ key: { isActivated: -1, startTime: 1, endTime: 1 } }]);
+    super('status', [{ key: { isActivated: -1, startTime: 1, endTime: 1, createTime: 1 } }]);
   }
 
   find(query, sort, skip, limit) {
@@ -57,14 +57,15 @@ class Status extends Model {
   }
 
   add(model) {
-    return super.add(model).then((result) => {
+    const now = new Date();
+    return super.add(Object.assign({}, model, { createTime: now, updateTime: now })).then((result) => {
       cache.del('status');
       return result;
     });
   }
 
   update(id, model, unset) {
-    return super.update(id, model, unset).then((result) => {
+    return super.update(id, Object.assign({}, model, { updateTime: new Date() }), unset).then((result) => {
       cache.del('status');
       return result;
     });

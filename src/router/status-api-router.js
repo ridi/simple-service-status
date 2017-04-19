@@ -27,7 +27,7 @@ module.exports = [
         filter = { endTime: { $lte: new Date() } };
       }
       Promise.all([
-        Status.find(filter, { isActivated: -1, startTime: 1, endTime: 1 }, request.query.skip, request.query.limit),
+        Status.find(filter, { isActivated: -1, startTime: 1, endTime: 1, createTime: 1 }, request.query.skip, request.query.limit),
         Status.count(filter),
       ]).then(([list, totalCount]) => {
         reply({
