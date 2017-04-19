@@ -96,14 +96,17 @@ export default class RichEditor extends React.Component {
         <ButtonToolbar>
           <ButtonGroup style={{ marginLeft: 0 }}>
             <Button bsSize="small" active={this.state.buttons.BOLD} onMouseDown={() => this.onToggleInlineStyle('BOLD')}><i className="fa fa-bold" aria-hidden="true" /></Button>
-            <Button bsSize="small" active={this.state.buttons.ITALIC} onMouseDown={() => this.onToggleInlineStyle('ITALIC')}><i className="fa fa-italic" aria-hidden="true" /></Button>
-            <Button bsSize="small" active={this.state.buttons.UNDERLINE} onMouseDown={() => this.onToggleInlineStyle('UNDERLINE')}><i className="fa fa-underline" aria-hidden="true" /></Button>
-            <Button bsSize="small" active={this.state.buttons.STRIKETHROUGH} onMouseDown={() => this.onToggleInlineStyle('STRIKETHROUGH')}><i className="fa fa-strikethrough" aria-hidden="true" /></Button>
           </ButtonGroup>
           <ButtonGroup>
-            <Button bsSize="small" active={this.state.buttons['unordered-list-item']} onMouseDown={() => this.onToggleBlockType('unordered-list-item')}><i className="fa fa-list-ul" aria-hidden="true" /></Button>
-            <Button bsSize="small" active={this.state.buttons['ordered-list-item']} onMouseDown={() => this.onToggleBlockType('ordered-list-item')}><i className="fa fa-list-ol" aria-hidden="true" /></Button>
+            <Button bsSize="small" active={this.state.buttons.ITALIC} onMouseDown={() => this.onToggleInlineStyle('ITALIC')} disabled><i className="fa fa-italic" aria-hidden="true" /></Button>
+            <Button bsSize="small" active={this.state.buttons.UNDERLINE} onMouseDown={() => this.onToggleInlineStyle('UNDERLINE')} disabled><i className="fa fa-underline" aria-hidden="true" /></Button>
+            <Button bsSize="small" active={this.state.buttons.STRIKETHROUGH} onMouseDown={() => this.onToggleInlineStyle('STRIKETHROUGH')} disabled><i className="fa fa-strikethrough" aria-hidden="true" /></Button>
+            <Button bsSize="small" active={this.state.buttons['unordered-list-item']} onMouseDown={() => this.onToggleBlockType('unordered-list-item')} disabled><i className="fa fa-list-ul" aria-hidden="true" /></Button>
+            <Button bsSize="small" active={this.state.buttons['ordered-list-item']} onMouseDown={() => this.onToggleBlockType('ordered-list-item')} disabled><i className="fa fa-list-ol" aria-hidden="true" /></Button>
           </ButtonGroup>
+          <div style={{ width: '160px', height: '30px', position: 'relative', left: '36px', backgroundColor: 'rgba(228, 228, 228, 0.6)', color: '#8e8e8e', textAlign: 'center', lineHeight: '30px' }}>
+            <div style={{ position: 'absolute', width: '100%', fontSize: '12px' }}>추후 지원 예정</div>
+          </div>
         </ButtonToolbar>
         <Editor
           className="RichEditor-editor"

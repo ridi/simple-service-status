@@ -136,16 +136,6 @@ export default class StatusList extends React.Component {
           return <span dangerouslySetInnerHTML={{ __html: row.contents }} />;
         },
       },
-      {
-        title: '관련 URL',
-        isChildRow: true,
-        display: (row) => {
-          if (!row.url) {
-            return '';
-          }
-          return <span><a href={row.url} target="_blank" rel="noopener noreferrer">{row.url}</a></span>;
-        },
-      },
     ];
 
     this.currentTableColumns = this.expiredTableColumns.concat({
