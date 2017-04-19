@@ -91,7 +91,6 @@ GET /v1/status/check?device_type=[device_type]&device_version=[device_version]&a
 | is_activated       | boolean                                  | 알림 활성화 여부 (항상 true)                                            |
 | device_sem_version | string                                   | 대상 디바이스 플랫폼 버전 비교 기준 (SemVer를 따름)                     |
 | app_sem_version    | string                                   | 대상 뷰어 앱 버전 비교 기준 (SemVer를 따름)                             |
-| url                | string                                   | 관련 URL                                                                |
 | start_time         | string (ISO 8601 포맷)                   | 알림 시작 시간 (timezone 포함) - 설정되어 있지 않은 경우 모든 기간 대상 |
 | end_time           | string (ISO 8601 포맷)                   | 알림 종료 시간 (timezone 포함) - 설정되어 있지 않은 경우 모든 기간 대상 |
 | create_time        | string (ISO 8601 포맷)                   | 알림 생성 시간                                                          |
@@ -119,7 +118,6 @@ GET /api/v1/status/check?device_type=android&device_version=3.5.6&app_version=3.
             "is_activated": true,
             "device_sem_version": ">=1.0.0  || =7.0.0-alpha.1",
             "app_sem_version": "<3.0.0 || =6.0.0",
-            "url": "http://...",
             "start_time": "2017-01-13T11:40:55+09:00",
             "end_time": "2017-01-13T13:40:55+09:00",
             "create_time": "2017-04-19T16:53:30+09:00",
