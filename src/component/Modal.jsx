@@ -76,7 +76,7 @@ export default class Modal extends React.Component {
     }
 
     return (
-      <RBModal show={this.state.showModal} onHide={() => this.close(true)} bsSize={size || 'large'}>
+      <RBModal show={this.state.showModal} onHide={() => this.close(true)} bsSize={size || 'large'} backdrop="static">
         <RBModal.Header closeButton>
           <RBModal.Title>{this.props.title}</RBModal.Title>
         </RBModal.Header>
