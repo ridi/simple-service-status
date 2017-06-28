@@ -10,6 +10,9 @@ import server from './server';
 import webpackConfig from '../webpack.config';
 import config from './config/server.config';
 
+let a = 0;
+a++;
+
 if (process.env.NODE_ENV === 'development') {
   // IN DEVELOPMENT
 
