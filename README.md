@@ -22,7 +22,7 @@ Simple Notifiers는 특정 앱/플랫폼 버전을 지정하여 공지사항을 
 ```
 $ git clone git@github.com:ridibooks/viewer-notification.git [target directory]
 $ cd [taget directory]
-$ npm install
+$ yarn install
 ```
 
 ## Run
@@ -44,12 +44,12 @@ SECRET_KEY=secret_key
 For development
 ```
 # 다음을 실행하면 서버(포트 번호: 8080)와 모듈 핫 리로딩을 위한 서버(포트 번호: 3000)가 함께 구동됩니다.
-npm run start:dev
+yarn run start:dev
 ```
 
 For production
 ```
-npm start
+yarn start
 ```
 
 구동 후 [http://localhost:8080](http://localhost:8080)으로 접속하면 관리 UI로 연결됩니다.
@@ -57,7 +57,7 @@ npm start
 ## Test
 
 ```
-npm test
+yarn test
 ```
 
 ## Public API
