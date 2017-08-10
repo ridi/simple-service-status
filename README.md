@@ -1,14 +1,13 @@
-# Simple Notifier
+# Simple Service Status
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/ridibooks/simple-notifier.svg)](https://greenkeeper.io/)
-
-[![Build Status](https://travis-ci.org/ridibooks/simple-notifier.svg?branch=master)](https://travis-ci.org/ridibooks/simple-notifier)
+[![Build Status](https://travis-ci.org/ridi/simple-service-status.svg?branch=master)](https://travis-ci.org/ridi/simple-service-status)
 [![npm](https://img.shields.io/npm/v/simple-notifier.svg)](https://www.npmjs.com/package/simple-notifier)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ridibooks/simple-notifier/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ridibooks/simple-notifier/?branch=master)
 
 ## Overview
 
-Simple Notifiers는 특정 앱/플랫폼 버전을 지정하여 공지사항을 전달할 수 있는 간단한 도구입니다.
+특정 앱/플랫폼 버전을 지정하여 공지사항을 전달할 수 있는 간단한 도구입니다.
 공지사항을 관리할 수 있는 웹 UI와 질의를 위한 API를 제공합니다.
 
 버전 비교를 위해서 내부적으로 [SemVer](http://semver.org/)를 사용하고 있습니다.
