@@ -7,7 +7,7 @@
 const co = require('co');
 const mongodb = require('mongodb');
 const config = require('../config/server.config');
-const NotifierError = require('../common/Error');
+const SSSError = require('../common/Error');
 
 const MongoClient = mongodb.MongoClient;
 const ObjectID = mongodb.ObjectID;
@@ -62,7 +62,7 @@ class Model {
       return item;
     })).catch((error) => {
       logger.error(error);
-      throw new NotifierError(NotifierError.Types.DB, {}, error);
+      throw new SSSError(SSSError.Types.DB, {}, error);
     });
   }
 
@@ -70,7 +70,7 @@ class Model {
     return this.runQuery(collection => collection.count(query || {}))
       .catch((error) => {
         logger.error(error);
-        throw new NotifierError(NotifierError.Types.DB, {}, error);
+        throw new SSSError(SSSError.Types.DB, {}, error);
       });
   }
 
@@ -85,7 +85,7 @@ class Model {
       })
       .catch((error) => {
         logger.error(error);
-        throw new NotifierError(NotifierError.Types.DB, {}, error);
+        throw new SSSError(SSSError.Types.DB, {}, error);
       });
   }
 
@@ -103,7 +103,7 @@ class Model {
       .then(result => ({ data: [{ _id: result.value._id.toHexString() }], count: 1 }))
       .catch((error) => {
         logger.error(error);
-        throw new NotifierError(NotifierError.Types.DB, {}, error);
+        throw new SSSError(SSSError.Types.DB, {}, error);
       });
   }
 
@@ -112,7 +112,7 @@ class Model {
       .then(result => ({ data: [{ _id: id }], count: result.result.n }))
       .catch((error) => {
         logger.error(error);
-        throw new NotifierError(NotifierError.Types.DB, {}, error);
+        throw new SSSError(SSSError.Types.DB, {}, error);
       });
   }
 }

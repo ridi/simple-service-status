@@ -1,7 +1,7 @@
-class NotifierError extends Error {
+class SSSError extends Error {
   constructor(type, context, originalError) {
     super(type.message(context));
-    this.name = 'NotifierError';
+    this.name = 'SSSError';
     this.type = type.type;
     this.errorCode = type.code;
     this.message = type.message(context);
@@ -14,7 +14,7 @@ class NotifierError extends Error {
   }
 }
 
-NotifierError.Types = Object.freeze({
+SSSError.Types = Object.freeze({
   BAD_REQUEST: { code: 400000, message: () => '잘못된 요청입니다.' },
   BAD_REQUEST_INVALID: { code: 400100, message: context => `요청이 유효하지 않습니다: ${context.message}` },
   AUTH: { code: 401000, message: () => '로그인이 실패하였습니다.' },
@@ -34,8 +34,8 @@ NotifierError.Types = Object.freeze({
   DB: { code: 500100, message: () => 'DB 에러가 발생했습니다.' },
 });
 
-Object.keys(NotifierError.Types).forEach((type) => {
-  NotifierError.Types[type].type = type;
+Object.keys(SSSError.Types).forEach((type) => {
+  SSSError.Types[type].type = type;
 });
 
-module.exports = NotifierError;
+module.exports = SSSError;

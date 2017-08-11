@@ -7,7 +7,7 @@
 const Model = require('./Model');
 const semver = require('semver');
 const Cache = require('node-cache');
-const NotifierError = require('../common/Error');
+const SSSError = require('../common/Error');
 
 const cache = new Cache({ stdTTL: 60, checkperiod: 30 });
 
@@ -37,11 +37,11 @@ class Status extends Model {
     const self = this;
     const now = new Date();
     if (deviceVersion !== '*' && !semver.valid(deviceVersion)) {
-      return Promise.reject(new NotifierError(NotifierError.Types.BAD_REQUEST_INVALID,
+      return Promise.reject(new SSSError(SSSError.Types.BAD_REQUEST_INVALID,
         { message: `"${deviceVersion}"은 잘못된 버전 형식입니다.` }));
     }
     if (appVersion !== '*' && !semver.valid(appVersion)) {
-      return Promise.reject(new NotifierError(NotifierError.Types.BAD_REQUEST_INVALID,
+      return Promise.reject(new SSSError(SSSError.Types.BAD_REQUEST_INVALID,
         { message: `"${appVersion}"은 잘못된 버전 형식입니다.` }));
     }
     return this.findWithCache({

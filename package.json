@@ -1,12 +1,12 @@
 {
-  "name": "simple-notifier",
+  "name": "simple-service-status",
   "version": "1.1.1",
   "engines": {
     "node": "6.x",
     "npm": "3.x",
     "yarn": "^0.27.5"
   },
-  "description": "A simple tool that supports management UI and query API for notifiactions designating specific version of app or platform",
+  "description": "A simple tool that supports management UI and query API for announcement service status designating specific version of app or platform",
   "main": "dist/index.js",
   "scripts": {
     "start": "yarn run start:prod",
@@ -27,13 +27,13 @@
     ]
   },
   "keywords": [
-    "notifier"
+    "status"
   ],
   "author": "",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ridibooks/simple-notifier.git"
+    "url": "https://github.com/ridi/simple-service-status.git"
   },
   "dependencies": {
     "axios": "^0.16.2",

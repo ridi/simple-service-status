@@ -8,7 +8,7 @@ const Joi = require('joi');
 const StatusType = require('./../repository/StatusType');
 const config = require('../config/server.config').url;
 const dateUtil = require('../common/date-util');
-const NotifierError = require('../common/Error');
+const SSSError = require('../common/Error');
 const logger = require('winston');
 
 module.exports = [
@@ -32,7 +32,7 @@ module.exports = [
       StatusType.find({ value: statusType.value })
         .then((result) => {
           if (result && result.length > 0) {
-            throw new NotifierError(NotifierError.Types.CONFLICT, { value: statusType.value });
+            throw new SSSError(SSSError.Types.CONFLICT, { value: statusType.value });
           }
           return true;
         })
@@ -62,7 +62,7 @@ module.exports = [
       StatusType.find({ value: statusType.value })
         .then((result) => {
           if (result && result.length > 0 && request.params.statusTypeId !== result[0]._id) {
-            throw new NotifierError(NotifierError.Types.CONFLICT, { value: statusType.value });
+            throw new SSSError(SSSError.Types.CONFLICT, { value: statusType.value });
           }
           return true;
         })

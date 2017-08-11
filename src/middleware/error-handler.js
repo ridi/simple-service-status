@@ -4,7 +4,7 @@
  * @since 1.0.0
  */
 
-const NotifierError = require('../common/Error');
+const SSSError = require('../common/Error');
 
 const defaultOptions = Object.freeze({
   apiPrefix: '/api',
@@ -36,8 +36,8 @@ const onApiError = (request, reply) => {
   switch (statusCode) {
     case 400:
       if (request.response.data && request.response.data.name === 'ValidationError') {
-        responseBody.code = NotifierError.Types.BAD_REQUEST_INVALID.code;
-        responseBody.message = NotifierError.Types.BAD_REQUEST_INVALID.message({ message: request.response.message });
+        responseBody.code = SSSError.Types.BAD_REQUEST_INVALID.code;
+        responseBody.message = SSSError.Types.BAD_REQUEST_INVALID.message({ message: request.response.message });
       }
       return reply(responseBody).code(statusCode);
     case 401:
@@ -45,7 +45,7 @@ const onApiError = (request, reply) => {
       return reply(responseBody).unstate('token').code(statusCode);
     case 500:
       if (!responseBody.code) {
-        responseBody.code = NotifierError.Types.SERVER.code;
+        responseBody.code = SSSError.Types.SERVER.code;
       }
       return reply(responseBody).code(statusCode);
     default:

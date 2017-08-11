@@ -28,7 +28,7 @@ const DeviceType = require('./repository/DeviceType');
 const StatusType = require('./repository/StatusType');
 
 const config = require('./config/server.config');
-const NotifierError = require('./common/Error');
+const SSSError = require('./common/Error');
 
 const util = require('./common/common-util');
 const logger = require('winston');
@@ -63,24 +63,24 @@ const _setAuthStrategy = () => {
       const clientIP = util.getClientIp(request);
       if (clientIP !== decoded.ip) {
         logger.warn(`[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${clientIP}`);
-        return callback(new NotifierError(NotifierError.Types.AUTH_TOKEN_INVALID), false);
+        return callback(new SSSError(SSSError.Types.AUTH_TOKEN_INVALID), false);
       }
       // Check token expiration
       if (decoded.exp < new Date().getTime()) {
         logger.warn(`[Auth] This auth token is expired.: decoded.exp => ${decoded.exp}, now => ${new Date().getTime()}`);
-        return callback(new NotifierError(NotifierError.Types.AUTH_TOKEN_EXPIRED), false);
+        return callback(new SSSError(SSSError.Types.AUTH_TOKEN_EXPIRED), false);
       }
       return User.find({ username: decoded.username })
         .then((accounts) => {
           if (!accounts || accounts.length === 0) {
             logger.warn(`[Auth] This account is not exist.: ${decoded.username}`);
-            return callback(new NotifierError(NotifierError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }), false);
+            return callback(new SSSError(SSSError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }), false);
           }
           return callback(null, true, accounts[0]);
         })
         .catch((e) => {
           logger.error(`[DB] DB error occurred: ${e.message}`);
-          callback(new NotifierError(NotifierError.Types.DB), false);
+          callback(new SSSError(SSSError.Types.DB), false);
         });
     },
     verifyOptions: { algorithms: ['HS256'] },

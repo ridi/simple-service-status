@@ -31,7 +31,7 @@ exports.login = data => axios.post('/login', data);
 exports.changePassword = data => axios.put('/passwords', data);
 
 /**
- * Get status(notification) list
+ * Get status list
  * @param {string} filter - filter name: 'current' or 'expired'
  * @param {number} skip - numbers of records to be skipped
  * @param {number} limit - numbers of records to be returned
@@ -39,7 +39,7 @@ exports.changePassword = data => axios.put('/passwords', data);
 exports.getStatus = (filter, skip, limit) => axios.get('/status', { params: { filter, skip, limit } });
 
 /**
- * Add a status(notification)
+ * Add a status
  * @param {Object} data
  *    - {string} type
  *    - {Array} deviceTypes
@@ -53,7 +53,7 @@ exports.getStatus = (filter, skip, limit) => axios.get('/status', { params: { fi
 exports.addStatus = data => axios.post('/status', data);
 
 /**
- * Update a status(notification)
+ * Update a status
  * @param {string} statusId
  * @param {Object} data
  *    - {string} type
@@ -68,19 +68,19 @@ exports.addStatus = data => axios.post('/status', data);
 exports.updateStatus = (statusId, data) => axios.put(`/status/${statusId}`, data);
 
 /**
- * Remove a status(notification)
+ * Remove a status
  * @param {string} statusId
  */
 exports.removeStatus = statusId => axios.delete(`/status/${statusId}`);
 
 /**
- * Activate a status(notification)
+ * Activate a status
  * @param {string} statusId
  */
 exports.activateStatus = statusId => axios.put(`/status/${statusId}/activate`);
 
 /**
- * Deactivate a status(notification)
+ * Deactivate a status
  * @param {string} statusId
  */
 exports.deactivateStatus = statusId => axios.put(`/status/${statusId}/deactivate`);

@@ -1,9 +1,9 @@
 # Simple Service Status
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/ridibooks/simple-notifier.svg)](https://greenkeeper.io/)
+[![Greenkeeper badge](https://badges.greenkeeper.io/ridi/simple-service-status.svg)](https://greenkeeper.io/)
 [![Build Status](https://travis-ci.org/ridi/simple-service-status.svg?branch=master)](https://travis-ci.org/ridi/simple-service-status)
-[![npm](https://img.shields.io/npm/v/simple-notifier.svg)](https://www.npmjs.com/package/simple-notifier)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ridibooks/simple-notifier/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ridibooks/simple-notifier/?branch=master)
+[![npm](https://img.shields.io/npm/v/simple-service-status.svg)](https://www.npmjs.com/package/simple-service-status)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ridi/simple-service-status/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ridi/simple-service-status/?branch=master)
 
 ## Overview
 
