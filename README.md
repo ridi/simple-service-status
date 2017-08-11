@@ -21,7 +21,7 @@
 ## Install
 
 ```
-$ git clone git@github.com:ridibooks/viewer-notification.git [target directory]
+$ git clone git@github.com:ridi/simple-service-status.git [target directory]
 $ cd [taget directory]
 $ yarn install
 ```
@@ -62,7 +62,7 @@ yarn test
 ```
 
 ## Public API
-### Check Notifications
+### Check Service Status
 
 현재 디바이스 플랫폼과 앱 버전에 대해 공지사항이 있는지 확인한다.
 
