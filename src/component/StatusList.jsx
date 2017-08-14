@@ -58,6 +58,17 @@ export default class StatusList extends React.Component {
       activationMode: true,
       activeTab: 'current',
       showLoading: false,
+      statusModal: {
+        visible: false,
+        mode: 'add',
+        data: null,
+      },
+      removeModal: {
+        visible: false,
+      },
+      activationModal: {
+        visible: false,
+      },
     };
 
     this.modals = {};
@@ -163,13 +174,20 @@ export default class StatusList extends React.Component {
     this.setState(newState);
   }
 
-  showModal(mode, data) {
-    this.modals.createModal.show(mode, data);
+  showStatusModal(mode = 'add', data = null) {
+    this.setState({ statusModal: { visible: true, mode, data } });
+  }
+
+  closeStatusModal() {
+    this.setState({ statusModal: { visible: false, mode: this.state.statusModal.mode, data: null } });
   }
 
   startToSetActivation(activationMode) {
-    this.setState({ activationMode });
-    this.modals.activationModal.show();
+    this.setState({ activationMode, activationModal: { visible: true } });
+  }
+
+  closeActivationModal() {
+    this.setState({ activationModal: { visible: false } });
   }
 
   setActivation(tabName, isActivated, items) {
@@ -178,7 +196,7 @@ export default class StatusList extends React.Component {
       Promise.all(items.map(item => api(item.id)))
         .then(() => {
           this.refresh(tabName);
-          this.modals.activationModal.close();
+          this.closeActivationModal();
         })
         .catch(error => this.setState({ error }));
     }
@@ -216,7 +234,11 @@ export default class StatusList extends React.Component {
   }
 
   startToRemove() {
-    this.modals.removeModal.show();
+    this.setState({ removeModal: { visible: true }});
+  }
+
+  closeRemoveModal() {
+    this.setState({ removeModal: { visible: false } });
   }
 
   remove(tabName, items) {
@@ -224,7 +246,7 @@ export default class StatusList extends React.Component {
       Promise.all(items.map(item => Api.removeStatus(item.id)))
         .then(() => {
           this.refresh(tabName);
-          this.modals.removeModal.close();
+          this.closeRemoveModal();
         })
         .catch(error => this.setState({ error }));
     }
@@ -252,14 +274,14 @@ export default class StatusList extends React.Component {
             <ButtonToolbar>
               <ButtonGroup>
                 <Button
-                  onClick={() => this.showModal('add')}
+                  onClick={() => this.showStatusModal('add')}
                   bsSize="small"
                   disabled={currentState.buttonDisabled.add}
                 >
                   등록
                 </Button>
                 <Button
-                  onClick={() => this.showModal('add', currentState.checkedItems[0])}
+                  onClick={() => this.showStatusModal('add', currentState.checkedItems[0])}
                   bsSize="small"
                   disabled={currentState.buttonDisabled.clone}
                 >
@@ -267,7 +289,7 @@ export default class StatusList extends React.Component {
                 </Button>
               </ButtonGroup>
               <Button
-                onClick={() => this.showModal('modify', currentState.checkedItems[0])}
+                onClick={() => this.showStatusModal('modify', currentState.checkedItems[0])}
                 bsSize="small"
                 disabled={currentState.buttonDisabled.modify}
               >
@@ -325,14 +347,14 @@ export default class StatusList extends React.Component {
             <ButtonToolbar>
               <ButtonGroup>
                 <Button
-                  onClick={() => this.showModal('add')}
+                  onClick={() => this.showStatusModal('add')}
                   bsSize="small"
                   disabled={expireState.buttonDisabled.add}
                 >
                   등록
                 </Button>
                 <Button
-                  onClick={() => this.showModal('add', expireState.checkedItems[0])}
+                  onClick={() => this.showStatusModal('add', expireState.checkedItems[0])}
                   bsSize="small"
                   disabled={expireState.buttonDisabled.clone}
                 >
@@ -340,7 +362,7 @@ export default class StatusList extends React.Component {
                 </Button>
               </ButtonGroup>
               <Button
-                onClick={() => this.showModal('modify', expireState.checkedItems[0])}
+                onClick={() => this.showStatusModal('modify', expireState.checkedItems[0])}
                 bsSize="small"
                 disabled={expireState.buttonDisabled.modify}
               >
@@ -376,24 +398,29 @@ export default class StatusList extends React.Component {
           </Tab>
         </Tabs>
         <CreateModal
-          ref={(m) => { this.modals.createModal = m; }}
+          visible={this.state.statusModal.visible}
           options={options}
           onSuccess={() => this.refresh(this.state.activeTab)}
+          onClose={() => this.closeStatusModal()}
+          mode={this.state.statusModal.mode}
+          data={this.state.statusModal.data}
         />
         <Modal
-          ref={(m) => { this.modals.removeModal = m; }}
+          visible={this.state.removeModal.visible}
           mode={'confirm'}
           title="삭제 확인"
           onConfirm={() => this.remove(this.state.activeTab, this.state[this.state.activeTab].checkedItems)}
+          onClose={() => this.closeRemoveModal()}
         >
           <p>{this.state[this.state.activeTab].checkedItems.length} 건의 데이터를 삭제하시겠습니까?</p>
         </Modal>
         <Modal
-          ref={(m) => { this.modals.activationModal = m; }}
+          visible={this.state.activationModal.visible}
           mode={'confirm'}
           title={this.state.activationMode ? '활성화 확인' : '비활성화 확인'}
           onConfirm={() => this.setActivation(this.state.activeTab, this.state.activationMode,
             this.state[this.state.activeTab].checkedItems)}
+          onClose={() => this.closeActivationModal()}
         >
           <p>
             {this.state[this.state.activeTab].checkedItems.length} 건의 데이터를

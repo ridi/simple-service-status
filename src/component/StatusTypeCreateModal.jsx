@@ -49,9 +49,18 @@ export default class StatusTypeCreateModal extends React.Component {
       mode: 'add',
       saveWarningMessage: null,
       buttons: this.modes.add,
+      message: '',
+      messageLevel: 'warning',
     };
 
     Object.assign(this.state, this.defaultData);
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (newProps.visible !== this.props.visible && newProps.visible) {
+      this.setState({ saveWarningMessage: null, buttons: this.modes[newProps.mode].buttons });
+      this.resolveData(newProps.data);
+    }
   }
 
   setButtonDisabled(disabled, excludeCloseButton, callback) {
@@ -109,31 +118,25 @@ export default class StatusTypeCreateModal extends React.Component {
           template: this.state.template,
         };
 
-        const api = (this.state.mode === 'add') ? Api.addStatusType(data) : Api.updateStatusType(this.state.id, data);
+        const api = (this.props.mode === 'add') ? Api.addStatusType(data) : Api.updateStatusType(this.state.id, data);
         return api.then(() => {
           self.props.onSuccess();
-          return self.modal.close();
+          return self.props.onClose();
         }).catch((err) => {
           let message = '저장 도중 에러가 발생했습니다. 다시 시도해주세요.';
           if (err.response && err.response.data && err.response.data.message) {
             message = err.response.data.message;
           }
-          self.modal.message(message, 'warning');
+          this.setState({ message });
           throw err;
         });
       })
       .catch((error) => {
         if (error instanceof ValidationError) {
-          self.modal.message(error.message, 'warning');
+          this.setState({ message: error.message });
         }
         throw new Error(error);
       });
-  }
-
-  show(mode, data) {
-    this.setState({ mode, saveWarningMessage: null, buttons: this.modes[mode].buttons });
-    this.resolveData(data);
-    this.modal.show();
   }
 
   ensureSafeClick(action) {
@@ -147,9 +150,10 @@ export default class StatusTypeCreateModal extends React.Component {
   render() {
     return (
       <Modal
-        title={this.modes[this.state.mode].modalTitle}
-        ref={(modal) => { this.modal = modal; }}
+        visible={this.props.visible}
+        title={this.modes[this.props.mode].modalTitle}
         buttons={this.state.buttons}
+        onClose={() => this.props.onClose()}
       >
         <ValidationForm ref={(form) => { this.form = form; }}>
           <ValidationField
@@ -205,5 +209,14 @@ StatusTypeCreateModal.defaultProps = {
 };
 
 StatusTypeCreateModal.propTypes = {
+  visible: PropTypes.bool.isRequired,
   onSuccess: PropTypes.func,
+  onClose: PropTypes.func.isRequired,
+  mode: PropTypes.oneOf(['add', 'modify']).isRequired,
+  data: PropTypes.shape({
+    id: PropTypes.string,
+    label: PropTypes.string,
+    value: PropTypes.string,
+    template: PropTypes.string,
+  }).isRequired,
 };

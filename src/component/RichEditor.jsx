@@ -9,6 +9,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Draft from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
+import config from '../config/client.config';
 
 import {
   Button,
@@ -95,18 +96,72 @@ export default class RichEditor extends React.Component {
       <div className="editor-root">
         <ButtonToolbar>
           <ButtonGroup style={{ marginLeft: 0 }}>
-            <Button bsSize="small" active={this.state.buttons.BOLD} onMouseDown={() => this.onToggleInlineStyle('BOLD')}><i className="fa fa-bold" aria-hidden="true" /></Button>
+            <Button
+              bsSize="small"
+              active={this.state.buttons.BOLD}
+              onMouseDown={() => this.onToggleInlineStyle('BOLD')}
+            >
+              <i className="fa fa-bold" aria-hidden="true" />
+            </Button>
           </ButtonGroup>
           <ButtonGroup>
-            <Button bsSize="small" active={this.state.buttons.ITALIC} onMouseDown={() => this.onToggleInlineStyle('ITALIC')} disabled><i className="fa fa-italic" aria-hidden="true" /></Button>
-            <Button bsSize="small" active={this.state.buttons.UNDERLINE} onMouseDown={() => this.onToggleInlineStyle('UNDERLINE')} disabled><i className="fa fa-underline" aria-hidden="true" /></Button>
-            <Button bsSize="small" active={this.state.buttons.STRIKETHROUGH} onMouseDown={() => this.onToggleInlineStyle('STRIKETHROUGH')} disabled><i className="fa fa-strikethrough" aria-hidden="true" /></Button>
-            <Button bsSize="small" active={this.state.buttons['unordered-list-item']} onMouseDown={() => this.onToggleBlockType('unordered-list-item')} disabled><i className="fa fa-list-ul" aria-hidden="true" /></Button>
-            <Button bsSize="small" active={this.state.buttons['ordered-list-item']} onMouseDown={() => this.onToggleBlockType('ordered-list-item')} disabled><i className="fa fa-list-ol" aria-hidden="true" /></Button>
+            <Button
+              bsSize="small"
+              active={this.state.buttons.ITALIC}
+              onMouseDown={() => this.onToggleInlineStyle('ITALIC')}
+              disabled={!config.editor.supportEnhancedFormat}
+            >
+              <i className="fa fa-italic" aria-hidden="true" />
+            </Button>
+            <Button
+              bsSize="small"
+              active={this.state.buttons.UNDERLINE}
+              onMouseDown={() => this.onToggleInlineStyle('UNDERLINE')}
+              disabled={!config.editor.supportEnhancedFormat}
+            >
+              <i className="fa fa-underline" aria-hidden="true" />
+            </Button>
+            <Button
+              bsSize="small"
+              active={this.state.buttons.STRIKETHROUGH}
+              onMouseDown={() => this.onToggleInlineStyle('STRIKETHROUGH')}
+              disabled={!config.editor.supportEnhancedFormat}
+            >
+              <i className="fa fa-strikethrough" aria-hidden="true" />
+            </Button>
+            <Button
+              bsSize="small"
+              active={this.state.buttons['unordered-list-item']}
+              onMouseDown={() => this.onToggleBlockType('unordered-list-item')}
+              disabled={!config.editor.supportEnhancedFormat}
+            >
+              <i className="fa fa-list-ul" aria-hidden="true" />
+            </Button>
+            <Button
+              bsSize="small"
+              active={this.state.buttons['ordered-list-item']}
+              onMouseDown={() => this.onToggleBlockType('ordered-list-item')}
+              disabled={!config.editor.supportEnhancedFormat}
+            >
+              <i className="fa fa-list-ol" aria-hidden="true" />
+            </Button>
           </ButtonGroup>
-          <div style={{ width: '160px', height: '30px', position: 'relative', left: '36px', backgroundColor: 'rgba(228, 228, 228, 0.6)', color: '#8e8e8e', textAlign: 'center', lineHeight: '30px' }}>
-            <div style={{ position: 'absolute', width: '100%', fontSize: '12px' }}>추후 지원 예정</div>
-          </div>
+          { !config.editor.supportEnhancedFormat &&
+            <div
+              style={{
+                width: '160px',
+                height: '30px',
+                position: 'relative',
+                left: '36px',
+                backgroundColor: 'rgba(228, 228, 228, 0.6)',
+                color: '#8e8e8e',
+                textAlign: 'center',
+                lineHeight: '30px',
+              }}
+            >
+              <div style={{ position: 'absolute', width: '100%', fontSize: '12px' }}>추후 지원 예정</div>
+            </div>
+          }
         </ButtonToolbar>
         <Editor
           className="RichEditor-editor"

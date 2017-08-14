@@ -62,6 +62,7 @@
     "react-bootstrap": "^0.31.2",
     "react-datetime": "^2.8.1",
     "react-dom": "^15.4.1",
+    "react-dom-factories": "^1.0.1",
     "react-hot-loader": "^3.0.0-beta.6",
     "react-selectize": "^3.0.1",
     "semver": "^5.3.0",
