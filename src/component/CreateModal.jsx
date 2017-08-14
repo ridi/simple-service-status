@@ -9,8 +9,6 @@ import {
 import { SimpleSelect, MultiSelect } from 'react-selectize';
 import moment from 'moment';
 import semver from 'semver';
-import Joi from 'joi';
-
 import Modal from './Modal';
 import VersionSelector from './VersionSelector';
 import DateRangeSelector from './DateRangeSelector';
@@ -29,7 +27,7 @@ class ValidationWarning {
   }
 }
 
-export default class CreateModal extends React.Component {
+export default class StatusModal extends React.Component {
   constructor(props) {
     super(props);
     const self = this;
@@ -67,18 +65,83 @@ export default class CreateModal extends React.Component {
 
     this.state = {
       modalTitle: '새로운 알림 등록',
-      mode: 'add',
       startTimeState: null,
       endTimeState: null,
       versionSelectorDisabled: false,
       saveWarningMessage: null,
       buttons: this.modes.add,
+      message: '',
+      messageLevel: 'warning',
     };
 
     this.contentEditor = null;
     this.form = null;
     Object.assign(this.state, this.defaultData);
     this.ignoreWarning = false;
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (newProps.visible !== this.props.visible && newProps.visible) {
+      this.setState({ saveWarningMessage: null, buttons: this.modes[newProps.mode].buttons });
+      this.resolveData(newProps.data);
+    }
+  }
+
+  save(withActivation) {
+    const self = this;
+
+    return Promise.resolve()
+      .then(() => this.checkFormValidity(this.ignoreWarning))
+      .then(() => {
+        const data = {
+          title: this.state.title,
+          type: this.state.type.value,
+          deviceTypes: this.state.deviceTypes.map(dt => dt.value),
+          contents: this.state.contents,
+          isActivated: withActivation,
+          deviceSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.deviceSemVersion) : '*',
+          appSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.appSemVersion) : '*',
+        };
+        if (this.state.dateRange.comparator === '~') {
+          data.startTime = dateUtil.formatDate(this.state.dateRange.startTime);
+          data.endTime = dateUtil.formatDate(this.state.dateRange.endTime);
+        }
+
+        this.ignoreWarning = false;
+
+        const api = (this.props.mode === 'add') ? Api.addStatus(data) : Api.updateStatus(this.state.id, data);
+        return api.then(() => {
+          if (typeof self.props.onSuccess === 'function') {
+            self.props.onSuccess();
+          }
+          return self.props.onClose();
+        }).catch((err) => {
+          let message = '저장 도중 에러가 발생했습니다. 다시 시도해주세요.';
+          if (err.response && err.response.data && err.response.data.message) {
+            message = err.response.data.message;
+          }
+          this.setState({ message });
+          throw err;
+        });
+      })
+      .catch((error) => {
+        if (error instanceof ValidationError) {
+          this.setState({ message: error.message });
+        } else if (error instanceof ValidationWarning) {
+          this.ignoreWarning = true;
+          const message = (
+            <p>
+              저장하시기 전에 아래의 문제(들)를 확인해 주세요.
+              <br />
+              {error.message}
+              <br />
+              그래도 계속 하시려면 <strong>저장 버튼</strong>을 다시 누르세요.
+            </p>
+          );
+          this.setState({ saveWarningMessage: message });
+        }
+        throw new Error(error);
+      });
   }
 
   checkSemVersionValidity(parsedConditions) {
@@ -117,69 +180,6 @@ export default class CreateModal extends React.Component {
       throw new ValidationError(error);
     }
     return true;
-  }
-
-  save(withActivation) {
-    const self = this;
-
-    return Promise.resolve()
-      .then(() => this.checkFormValidity(this.ignoreWarning))
-      .then(() => {
-        const data = {
-          title: this.state.title,
-          type: this.state.type.value,
-          deviceTypes: this.state.deviceTypes.map(dt => dt.value),
-          contents: this.state.contents,
-          isActivated: withActivation,
-          deviceSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.deviceSemVersion) : '*',
-          appSemVersion: (this.state.deviceTypes.length === 1) ? util.stringifySemVersion(this.state.appSemVersion) : '*',
-        };
-        if (this.state.dateRange.comparator === '~') {
-          data.startTime = dateUtil.formatDate(this.state.dateRange.startTime);
-          data.endTime = dateUtil.formatDate(this.state.dateRange.endTime);
-        }
-
-        this.ignoreWarning = false;
-
-        const api = (this.state.mode === 'add') ? Api.addStatus(data) : Api.updateStatus(this.state.id, data);
-        return api.then(() => {
-          if (typeof self.props.onSuccess === 'function') {
-            self.props.onSuccess();
-          }
-          return self.modal.close();
-        }).catch((err) => {
-          let message = '저장 도중 에러가 발생했습니다. 다시 시도해주세요.';
-          if (err.response && err.response.data && err.response.data.message) {
-            message = err.response.data.message;
-          }
-          self.modal.message(message, 'warning');
-          throw err;
-        });
-      })
-      .catch((error) => {
-        if (error instanceof ValidationError) {
-          self.modal.message(error.message, 'warning');
-        } else if (error instanceof ValidationWarning) {
-          this.ignoreWarning = true;
-          const message = (
-            <p>
-              저장하시기 전에 아래의 문제(들)를 확인해 주세요.
-              <br />
-              {error.message}
-              <br />
-              그래도 계속 하시려면 <strong>저장 버튼</strong>을 다시 누르세요.
-            </p>
-          );
-          this.setState({ saveWarningMessage: message });
-        }
-        throw new Error(error);
-      });
-  }
-
-  show(mode, data) {
-    this.setState({ mode, saveWarningMessage: null, buttons: this.modes[mode].buttons });
-    this.resolveData(data);
-    this.modal.show();
   }
 
   resolveData(data) {
@@ -238,7 +238,7 @@ export default class CreateModal extends React.Component {
     const isValid = this.form.validate();
     this.setButtonDisabled(!isValid, true);
   }
-  
+
   validate(id) {
     const data = this.state;
     switch (id) {
@@ -331,9 +331,12 @@ export default class CreateModal extends React.Component {
   render() {
     const rendered = (
       <Modal
-        title={this.modes[this.state.mode].modalTitle}
-        ref={(modal) => { this.modal = modal; }}
+        visible={this.props.visible}
+        title={this.modes[this.props.mode].modalTitle}
         buttons={this.state.buttons}
+        message={this.state.message}
+        messageLevel={this.state.messageLevel}
+        onClose={() => this.props.onClose()}
       >
         <ValidationForm ref={(f) => { this.form = f; }}>
           <ValidationField controlId="type" label="알림 타입" required validate={() => this.validate('type')}>
@@ -443,12 +446,28 @@ export default class CreateModal extends React.Component {
   }
 }
 
-CreateModal.defaultProps = {
+StatusModal.defaultProps = {
   options: {},
   onSuccess: () => {},
+  data: null,
 };
 
-CreateModal.propTypes = {
+StatusModal.propTypes = {
+  visible: PropTypes.bool.isRequired,
   options: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string))),
   onSuccess: PropTypes.func,
+  onClose: PropTypes.func.isRequired,
+  data: PropTypes.shape({
+    id: PropTypes.string,
+    title: PropTypes.string,
+    type: PropTypes.string,
+    deviceTypes: PropTypes.array,
+    startTime: PropTypes.string,
+    endTime: PropTypes.string,
+    contents: PropTypes.string,
+    isActivated: PropTypes.bool,
+    deviceSemVersion: PropTypes.string,
+    appSemVersion: PropTypes.string,
+  }),
+  mode: PropTypes.oneOf(['add', 'modify']).isRequired,
 };

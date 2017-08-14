@@ -17,7 +17,10 @@ if (process.env.NODE_ENV === 'development') {
     hot: true,
     contentBase: resolve(__dirname, `${config.build.clientOutputDirectoryName}`),
     publicPath: `http://${config.defaults.host}:${config.build.webpackServerPort}${config.url.publicPrefix}/`,
-    headers: { 'Access-Control-Allow-Origin': '*' },
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+    },
   }).listen(config.build.webpackServerPort, config.defaults.host, (err) => {
     if (err) {
       logger.error(err);

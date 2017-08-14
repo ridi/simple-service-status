@@ -43,6 +43,14 @@ export default class Settings extends React.Component {
         },
         checkedItems: [],
       },
+      statusTypeModal: {
+        visible: false,
+        mode: 'add',
+        data: null,
+      },
+      removeModal: {
+        visible: false,
+      },
     };
     this.tables = {};
     this.statusTypeColumns = [
@@ -63,7 +71,6 @@ export default class Settings extends React.Component {
       { title: '라벨', key: 'label' },
       { title: '값', key: 'value' },
     ];
-    this.modals = {};
   }
 
   componentDidMount() {
@@ -89,8 +96,12 @@ export default class Settings extends React.Component {
     this.setState({ activeTab }, () => this.refresh(activeTab));
   }
 
-  showModal(mode, data) {
-    this.modals.createModal.show(mode, data);
+  showStatusTypeModal(mode = 'add', data = null) {
+    this.setState({ statusTypeModal: { visible: true, mode, data } });
+  }
+
+  closeStatusTypeModal() {
+    this.setState({ statusTypeModal: { visible: false, mode: this.state.statusTypeModal.mode, data: null } });
   }
 
   refresh(tabName) {
@@ -102,27 +113,31 @@ export default class Settings extends React.Component {
 
     const api = (tabName === 'statusType') ? Api.getStatusTypes() : Api.getDeviceTypes();
     return api.then((response) => {
-        newState[tabName].items = response.data.data;
-        newState[tabName].totalCount = response.data.totalCount;
-        newState[tabName].error = null;
-        newState[tabName].checkedItems = [];
-        this.setState(newState);
-        table.setChecked(false);
-        this.setState({ showLoading: false });
-      })
-      .catch((error) => {
-        newState[tabName].items = [];
-        newState[tabName].totalCount = 0;
-        newState[tabName].error = error;
-        newState[tabName].checkedItems = [];
-        this.setState(newState);
-        table.setChecked(false);
-        this.setState({ showLoading: false });
-      });
+      newState[tabName].items = response.data.data;
+      newState[tabName].totalCount = response.data.totalCount;
+      newState[tabName].error = null;
+      newState[tabName].checkedItems = [];
+      this.setState(newState);
+      table.setChecked(false);
+      this.setState({ showLoading: false });
+    })
+    .catch((error) => {
+      newState[tabName].items = [];
+      newState[tabName].totalCount = 0;
+      newState[tabName].error = error;
+      newState[tabName].checkedItems = [];
+      this.setState(newState);
+      table.setChecked(false);
+      this.setState({ showLoading: false });
+    });
   }
 
   startToRemove() {
-    this.modals.removeModal.show();
+    this.setState({ removeModal: { visible: true } });
+  }
+
+  closeRemoveModal() {
+    this.setState({ removeModal: { visible: false } });
   }
 
   remove(tabName, items) {
@@ -130,7 +145,7 @@ export default class Settings extends React.Component {
       Promise.all(items.map(item => Api.removeStatusType(item.id)))
         .then(() => {
           this.refresh(tabName);
-          this.modals.removeModal.close();
+          this.closeRemoveModal();
         })
         .catch(error => this.setState({ error }));
     }
@@ -145,14 +160,14 @@ export default class Settings extends React.Component {
           <Tab eventKey={'statusType'} title="상태 타입 목록">
             <ButtonToolbar>
               <Button
-                onClick={() => this.showModal('add')}
+                onClick={() => this.showStatusTypeModal('add')}
                 bsSize="small"
                 disabled={statusTypeState.buttonDisabled.add}
               >
                 등록
               </Button>
               <Button
-                onClick={() => this.showModal('modify', statusTypeState.checkedItems[0])}
+                onClick={() => this.showStatusTypeModal('modify', statusTypeState.checkedItems[0])}
                 bsSize="small"
                 disabled={statusTypeState.buttonDisabled.modify}
               >
@@ -187,14 +202,18 @@ export default class Settings extends React.Component {
           </Tab>
         </Tabs>
         <StatusTypeCreateModal
-          ref={(m) => { this.modals.createModal = m; }}
+          visible={this.state.statusTypeModal.visible}
+          mode={this.state.statusTypeModal.mode}
+          data={this.state.statusTypeModal.data}
           onSuccess={() => this.refresh(this.state.activeTab)}
+          onClose={() => this.closeStatusTypeModal()}
         />
         <Modal
-          ref={(m) => { this.modals.removeModal = m; }}
+          visible={this.state.removeModal.visible}
           mode={'confirm'}
           title="삭제 확인"
           onConfirm={() => this.remove(this.state.activeTab, this.state[this.state.activeTab].checkedItems)}
+          onClose={() => this.startToRemove()}
         >
           <p>{this.state[this.state.activeTab].checkedItems.length} 건의 데이터를 삭제하시겠습니까?</p>
         </Modal>
