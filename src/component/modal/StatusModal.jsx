@@ -4,7 +4,6 @@ import {
   FormControl,
   HelpBlock,
   Row,
-  Checkbox,
   FormGroup,
   ControlLabel,
   ButtonToolbar,
@@ -14,6 +13,7 @@ import {
 import { SimpleSelect, MultiSelect } from 'react-selectize';
 import moment from 'moment';
 import semver from 'semver';
+import dateUtil from '../../common/date-util';
 import DataEditableModal from './DataEditableModal';
 import VersionSelector from '../VersionSelector';
 import DateRangeSelector from '../DateRangeSelector';
@@ -54,15 +54,21 @@ export default class StatusModal extends DataEditableModal {
 
   getData() {
     const data = this.state.data;
-    return {
+
+    const result = {
       title: data.title,
       type: data.type.value,
       deviceTypes: data.deviceTypes.map(dt => dt.value),
       contents: data.contents,
-      isActivated: data.isActivated,
+      isActivated: !!data.isActivated,
       deviceSemVersion: (data.deviceTypes.length === 1) ? util.stringifySemVersion(data.deviceSemVersion) : '*',
       appSemVersion: (data.deviceTypes.length === 1) ? util.stringifySemVersion(data.appSemVersion) : '*',
     };
+    if (data.dateRange.comparator === '~') {
+      result.startTime = dateUtil.formatDate(data.dateRange.startTime);
+      result.endTime = dateUtil.formatDate(data.dateRange.endTime);
+    }
+    return result;
   }
 
   resolveData(data) {
@@ -80,7 +86,7 @@ export default class StatusModal extends DataEditableModal {
           endTime: moment(data.endTime),
         },
         contents: data.contents,
-        isActivated: data.isActivated,
+        isActivated: false,
         deviceSemVersion: util.parseSemVersion(data.deviceSemVersion),
         appSemVersion: util.parseSemVersion(data.appSemVersion),
       };
@@ -162,7 +168,7 @@ export default class StatusModal extends DataEditableModal {
     if (error) {
       throw new ValidationError(error);
     }
-    return Promise.resolve();
+    return true;
   }
 
   validateField(id) {
@@ -219,24 +225,24 @@ export default class StatusModal extends DataEditableModal {
 
     // Check warnings
     if (this.ignoreWarning) {
-      return Promise.resolve();
+      return true;
     }
-    const warning = [];
+    const warnings = [];
     if (data.dateRange.comparator === '~') {
       if (moment(data.dateRange.endTime).isBefore(moment.now())) {
-        warning.push('- 설정된 종료 일시가 과거입니다. 활성화 하더라도 알림이 실행되지 않습니다.');
+        warnings.push('설정된 종료 일시가 과거입니다. 활성화 하더라도 알림이 실행되지 않습니다.');
       }
     }
     if (data.deviceSemVersion.some(cond => cond.comparator === '*') && data.deviceSemVersion.length > 1) {
-      warning.push('- 설정된 타겟 디바이스 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
+      warnings.push('설정된 타겟 디바이스 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
     }
     if (data.appSemVersion.some(cond => cond.comparator === '*') && data.appSemVersion.length > 1) {
-      warning.push('- 설정된 앱 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
+      warnings.push('설정된 앱 버전 조건에 이미 \'*\'(모든 버전 대상)이 포함되어 있습니다. 저장 시 다른 조건들은 무시됩니다.');
     }
-    if (warning.length > 0) {
-      return Promise.reject(new ValidationError(warning.join(<br />), 'warning'));
+    if (warnings.length > 0) {
+      throw new ValidationError(warnings.join('\n'), 'warning');
     }
-    return Promise.resolve();
+    return true;
   }
 
   renderChild() {
@@ -269,7 +275,7 @@ export default class StatusModal extends DataEditableModal {
         </ValidationField>
         <ValidationField
           controlId="dateRange"
-          label="알림 시작종료 일시"
+          label="알림 시작 / 종료 일시"
           required
           validate={() => this.validateField('dateRange')}
         >

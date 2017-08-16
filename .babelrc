@@ -1,18 +1,19 @@
 {
-  "plugins": [
-    ["babel-plugin-transform-builtin-extend", {
-      "globals": ["Error", "Array"]
-    }]
-  ],
   "env": {
     "test": { "presets": [["env", { "targets": { "node": "current" } }]] },
     "development": {
       "presets": [["env", { "modules": false }], "react"],
-      "plugins": ["react-hot-loader/babel"]
+      "plugins": [
+        "react-hot-loader/babel",
+        ["babel-plugin-transform-builtin-extend", { "globals": ["Error", "Array"] }]
+      ]
     },
     "production": {
       "presets": [["env", { "modules": false }], "react"],
-      "plugins": ["react-hot-loader/babel"]
+      "plugins": [
+        "react-hot-loader/babel",
+        ["babel-plugin-transform-builtin-extend", { "globals": ["Error", "Array"] }]
+      ]
     }
   }
 }
