@@ -14,7 +14,7 @@ import {
 import moment from 'moment';
 import Table from './Table';
 
-import CreateModal from './modal/StatusModal';
+import StatusModal from './modal/StatusModal';
 import Modal from './modal/Modal';
 import Loading from './Loading';
 
@@ -397,7 +397,7 @@ export default class StatusList extends React.Component {
             </div>
           </Tab>
         </Tabs>
-        <CreateModal
+        <StatusModal
           visible={this.state.statusModal.visible}
           options={options}
           onSuccess={() => this.refresh(this.state.activeTab)}
