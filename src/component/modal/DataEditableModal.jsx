@@ -96,8 +96,7 @@ export default class DataEditableModal extends React.Component {
   }
 
   checkData() {
-    this.ignoreWarning = false;
-    return Promise.resolve();
+    return true;
   }
 
   validate() {
@@ -149,13 +148,11 @@ export default class DataEditableModal extends React.Component {
           } else if (error.level === 'warning') {
             this.ignoreWarning = true;
             const message = (
-              <p>
-                저장하시기 전에 아래의 문제(들)를 확인해 주세요.
-                <br />
-                {error.message}
-                <br />
-                그래도 계속 하시려면 <strong>저장 버튼</strong>을 다시 누르세요.
-              </p>
+              <div>
+                <p>저장하기 전에 아래의 문제(들)를 확인해 주세요.</p>
+                <ul>{ error.message.split('\n').map(warn => <li>{warn}</li>) }</ul>
+                <p>그래도 계속 하시려면 <strong>저장 버튼</strong>을 다시 누르세요.</p>
+              </div>
             );
             this.setState({ saveWarningMessage: message });
           }

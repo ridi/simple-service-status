@@ -69,10 +69,10 @@ ValidationForm.childContextTypes = {
 };
 
 export class ValidationError extends Error {
-  constructor(message, level = 'error') {
-    super();
-    this.message = message;
+  constructor(message = 'Invalid data input', level = 'error') {
+    super(message);
     this.level = level;
+    this.name = 'ValidationError';
   }
 }
 
