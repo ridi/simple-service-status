@@ -29,8 +29,23 @@ $error-color: #ef6767;
     }
     tbody {
       tr {
+        &:last-child {
+          & > td {
+            border-bottom: 1px solid #ddd;
+          }
+        }
         &.main-row {
           background-color: #f3f3f3;
+          &.checked-row {
+            background-color: #dae8f7;
+            & td {
+              border-top: 1px solid #bbd6f3;
+              border-bottom: 1px solid #bbd6f3;
+            }
+          }
+        }
+        &.checked-row {
+          background-color: #e9f1f9;
         }
       }
     }
@@ -55,9 +70,17 @@ $error-color: #ef6767;
             border-top: 0 !important;
             font-size: 0.85em;
           }
+          &:last-child {
+            & > td {
+              border-bottom: 0 !important;
+            }
+          }
         }
       }
     }
+  }
+  .table .table {
+    background-color: transparent;
   }
   .table-responsive {
     @media screen and (max-width: 767px) {
