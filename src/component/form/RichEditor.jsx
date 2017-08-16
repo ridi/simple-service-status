@@ -9,13 +9,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Draft from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
-import config from '../config/client.config';
-
 import {
   Button,
   ButtonToolbar,
   ButtonGroup,
 } from 'react-bootstrap';
+import config from '../../config/client.config';
 
 const Editor = Draft.Editor;
 const EditorState = Draft.EditorState;
