@@ -8,7 +8,7 @@ import {
   Row,
 } from 'react-bootstrap';
 import DataEditableModal from './DataEditableModal';
-import RichEditor from '../RichEditor';
+import RichEditor from '../form/RichEditor';
 import Api from '../../common/api';
 import ValidationField from '../form/ValidationField';
 import ValidationForm, { ValidationError } from '../form/ValidationForm';
