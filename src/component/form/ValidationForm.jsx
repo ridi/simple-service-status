@@ -68,8 +68,11 @@ ValidationForm.childContextTypes = {
   reset: PropTypes.func.isRequired,
 };
 
-export class ValidationError {
-  constructor(message) {
+export class ValidationError extends Error {
+  constructor(message, level = 'error') {
+    super();
     this.message = message;
+    this.level = level;
   }
 }
+

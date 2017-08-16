@@ -14,8 +14,8 @@ import {
 import moment from 'moment';
 import Table from './Table';
 
-import CreateModal from './CreateModal';
-import Modal from './Modal';
+import CreateModal from './modal/StatusModal';
+import Modal from './modal/Modal';
 import Loading from './Loading';
 
 import dateUtil from '../common/date-util';

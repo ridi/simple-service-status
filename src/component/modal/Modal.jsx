@@ -64,8 +64,17 @@ export default class Modal extends React.Component {
   render() {
     const modal = this;
 
+    let buttons = this.props.buttons;
+    let size = this.props.size;
+    if (!buttons) {
+      buttons = MODE_PRESET[this.props.mode].buttons;
+    }
+    if (!size) {
+      size = MODE_PRESET[this.props.mode].size;
+    }
+
     return (
-      <RBModal show={this.props.visible} onHide={() => this.close(true)} bsSize={this.props.size} backdrop="static">
+      <RBModal show={this.props.visible} onHide={() => this.close(true)} bsSize={size} backdrop="static">
         <RBModal.Header closeButton>
           <RBModal.Title>{this.props.title}</RBModal.Title>
         </RBModal.Header>
@@ -76,7 +85,7 @@ export default class Modal extends React.Component {
           {this.props.children}
         </RBModal.Body>
         <RBModal.Footer>
-          {this.props.buttons instanceof Array && this.props.buttons.map(button => (
+          {buttons instanceof Array && buttons.map(button => (
             <Button
               onClick={e => (button.isClose ? this.close(true) : button.onClick(e, modal))}
               bsStyle={button.style || 'default'}
@@ -96,7 +105,7 @@ Modal.defaultProps = {
   size: MODE_PRESET.default.size,
   onConfirm: () => {},
   onCancel: () => {},
-  buttons: MODE_PRESET.default.buttons,
+  buttons: null,
   message: '',
   messageLevel: 'warning',
 };

@@ -12,8 +12,8 @@ import {
 
 import Table from './Table';
 import Loading from './Loading';
-import StatusTypeCreateModal from './StatusTypeCreateModal';
-import Modal from './Modal';
+import StatusTypeCreateModal from './modal/StatusTypeModal';
+import Modal from './modal/Modal';
 
 import Api from '../common/api';
 
@@ -121,15 +121,15 @@ export default class Settings extends React.Component {
       table.setChecked(false);
       this.setState({ showLoading: false });
     })
-    .catch((error) => {
-      newState[tabName].items = [];
-      newState[tabName].totalCount = 0;
-      newState[tabName].error = error;
-      newState[tabName].checkedItems = [];
-      this.setState(newState);
-      table.setChecked(false);
-      this.setState({ showLoading: false });
-    });
+      .catch((error) => {
+        newState[tabName].items = [];
+        newState[tabName].totalCount = 0;
+        newState[tabName].error = error;
+        newState[tabName].checkedItems = [];
+        this.setState(newState);
+        table.setChecked(false);
+        this.setState({ showLoading: false });
+      });
   }
 
   startToRemove() {
@@ -210,10 +210,10 @@ export default class Settings extends React.Component {
         />
         <Modal
           visible={this.state.removeModal.visible}
-          mode={'confirm'}
+          mode="confirm"
           title="삭제 확인"
           onConfirm={() => this.remove(this.state.activeTab, this.state[this.state.activeTab].checkedItems)}
-          onClose={() => this.startToRemove()}
+          onClose={() => this.closeRemoveModal()}
         >
           <p>{this.state[this.state.activeTab].checkedItems.length} 건의 데이터를 삭제하시겠습니까?</p>
         </Modal>
