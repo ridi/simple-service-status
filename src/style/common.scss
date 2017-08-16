@@ -97,15 +97,20 @@ $error-color: #ef6767;
     &.btn-default {
       color: #5a5a5a;
       background-color: #fff;
-      border-color: #e0e0e0;
+      border-color: #cccccc;
       &.active {
-        background: #e0e0e0;
-        color: #5a93c3;
+        color: #f1f1f1;
+        background: #4e8bbf;
+        font-weight: 300;
+        &:hover {
+          color: #f1f1f1;
+          background: #4e8bbf;
+        }
       }
-    }
-    &.btn-default:hover {
-      background-color: #f3f3f3;
-      border-color: #dcdcdc;
+      &:hover {
+        background-color: #f3f3f3;
+        border-color: #dcdcdc;
+      }
     }
     &.btn-danger {
       color: #fff;
@@ -154,6 +159,9 @@ $error-color: #ef6767;
   label {
     color: $default-background-color;
     font-weight: 400;
+  }
+  .form-group .btn-toolbar {
+    margin: 0 -5px;
   }
   .form-control {
     color: #000;
