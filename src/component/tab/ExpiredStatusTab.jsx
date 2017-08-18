@@ -134,11 +134,6 @@ export default class ExpiredStatusTab extends BaseRefreshableTab {
     }
   }
 
-  setSubState(key, state) {
-    const newState = Object.assign({}, this.state[key], state);
-    this.setState({ [key]: newState });
-  }
-
   refresh() {
     const {
       page,

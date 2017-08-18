@@ -9,7 +9,6 @@ const StatusType = require('./../repository/StatusType');
 const config = require('../config/server.config').url;
 const dateUtil = require('../common/date-util');
 const SSSError = require('../common/Error');
-const logger = require('winston');
 
 module.exports = [
   {
@@ -45,7 +44,7 @@ module.exports = [
         payload: {
           label: Joi.string().required(),
           value: Joi.string().required(),
-          template: Joi.string(),
+          template: Joi.string().allow(''),
         },
       },
     },
@@ -78,7 +77,7 @@ module.exports = [
         payload: {
           label: Joi.string().required(),
           value: Joi.string().required(),
-          template: Joi.string(),
+          template: Joi.string().allow(''),
         },
       },
     },

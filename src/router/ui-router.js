@@ -9,7 +9,7 @@ const DeviceType = require('../repository/DeviceType');
 
 const menus = [
   { viewName: 'StatusView', title: '공지사항 관리', url: '/' },
-  { viewName: 'SettingList', title: '설정', url: '/settings' },
+  { viewName: 'SettingView', title: '설정', url: '/settings' },
 ];
 
 function view(request, reply, childViewName, context) {
@@ -37,7 +37,7 @@ module.exports = [
   {
     method: 'GET',
     path: '/settings',
-    handler: (request, reply) => view(request, reply, 'SettingList', {}),
+    handler: (request, reply) => view(request, reply, 'SettingView', {}),
   },
   {
     method: 'GET',
