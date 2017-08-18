@@ -7,13 +7,13 @@ import {
   HelpBlock,
   Row,
 } from 'react-bootstrap';
-import DataEditableModal from './DataEditableModal';
+import BaseDataEditableModal from './BaseDataEditableModal';
 import RichEditor from '../form/RichEditor';
 import Api from '../../common/api';
 import ValidationField from '../form/ValidationField';
 import ValidationForm, { ValidationError } from '../form/ValidationForm';
 
-export default class StatusTypeModal extends DataEditableModal {
+export default class StatusTypeModal extends BaseDataEditableModal {
   constructor(props) {
     super(
       props,

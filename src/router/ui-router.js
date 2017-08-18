@@ -8,7 +8,7 @@ const StatusType = require('../repository/StatusType');
 const DeviceType = require('../repository/DeviceType');
 
 const menus = [
-  { viewName: 'StatusList', title: '공지사항 관리', url: '/' },
+  { viewName: 'StatusView', title: '공지사항 관리', url: '/' },
   { viewName: 'SettingList', title: '설정', url: '/settings' },
 ];
 
@@ -31,7 +31,7 @@ module.exports = [
     method: 'GET',
     path: '/',
     handler: (request, reply) => Promise.all([StatusType.find(), DeviceType.find()])
-      .then(([statusTypes, deviceTypes]) => view(request, reply, 'StatusList', { statusTypes, deviceTypes }))
+      .then(([statusTypes, deviceTypes]) => view(request, reply, 'StatusView', { statusTypes, deviceTypes }))
       .catch(error => reply(error)),
   },
   {

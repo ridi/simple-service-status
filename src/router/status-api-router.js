@@ -8,7 +8,6 @@ const Joi = require('joi');
 const Status = require('./../repository/Status');
 const config = require('../config/server.config').url;
 const dateUtil = require('../common/date-util');
-const logger = require('winston');
 
 module.exports = [
   {
