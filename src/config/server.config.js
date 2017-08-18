@@ -12,7 +12,7 @@ const WEBPACK_SERVER_PORT = 3000;
 
 const configs = {
   defaults: {
-    host: 'localhost',
+    host: '0.0.0.0',
     port: DEV_SERVER_PORT,
     mongoDBUrl: 'mongodb://localhost',
   },
