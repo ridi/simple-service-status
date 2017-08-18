@@ -26,19 +26,39 @@ $ cd [taget directory]
 $ yarn install
 ```
 
-## Run
+## Configure
 
-### Make .env file
+필요한 경우 아래의 `src/config/*.config.js`를 수정하세요.
 
+### Configure Server `server.config.js`
+
+- `defaults.host`: 서버 구동 호스트
+- `defaults.port`: 서버 구동 포트
+- `defaults.mongoDBUrl`: MongoDB 접속 주소 (없을 경우 mongodb://localhost 사용)
+- `auth.secretKey`: 패스워드와 인증 토큰 암호화를 위한 비밀키 (없을 경우 "secretKey" 문자열 사용)
+- `auth.tokenTTL`: 발급된 token의 만료 시간
+- `initialData`: 서버 초기화 시 DB에 생성될 데이터
+
+### Configure Client `client.config.js`
+
+- `editor.supportEnhancedFormat`: 이 값을 `true`로 설정할 경우 UI Editor들의 모든 포매팅 기능을 사용할 수 있습니다.
+
+### Make `.env` file
+
+`server.config.js`를 직접 수정하는 대신 환경변수를 사용해 설정 값을 덮어쓸 수 있습니다.
 필요한 경우 프로젝트 루트에 `.env` 파일을 생성하고 다음의 값들을 설정합니다.
 
-- `MONGODB_URI`: MongoDB 접속 주소 (없을 경우 mongodb://localhost 사용)
-- `SECRET_KEY`: 패스워드와 인증 토큰 암호화를 위한 비밀키 (없을 경우 "secretKey" 문자열 사용)
+- `PORT`: `server.config.js`의 `defaults.port` 참고
+- `MONGODB_URI`: `server.config.js`의 `defaults.mongoDBUrl` 참고
+- `SECRET_KEY`: `server.config.js`의 `auth.secretKey` 참고
 
 ```
 MONGODB_URI=mongodb://your.domain:port/database_name
 SECRET_KEY=secret_key
+PORT=8080
 ```
+
+## Run
 
 ### Run Script
 
