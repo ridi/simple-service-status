@@ -4,7 +4,7 @@ import { Alert } from 'react-bootstrap';
 import Modal from './Modal';
 import { ValidationError } from '../form/ValidationForm';
 
-export default class DataEditableModal extends React.Component {
+export default class BaseDataEditableModal extends React.Component {
   constructor(props, defaultData = {}, modes = {}) {
     super(props);
 
@@ -13,26 +13,36 @@ export default class DataEditableModal extends React.Component {
       add: {
         title: modes.add.title,
         buttons: [
-          { label: modes.add.buttonLabel || '저장', onClick: () => this.ensureSafeClick(() => this.saveData()), style: 'primary', disabled: false },
+          {
+            label: modes.add.buttonLabel || '저장',
+            onClick: () => this.ensureSafeClick(() => this.saveData()),
+            style: 'primary',
+            disabled: false,
+          },
           { label: '닫기', disabled: false, isClose: true },
         ],
       },
       modify: {
         title: modes.modify.title,
         buttons: [
-          { label: modes.modify.buttonLabel || '수정', onClick: () => this.ensureSafeClick(() => this.saveData()), style: 'primary', disabled: false },
+          {
+            label: modes.modify.buttonLabel || '수정',
+            onClick: () => this.ensureSafeClick(() => this.saveData()),
+            style: 'primary',
+            disabled: false,
+          },
           { label: '닫기', disabled: false, isClose: true },
         ],
       },
     };
     this.state = {
-      title: '등록',
-      mode: 'add',
-      buttons: this.modes.add.buttons,
+      title: this.modes[props.mode].title,
+      mode: props.mode,
+      buttons: this.modes[props.mode].buttons,
       message: '',
       messageLevel: 'warning',
       saveWarningMessage: '',
-      data: defaultData,
+      data: Object.assign({}, this.defaultData, this.resolveData(props.data)),
     };
 
     this.ignoreWarning = false; // TODO state로 관리, true일 경우 아예 warning을 발생 안 시키게
@@ -40,7 +50,7 @@ export default class DataEditableModal extends React.Component {
 
   componentWillReceiveProps(props) {
     if (props.visible !== this.props.visible && props.visible) {
-      this.setState({ saveWarningMessage: '', buttons: this.modes[props.mode].buttons });
+      this.setState({ message: '', saveWarningMessage: '', buttons: this.modes[props.mode].buttons });
       this.setData(props.data);
     }
   }
@@ -186,13 +196,13 @@ export default class DataEditableModal extends React.Component {
   }
 }
 
-DataEditableModal.defaultProps = {
+BaseDataEditableModal.defaultProps = {
   mode: 'add',
   data: null,
   onSuccess: () => {},
 };
 
-DataEditableModal.propTypes = {
+BaseDataEditableModal.propTypes = {
   visible: PropTypes.bool.isRequired,
   mode: PropTypes.oneOf(['add', 'modify']),
   data: PropTypes.object,

@@ -14,7 +14,7 @@ import { SimpleSelect, MultiSelect } from 'react-selectize';
 import moment from 'moment';
 import semver from 'semver';
 import dateUtil from '../../common/date-util';
-import DataEditableModal from './DataEditableModal';
+import BaseDataEditableModal from './BaseDataEditableModal';
 import VersionSelector from '../form/VersionSelector';
 import DateRangeSelector from '../form/DateRangeSelector';
 import RichEditor from '../form/RichEditor';
@@ -25,7 +25,7 @@ import ValidationForm, { ValidationError } from '../form/ValidationForm';
 
 const EMPTY_CONTENTS_VALUE = '<p><br></p>';
 
-export default class StatusModal extends DataEditableModal {
+export default class StatusModal extends BaseDataEditableModal {
   constructor(props) {
     super(
       props,
@@ -46,7 +46,7 @@ export default class StatusModal extends DataEditableModal {
       },
     );
 
-    this.state = Object.assign({}, this.state, { versionSelectorDisabled: false });
+    this.state = Object.assign({}, this.state, { versionSelectorDisabled: true });
 
     this.contentEditor = null;
     this.form = null;
@@ -258,6 +258,7 @@ export default class StatusModal extends DataEditableModal {
               name="isActivated"
               value={this.state.data.isActivated ? 2 : 1}
               defaultValue={1}
+              onChange={() => { /* 버그로 인해 호출되지 않으므로 사용하지 않음 */ }}
             >
               <ToggleButton value={2} onClick={() => this.setDataField({ isActivated: true })}>ON</ToggleButton>
               <ToggleButton value={1} onClick={() => this.setDataField({ isActivated: false })}>OFF</ToggleButton>
