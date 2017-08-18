@@ -128,11 +128,6 @@ export default class CurrentStatusTab extends BaseRefreshableTab {
     this.setState({ buttonDisabled, checkedItems });
   }
 
-  setSubState(key, state) {
-    const newState = Object.assign({}, this.state[key], state);
-    this.setState({ [key]: newState });
-  }
-
   remove(items) {
     if (items instanceof Array && items.length > 0) {
       Promise.all(items.map(item => Api.removeStatus(item.id)))
