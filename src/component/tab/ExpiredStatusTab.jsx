@@ -99,7 +99,22 @@ export default class ExpiredStatusTab extends BaseRefreshableTab {
           if (row.deviceTypes.length === this.options.deviceTypes.length) {
             return <span>{ASTERISK}</span>;
           }
-          return row.deviceTypes ? <span>{row.deviceTypes.join(', ')}</span> : <span />;
+          return row.deviceTypes
+            ? (
+              <span>
+                {row.deviceTypes.map((device) => {
+                  let typeLabel = 'Unknown';
+                  for (let i = 0; i < this.options.deviceTypes.length; i++) {
+                    if (device === this.options.deviceTypes[i].value) {
+                      typeLabel = this.options.deviceTypes[i].label;
+                      break;
+                    }
+                  }
+                  return typeLabel;
+                }).join(', ')}
+              </span>
+            )
+            : <span />;
         },
       },
       {

@@ -1,26 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  FormGroup,
-  ControlLabel,
-  FormControl,
-  HelpBlock,
-  Row,
-} from 'react-bootstrap';
+import { FormControl } from 'react-bootstrap';
 import BaseDataEditableModal from './BaseDataEditableModal';
-import RichEditor from '../form/RichEditor';
 import Api from '../../common/api';
 import ValidationField from '../form/ValidationField';
 import ValidationForm, { ValidationError } from '../form/ValidationForm';
 
-export default class StatusTypeModal extends BaseDataEditableModal {
+export default class DeviceTypeModal extends BaseDataEditableModal {
   constructor(props) {
     super(
       props,
-      { label: '', value: '', template: '' },
+      { label: '', value: '' },
       {
-        add: { title: '새로운 알림 타입 등록' },
-        modify: { title: '알림 타입 수정' },
+        add: { title: '새로운 디바이스 타입 등록' },
+        modify: { title: '디바이스 타입 수정' },
       },
     );
   }
@@ -29,7 +22,6 @@ export default class StatusTypeModal extends BaseDataEditableModal {
     return {
       label: this.state.data.label,
       value: this.state.data.value,
-      template: this.state.data.template,
     };
   }
 
@@ -38,11 +30,11 @@ export default class StatusTypeModal extends BaseDataEditableModal {
   }
 
   doAdd(data) {
-    return Api.addStatusType(data);
+    return Api.addDeviceType(data);
   }
 
   doModify(id, data) {
-    return Api.updateStatusType(id, data);
+    return Api.updateDeviceType(id, data);
   }
 
   doValidate() {
@@ -54,12 +46,12 @@ export default class StatusTypeModal extends BaseDataEditableModal {
     switch (id) {
       case 'label':
         if (!data.label) {
-          throw new ValidationError('상태 타입의 라벨을 설정해 주세요.');
+          throw new ValidationError('디바이스 타입의 라벨을 설정해 주세요.');
         }
         break;
       case 'value':
         if (!data.value) {
-          throw new ValidationError('상태 타입의 값을 설정해 주세요.');
+          throw new ValidationError('디바이스 타입의 값을 설정해 주세요.');
         }
         break;
       default:
@@ -73,7 +65,7 @@ export default class StatusTypeModal extends BaseDataEditableModal {
         <ValidationField
           controlId="label"
           required
-          label="상태 타입 라벨"
+          label="디바이스 타입 라벨"
           validate={() => this.validateField('label')}
         >
           <FormControl
@@ -86,7 +78,7 @@ export default class StatusTypeModal extends BaseDataEditableModal {
 
         <ValidationField
           controlId="value"
-          label="상태 타입 값"
+          label="디바이스 타입 값"
           required
           validate={() => this.validateField('value')}
         >
@@ -98,28 +90,16 @@ export default class StatusTypeModal extends BaseDataEditableModal {
             readOnly={this.props.mode === 'modify'}
           />
         </ValidationField>
-
-        <FormGroup controlId="template">
-          <ControlLabel>상태 타입 템플릿</ControlLabel>
-          <RichEditor
-            value={this.state.data.template}
-            onChange={template => this.setDataField({ template })}
-            placeholder="템플릿"
-          />
-        </FormGroup>
-        <Row>
-          <HelpBlock>설정한 템플릿 내용은 새로운 알림을 생성할 때 알림 내용의 기본값으로 사용됩니다.</HelpBlock>
-        </Row>
       </ValidationForm>
     );
   }
 }
 
-StatusTypeModal.defaultProps = {
+DeviceTypeModal.defaultProps = {
   onSuccess: () => {},
 };
 
-StatusTypeModal.propTypes = {
+DeviceTypeModal.propTypes = {
   visible: PropTypes.bool.isRequired,
   onSuccess: PropTypes.func,
   onClose: PropTypes.func.isRequired,
