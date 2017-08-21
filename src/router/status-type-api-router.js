@@ -57,6 +57,7 @@ module.exports = [
       let unset;
       if (!statusType.template) {
         unset = { template: 1 };
+        delete statusType.template;
       }
       StatusType.find({ value: statusType.value })
         .then((result) => {
