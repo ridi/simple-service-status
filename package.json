@@ -1,6 +1,6 @@
 {
   "name": "simple-service-status",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "engines": {
     "node": "6.x",
     "npm": "3.x",
@@ -69,7 +69,8 @@
     "react-selectize": "^3.0.1",
     "semver": "^5.3.0",
     "vision": "^4.1.1",
-    "winston": "^2.3.0"
+    "winston": "^2.3.0",
+    "yarn": "^0.27.5"
   },
   "devDependencies": {
     "@ridi/eslint-config": "*",
