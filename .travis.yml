@@ -10,7 +10,6 @@ branches:
   only:
   - master
   - /^greenkeeper/.*$/
-  - /v\d+\.\d+[a-z]/     # for taged commit
 deploy:
   provider: npm
   email: kyungmi.k@ridi.com
