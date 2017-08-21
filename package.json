@@ -1,6 +1,6 @@
 {
   "name": "simple-service-status",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "engines": {
     "node": "6.x",
     "npm": "3.x",
