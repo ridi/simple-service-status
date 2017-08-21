@@ -133,15 +133,15 @@ exports.addPlugin = (pluginSetting) => {
 };
 
 exports.start = extraRoutes => server.register(plugins)
-    .then(() => {
-      _setAuthStrategy();
-      _setViewEngine();
-      _setRoutes(extraRoutes);
-    })
-    .then(() => _setInitalData())
-    .then(() => server.start())
-    .then(() => {
-      logger.log('Server running at:', server.info.uri);
-      return server;
-    })
-    .catch((error) => { throw error; });
+  .then(() => {
+    _setAuthStrategy();
+    _setViewEngine();
+    _setRoutes(extraRoutes);
+  })
+  .then(() => _setInitalData())
+  .then(() => server.start())
+  .then(() => {
+    logger.log('Server running at:', server.info.uri);
+    return server;
+  })
+  .catch((error) => { throw error; });

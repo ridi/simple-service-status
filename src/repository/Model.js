@@ -19,7 +19,6 @@ const logger = require('winston');
  * @classdesc basic interactions with selected collection
  */
 class Model {
-
   constructor(collection, indexes) {
     if (new.target === Model) {
       throw new TypeError('Cannot construct Model instances directly');
@@ -36,7 +35,7 @@ class Model {
 
   runQuery(fn) {
     const self = this;
-    return co(function* () {
+    return co(function* run() {
       const db = yield MongoClient.connect(url);
       const collection = db.collection(self.collection);
       const result = yield fn.call(self, collection);

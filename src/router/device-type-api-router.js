@@ -9,7 +9,6 @@ const DeviceType = require('./../repository/DeviceType');
 const config = require('../config/server.config').url;
 const dateUtil = require('../common/date-util');
 const SSSError = require('../common/Error');
-const logger = require('winston');
 
 module.exports = [
   {

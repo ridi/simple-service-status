@@ -18,7 +18,7 @@ const configs = {
   },
   auth: {
     secretKey: 'secretKey',
-    tokenTTL: 24 * 60 * 60 * 1000,    // in millisecond
+    tokenTTL: 24 * 60 * 60 * 1000, // in millisecond
   },
   directory: {
     component: 'component',

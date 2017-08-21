@@ -49,7 +49,11 @@ module.exports = [
     method: 'GET',
     path: `${config.statusApiPrefix}/check`,
     handler: (request, reply) => {
-      Status.findWithComparators(request.query.deviceType || '*', request.query.deviceVersion || '*', request.query.appVersion || '*', { startTime: 1 })
+      Status.findWithComparators(
+        request.query.deviceType
+        || '*', request.query.deviceVersion
+        || '*', request.query.appVersion
+        || '*', { startTime: 1 })
         .then(result => dateUtil.formatDates(result))
         .then(result => reply({ data: result }))
         .catch(err => reply(err));

@@ -10,6 +10,7 @@ const moment = require('moment');
  * Format all dates in the received model
  * @param {Array|Date|Object} model
  * @param {string} [formatString]
+ * @param {number} [utcOffset]
  * @returns {*}
  */
 exports.formatDates = (model, formatString, utcOffset) => {
