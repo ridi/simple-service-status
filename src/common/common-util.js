@@ -10,7 +10,7 @@
  * Will return 127.0.0.1 when testing locally
  * Useful when you need the user ip for geolocation or serving localized content
  *
- * @param request
+ * @param {Object} request
  * @returns {string} ip
  */
 exports.getClientIp = (request) => {
@@ -117,12 +117,12 @@ const stringifier = {
 
 exports.parseSemVersion = (semVerString) => {
   if (!semVerString) {
-    return [{ comparator: '*' }];   // default
+    return [{ comparator: '*' }]; // default
   }
-  const conditions = semVerString.split('||').map(cond => cond.trim());  // OR 연산을 기준으로 분리
+  const conditions = semVerString.split('||').map(cond => cond.trim()); // OR 연산을 기준으로 분리
   const result = [];
   conditions.forEach((cond) => {
-    regex.lastIndex = 0;  // reset find index
+    regex.lastIndex = 0; // reset find index
     const comparator = getComparator(cond);
     const parsedObj = parsers[comparator](cond);
     if (parsedObj) {
