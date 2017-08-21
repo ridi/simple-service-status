@@ -60,6 +60,11 @@ export default class CurrentStatusTab extends BaseRefreshableTab {
 
     this.columns = [
       {
+        title: 'ID',
+        isChildRow: true,
+        display: row => <span>{row.id}</span>,
+      },
+      {
         title: '상태 타입',
         display: (row) => {
           if (!row.type) { return ''; }

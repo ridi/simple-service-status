@@ -46,7 +46,7 @@ export default class StatusModal extends BaseDataEditableModal {
       },
     );
 
-    this.state = Object.assign({}, this.state, { versionSelectorDisabled: true });
+    this.state.versionSelectorDisabled = true;
 
     this.contentEditor = null;
     this.form = null;
@@ -248,6 +248,12 @@ export default class StatusModal extends BaseDataEditableModal {
   renderChild() {
     return (
       <ValidationForm ref={(f) => { this.form = f; }}>
+        {this.props.mode === 'modify' &&
+        <FormGroup controlId="id">
+          <ControlLabel>ID</ControlLabel>
+          <FormControl.Static>{this.state.data.id}</FormControl.Static>
+        </FormGroup>
+        }
         <FormGroup controlId="isActivated">
           <ControlLabel>
             알림 활성화 <sup>&#x2731;</sup>
