@@ -15,7 +15,7 @@
 
 ## Prerequisite
 
-- [Node](https://nodejs.org/ko/) 6.9.1 버전 이상 설치
+- [Node](https://nodejs.org/ko/) 설치 (>= 6.x)
 - [MongoDB](https://www.mongodb.com/) 설치
 
 ## Install
@@ -23,7 +23,7 @@
 ```
 $ git clone git@github.com:ridi/simple-service-status.git [target directory]
 $ cd [taget directory]
-$ yarn install
+$ npm install
 ```
 
 ## Configure
@@ -65,12 +65,12 @@ PORT=8080
 For development
 ```
 # 다음을 실행하면 서버(포트 번호: 8080)와 모듈 핫 리로딩을 위한 서버(포트 번호: 3000)가 함께 구동됩니다.
-yarn run start:dev
+npm run start:dev
 ```
 
 For production
 ```
-yarn start
+npm start
 ```
 
 구동 후 [http://localhost:8080](http://localhost:8080)으로 접속하면 관리 UI로 연결됩니다.
@@ -78,7 +78,7 @@ yarn start
 ## Test
 
 ```
-yarn test
+npm test
 ```
 
 ## Public API

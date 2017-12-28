@@ -1,4 +1,3 @@
-/* global exec */
 /**
  * Build configuration for server-side using Gulp
  */
@@ -8,7 +7,6 @@ const nodemon = require('gulp-nodemon');
 const babel = require('gulp-babel');
 const path = require('path');
 const config = require('./src/config/server.config').build;
-const exec = require('child_process').exec;
 
 const PATHS = {
   src: ['src/**/*.js', 'src/**/*.jsx'],
@@ -26,7 +24,7 @@ gulp.task('server-build', () => compile());
 
 gulp.task('dev-server', ['server-build'], () => {
   return nodemon({
-    exec: 'node --debug=54321',
+    exec: 'node --inspect',
     script: `${PATHS.dist}/${config.serverEntry}`,
     ext: 'js html',
     ignore: ['**/*.test.js', `${PATHS.dist}/**/*.js`],

@@ -6,11 +6,11 @@ build:
   tests:
     override:
       -
-        command: 'yarn test'
+        command: 'npm test'
         coverage:
             file: 'coverage/clover.xml'
             format: 'clover'
-      - 'yarn run lint'
+      - 'npm run lint'
 filter:
   excluded_paths:
     - tests/*

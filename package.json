@@ -2,14 +2,13 @@
   "name": "simple-service-status",
   "version": "1.3.0",
   "engines": {
-    "node": "6.x",
-    "npm": "3.x"
+    "node": "8.x"
   },
   "description": "A simple tool that supports management UI and query API for announcement service status designating specific version of app or platform",
   "main": "dist/index.js",
   "scripts": {
-    "start": "yarn run start:prod",
-    "start:prod": "gulp server-build && yarn run webpack:prod && NODE_ENV=production node dist/index.js",
+    "start": "npm run start:prod",
+    "start:prod": "gulp server-build && npm run webpack:prod && NODE_ENV=production node dist/index.js",
     "start:dev": "gulp dev-start",
     "webpack:prod": "NODE_ENV=production webpack --config=./webpack.config.js",
     "webpack:dev": "NODE_ENV=development webpack --config=./webpack.config.js",
@@ -40,7 +39,6 @@
     "babel-loader": "^7.1.1",
     "babel-plugin-transform-builtin-extend": "^1.1.2",
     "babel-polyfill": "^6.20.0",
-    "babel-preset-react": "^6.16.0",
     "babel-register": "^6.18.0",
     "co": "^4.6.0",
     "dotenv": "^4.0.0",
@@ -68,8 +66,7 @@
     "react-selectize": "^3.0.1",
     "semver": "^5.3.0",
     "vision": "^4.1.1",
-    "winston": "^2.3.0",
-    "yarn": "^0.27.5"
+    "winston": "^2.3.0"
   },
   "devDependencies": {
     "@ridi/eslint-config": "*",
