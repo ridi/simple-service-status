@@ -53,8 +53,9 @@ const configs = {
     deviceTypes: [
       { label: 'Android', value: 'android' },
       { label: 'iOS', value: 'ios' },
-      { label: 'Paper', value: 'paper' },
-      { label: 'Paper Lite', value: 'paper_lite' },
+      { label: 'PAPER', value: 'paper' },
+      { label: 'PAPER Lite', value: 'paper_lite' },
+      { label: 'PAPER PRO', value: 'paper_pro' },
       { label: 'PC/Mac', value: 'qt' },
     ],
     statusTypes: [
