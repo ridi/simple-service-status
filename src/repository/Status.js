@@ -13,7 +13,11 @@ const cache = new Cache({ stdTTL: 60, checkperiod: 30 });
 
 class Status extends Model {
   constructor() {
-    super('status', [{ key: { isActivated: -1, startTime: 1, endTime: 1, createTime: 1 } }]);
+    super('status', [{
+      key: {
+        isActivated: -1, startTime: 1, endTime: 1, createTime: 1,
+      },
+    }]);
   }
 
   find(query, sort, skip, limit) {
@@ -37,23 +41,25 @@ class Status extends Model {
     const self = this;
     const now = new Date();
     if (deviceVersion !== '*' && !semver.valid(deviceVersion)) {
-      return Promise.reject(new SSSError(SSSError.Types.BAD_REQUEST_INVALID,
-        { message: `"${deviceVersion}"은 잘못된 버전 형식입니다.` }));
+      return Promise.reject(new SSSError(
+        SSSError.Types.BAD_REQUEST_INVALID,
+        { message: `"${deviceVersion}"은 잘못된 버전 형식입니다.` },
+      ));
     }
     if (appVersion !== '*' && !semver.valid(appVersion)) {
-      return Promise.reject(new SSSError(SSSError.Types.BAD_REQUEST_INVALID,
-        { message: `"${appVersion}"은 잘못된 버전 형식입니다.` }));
+      return Promise.reject(new SSSError(
+        SSSError.Types.BAD_REQUEST_INVALID,
+        { message: `"${appVersion}"은 잘못된 버전 형식입니다.` },
+      ));
     }
     return this.findWithCache({
       $or: [
         { startTime: { $lte: now }, endTime: { $gt: now }, isActivated: true },
         { startTime: { $exists: false }, endTime: { $exists: false }, isActivated: true },
       ],
-    }, sort).then(results => results.filter(
-      result => (deviceType === '*' || result.deviceTypes.includes(deviceType))
+    }, sort).then(results => results.filter(result => (deviceType === '*' || result.deviceTypes.includes(deviceType))
         && self._isSatisfiedVersion(result.deviceSemVersion, deviceVersion)
-        && self._isSatisfiedVersion(result.appSemVersion, appVersion)
-    ));
+        && self._isSatisfiedVersion(result.appSemVersion, appVersion)));
   }
 
   add(model) {

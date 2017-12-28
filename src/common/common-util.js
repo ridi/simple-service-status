@@ -40,7 +40,7 @@ exports.getClientIp = (request) => {
   const clusterClientIp = request.headers['x-cluster-client-ip'];
   const forwardedAlt = request.headers['x-forwarded'];
   const forwardedFor = request.headers['forwarded-for'];
-  const forwarded = request.headers.forwarded;
+  const { forwarded } = request.headers;
 
   // remote address check
   const reqConnectionRemoteAddress = request.connection ? request.connection.remoteAddress : null;
@@ -87,9 +87,9 @@ const parsers = {
     let execResult;
     while ((execResult = regex.exec(cond)) !== null) {
       if (execResult[1] === '>=') {
-        resultItem.versionStart = execResult[2];
+        [,, resultItem.versionStart] = execResult;
       } else if (execResult[1] === '<') {
-        resultItem.versionEnd = execResult[2];
+        [,, resultItem.versionEnd] = execResult;
       }
     }
     if (resultItem.versionStart || resultItem.versionEnd) {

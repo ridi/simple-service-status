@@ -51,6 +51,6 @@ if (process.env.NODE_ENV === 'development') {
         directory: { path: config.directory.public, listing: true },
       },
       config: { auth: false },
-    }
+    },
   ]);
 }

@@ -21,11 +21,11 @@ const getStatusCode = request => request.response.statusCode || request.response
 
 /* eslint no-param-reassign: ["error", { "props": false }] */
 const onSuccess = (request, reply, options) => {
-  const path = request.path;
+  const { path, response } = request;
   if (path.includes(options.apiPrefix)) {
-    const responseObj = request.response.source || {};
+    const responseObj = response.source || {};
     responseObj.success = true;
-    request.response.source = responseObj;
+    response.source = responseObj;
   }
   return null;
 };

@@ -9,8 +9,7 @@ const mongodb = require('mongodb');
 const config = require('../config/server.config');
 const SSSError = require('../common/Error');
 
-const MongoClient = mongodb.MongoClient;
-const ObjectID = mongodb.ObjectID;
+const { MongoClient, ObjectID } = mongodb;
 const url = process.env.MONGODB_URI || config.defaults.mongoDBUrl;
 const logger = require('winston');
 

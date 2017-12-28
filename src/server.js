@@ -47,7 +47,8 @@ const plugins = [
   { register: inert },
   { register: HapiAuthJwt2 },
   { register: HapiErrorHandler, options: { apiPrefix: config.url.apiPrefix, errorView: 'Error' } },
-  { register: HapiAuthChecker,
+  {
+    register: HapiAuthChecker,
     options: {
       excludeUrlPatterns: [new RegExp(`^${config.url.apiPrefix}`), new RegExp('^/logout')],
     },
