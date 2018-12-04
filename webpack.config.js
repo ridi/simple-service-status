@@ -8,7 +8,6 @@ const config = require('./src/config/server.config');
 
 const commonConfig = {
   context: resolve(__dirname, config.build.sourceDirectory),
-  devtool: 'source-map',
   entry: config.build.clientEntry,
   output: {
     filename: config.build.clientOutputJsFileName,
@@ -35,7 +34,29 @@ const commonConfig = {
     dns: 'mock',
     net: 'mock',
   },
-  mode: 'production',
+  plugins: [
+    new webpack.DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
+    new webpack.NoEmitOnErrorsPlugin(),
+  ],
+  optimization: {
+    namedModules: false,
+    namedChunks: false,
+    nodeEnv: 'production',
+    flagIncludedChunks: true,
+    occurrenceOrder: true,
+    sideEffects: true,
+    usedExports: true,
+    concatenateModules: true,
+    splitChunks: {
+      hidePathInfo: true,
+      minSize: 30000,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3,
+    },
+    noEmitOnErrors: true,
+    checkWasmTypes: true,
+    minimize: true,
+  },
 };
 
 const webpackConfig = Object.assign({}, commonConfig);
