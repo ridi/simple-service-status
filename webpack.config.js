@@ -35,11 +35,13 @@ const commonConfig = {
     dns: 'mock',
     net: 'mock',
   },
+  mode: 'production',
 };
 
 const webpackConfig = Object.assign({}, commonConfig);
 
 if (process.env.NODE_ENV === 'development') {
+  webpackConfig.mode = 'development';
   webpackConfig.devtool = 'cheap-module-eval-source-map';
   webpackConfig.output.publicPath = `${config.url.publicPrefix}/`;
 
