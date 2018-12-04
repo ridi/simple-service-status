@@ -171,7 +171,8 @@ exports.camel2snake = (str) => {
 exports.camel2snakeObject = (object) => {
   if (object instanceof Array) {
     return object.map(value => exports.camel2snakeObject(value));
-  } else if (object && typeof object === 'object') {
+  }
+  if (object && typeof object === 'object') {
     const result = {};
     Object.keys(object).forEach((key) => { result[exports.camel2snake(key)] = exports.camel2snakeObject(object[key]); });
     return result;
@@ -200,7 +201,8 @@ exports.snake2camel = (str) => {
 exports.snake2camelObject = (object) => {
   if (object instanceof Array) {
     return object.map(value => exports.snake2camelObject(value));
-  } else if (object && typeof object === 'object') {
+  }
+  if (object && typeof object === 'object') {
     const result = {};
     Object.keys(object).forEach((key) => { result[exports.snake2camel(key)] = exports.snake2camelObject(object[key]); });
     return result;

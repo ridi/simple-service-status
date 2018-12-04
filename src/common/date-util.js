@@ -16,9 +16,11 @@ const moment = require('moment');
 exports.formatDates = (model, formatString, utcOffset) => {
   if (model instanceof Array) {
     return model.map(item => exports.formatDates(item, formatString, utcOffset));
-  } else if (model instanceof Date || model instanceof moment) {
+  }
+  if (model instanceof Date || model instanceof moment) {
     return exports.formatDate(model, formatString, utcOffset);
-  } else if (model instanceof Object) {
+  }
+  if (model instanceof Object) {
     const result = {};
     Object.keys(model).forEach((key) => { result[key] = exports.formatDates(model[key], formatString, utcOffset); });
     return result;

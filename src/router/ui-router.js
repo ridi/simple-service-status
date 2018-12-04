@@ -65,4 +65,3 @@ module.exports = [
     handler: (request, reply) => view(request, reply, 'ChangePassword'),
   },
 ];
-

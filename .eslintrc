@@ -7,6 +7,9 @@
     ],
     "import/first": 1,
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-    "no-param-reassign": ["error", { "props": false }]
+    "no-param-reassign": ["error", { "props": false }],
+    "no-underscore-dangle": 0,
+    "import/order": 0,
+    "no-cond-assign": 0,
   }
 }
