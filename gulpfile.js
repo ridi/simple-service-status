@@ -20,18 +20,17 @@ const compile = () => gulp.src(PATHS.src)
   .pipe(sourceMaps.write('.', { sourceRoot: PATHS.sourceRoot }))
   .pipe(gulp.dest(PATHS.dist));
 
-gulp.task('server-build', () => compile());
+gulp.task('server-build', gulp.series(compile));
 
-gulp.task('dev-server', ['server-build'], () => {
-  return nodemon({
-    exec: 'node --inspect',
-    script: `${PATHS.dist}/${config.serverEntry}`,
-    ext: 'js html',
-    ignore: ['**/*.test.js', `${PATHS.dist}/**/*.js`],
-    env: { NODE_ENV: 'development' },
-    tasks: ['server-build'],
-    debug: true,
-  });
-});
+gulp.task('dev-server', gulp.series(done => nodemon({
+  exec: 'node --inspect',
+  script: `${PATHS.dist}/${config.serverEntry}`,
+  ext: 'js html',
+  ignore: ['**/*.test.js', `${PATHS.dist}/**/*.js`],
+  env: { NODE_ENV: 'development' },
+  tasks: ['server-build'],
+  debug: true,
+  done,
+})));
 
-gulp.task('dev-start', ['dev-server']);
+gulp.task('dev-start', gulp.series(['server-build', 'dev-server']));
