@@ -5,12 +5,13 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "npm run start:prod",
-    "start:prod": "gulp server-build && npm run webpack:prod && NODE_ENV=production node dist/index.js",
+    "start:prod": "node dist/index.js",
     "start:dev": "gulp dev-start",
     "webpack:prod": "NODE_ENV=production webpack --config=./webpack.config.js",
     "webpack:dev": "NODE_ENV=development webpack --config=./webpack.config.js",
     "test": "jest --forceExit",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "heroku-postbuild": "gulp server-build && npm run webpack:prod"
   },
   "jest": {
     "verbose": true,
