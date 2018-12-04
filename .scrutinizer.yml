@@ -2,6 +2,7 @@ checks:
   javascript: true
 build:
   environment:
+    node: 'v6.2.0'
     mongodb: '3.2'
   tests:
     override:
