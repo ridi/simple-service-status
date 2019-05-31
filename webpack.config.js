@@ -26,7 +26,11 @@ const commonConfig = {
       },
       {
         test: /(\.scss|\.css)$/,
-        use: ['style-loader', 'css-loader?modules?sourceMap', 'sass-loader'],
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader', options: { modules: true, sourceMap: true } },
+          { loader: 'sass-loader' },
+        ],
       },
     ],
   },
