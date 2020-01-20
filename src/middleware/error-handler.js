@@ -76,7 +76,7 @@ const onError = (request, reply, options) => {
     : onUIError(request, reply, options);
 };
 
-const register = (server, opts, next) => {
+const register = (server, opts) => {
   const options = Object.assign({}, defaultOptions, opts);
   server.ext('onPreResponse', (request, reply) => {
     const statusCode = request.response.statusCode || request.response.output.statusCode;
@@ -89,12 +89,10 @@ const register = (server, opts, next) => {
     }
     return reply.continue();
   });
-  next();
 };
 
-register.attributes = {
+module.exports = {
+  register,
   name: 'hapi-error-handler',
   version: '1.0.0',
 };
-
-module.exports = register;

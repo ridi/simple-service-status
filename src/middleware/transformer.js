@@ -10,7 +10,7 @@ const defaultOptions = Object.freeze({
   apiPrefix: '/api',
 });
 
-const register = (server, opts, next) => {
+const register = (server, opts) => {
   const options = Object.assign({}, defaultOptions, opts);
   /* eslint no-param-reassign: ["error", { "props": false }] */
   server.ext('onPostAuth', (request, reply) => {
@@ -29,13 +29,10 @@ const register = (server, opts, next) => {
     }
     return reply.continue();
   });
-
-  next();
 };
 
-register.attributes = {
+module.exports = {
+  register,
   name: 'hapi-transform',
   version: '1.0.0',
 };
-
-module.exports = register;
