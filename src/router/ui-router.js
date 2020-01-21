@@ -23,7 +23,7 @@ function view(request, h, childViewName, context) {
   }
   ctx.menus = menus;
   ctx.state = `window.state = ${JSON.stringify(ctx)}`;
-  return HTMLAreaElement.view('Layout', ctx);
+  return h.view('Layout', ctx);
 }
 
 module.exports = [
