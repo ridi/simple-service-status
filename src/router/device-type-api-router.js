@@ -14,19 +14,19 @@ module.exports = [
   {
     method: 'GET',
     path: `${config.deviceTypeApiPrefix}`,
-    handler: (request, reply) => {
+    handler: (request, h) => {
       DeviceType.find().then((list) => {
-        reply({
+        h.response({
           data: dateUtil.formatDates(list),
           totalCount: list.length,
         });
-      }).catch(err => reply(err));
+      }).catch(err => h.response(err));
     },
   },
   {
     method: 'POST',
     path: `${config.deviceTypeApiPrefix}`,
-    handler: (request, reply) => {
+    handler: (request, h) => {
       const deviceType = Object.assign({}, request.payload);
       DeviceType.find({ value: deviceType.value })
         .then((result) => {
@@ -36,8 +36,8 @@ module.exports = [
           return true;
         })
         .then(() => DeviceType.add(deviceType))
-        .then(result => reply(result))
-        .catch(err => reply(err));
+        .then(result => h.response(result))
+        .catch(err => h.response(err));
     },
     config: {
       validate: {
@@ -52,7 +52,7 @@ module.exports = [
   {
     method: 'PUT',
     path: `${config.deviceTypeApiPrefix}/{deviceTypeId}`,
-    handler: (request, reply) => {
+    handler: (request, h) => {
       const deviceType = Object.assign({}, request.payload);
       let unset;
       if (!deviceType.template) {
@@ -66,8 +66,8 @@ module.exports = [
           return true;
         })
         .then(() => DeviceType.update(request.params.deviceTypeId, deviceType, unset))
-        .then(result => reply(result))
-        .catch(err => reply(err));
+        .then(result => h.response(result))
+        .catch(err => h.response(err));
     },
     config: {
       validate: {
@@ -85,10 +85,10 @@ module.exports = [
   {
     method: 'DELETE',
     path: `${config.deviceTypeApiPrefix}/{deviceTypeId}`,
-    handler: (request, reply) => {
+    handler: (request, h) => {
       DeviceType.remove(request.params.deviceTypeId)
-        .then(result => reply(result))
-        .catch(err => reply(err));
+        .then(result => h.response(result))
+        .catch(err => h.response(err));
     },
     config: {
       validate: {

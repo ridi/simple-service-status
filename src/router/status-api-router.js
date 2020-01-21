@@ -13,7 +13,7 @@ module.exports = [
   {
     method: 'GET',
     path: `${config.statusApiPrefix}`,
-    handler: (request, reply) => {
+    handler: (request, h) => {
       let filter = {};
       if (request.query.filter === 'current') { // 미래 포함
         filter = {
@@ -31,11 +31,11 @@ module.exports = [
         }, request.query.skip, request.query.limit),
         Status.count(filter),
       ]).then(([list, totalCount]) => {
-        reply({
+        h.response({
           data: dateUtil.formatDates(list),
           totalCount,
         });
-      }).catch(err => reply(err));
+      }).catch(err => h.response(err));
     },
     config: {
       validate: {
@@ -50,14 +50,14 @@ module.exports = [
   {
     method: 'GET',
     path: `${config.statusApiPrefix}/check`,
-    handler: (request, reply) => {
+    handler: (request, h) => {
       Status.findWithComparators(request.query.deviceType
         || '*', request.query.deviceVersion
         || '*', request.query.appVersion
         || '*', { startTime: 1 })
         .then(result => dateUtil.formatDates(result))
-        .then(result => reply({ data: result }))
-        .catch(err => reply(err));
+        .then(result => h.response({ data: result }))
+        .catch(err => h.response(err));
     },
     config: {
       validate: {
@@ -73,15 +73,15 @@ module.exports = [
   {
     method: 'POST',
     path: `${config.statusApiPrefix}`,
-    handler: (request, reply) => {
+    handler: (request, h) => {
       const status = Object.assign({}, request.payload);
       if (status.startTime && status.endTime) {
         status.startTime = new Date(Date.parse(status.startTime));
         status.endTime = new Date(Date.parse(status.endTime));
       }
       Status.add(status)
-        .then(result => reply(result))
-        .catch(err => reply(err));
+        .then(result => h.response(result))
+        .catch(err => h.response(err));
     },
     config: {
       validate: {
@@ -103,7 +103,7 @@ module.exports = [
   {
     method: 'PUT',
     path: `${config.statusApiPrefix}/{statusId}`,
-    handler: (request, reply) => {
+    handler: (request, h) => {
       const status = Object.assign({}, request.payload);
       let unset;
       if (!status.startTime && !status.endTime) {
@@ -114,8 +114,8 @@ module.exports = [
       }
 
       Status.update(request.params.statusId, status, unset)
-        .then(result => reply(result))
-        .catch(err => reply(err));
+        .then(result => h.response(result))
+        .catch(err => h.response(err));
     },
     config: {
       validate: {
@@ -140,10 +140,10 @@ module.exports = [
   {
     method: 'PUT',
     path: `${config.statusApiPrefix}/{statusId}/{action}`,
-    handler: (request, reply) => {
+    handler: (request, h) => {
       Status.update(request.params.statusId, { isActivated: request.params.action === 'activate' })
-        .then(result => reply(result))
-        .catch(err => reply(err));
+        .then(result => h.response(result))
+        .catch(err => h.response(err));
     },
     config: {
       validate: {
@@ -157,10 +157,10 @@ module.exports = [
   {
     method: 'DELETE',
     path: `${config.statusApiPrefix}/{statusId}`,
-    handler: (request, reply) => {
+    handler: (request, h) => {
       Status.remove(request.params.statusId)
-        .then(result => reply(result))
-        .catch(err => reply(err));
+        .then(result => h.response(result))
+        .catch(err => h.response(err));
     },
     config: {
       validate: {

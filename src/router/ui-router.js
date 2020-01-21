@@ -12,7 +12,7 @@ const menus = [
   { viewName: 'SettingView', title: '설정', url: '/settings' },
 ];
 
-function view(request, reply, childViewName, context) {
+function view(request, h, childViewName, context) {
   const ctx = context || {};
   ctx.viewName = childViewName;
   if (request.auth) {
@@ -23,30 +23,30 @@ function view(request, reply, childViewName, context) {
   }
   ctx.menus = menus;
   ctx.state = `window.state = ${JSON.stringify(ctx)}`;
-  return reply.view('Layout', ctx);
+  return HTMLAreaElement.view('Layout', ctx);
 }
 
 module.exports = [
   {
     method: 'GET',
     path: '/',
-    handler: (request, reply) => Promise.all([StatusType.find(), DeviceType.find()])
-      .then(([statusTypes, deviceTypes]) => view(request, reply, 'StatusView', { statusTypes, deviceTypes }))
-      .catch(error => reply(error)),
+    handler: (request, h) => Promise.all([StatusType.find(), DeviceType.find()])
+      .then(([statusTypes, deviceTypes]) => view(request, h, 'StatusView', { statusTypes, deviceTypes }))
+      .catch(error => h.response(error)),
   },
   {
     method: 'GET',
     path: '/settings',
-    handler: (request, reply) => view(request, reply, 'SettingView', {}),
+    handler: (request, h) => view(request, h, 'SettingView', {}),
   },
   {
     method: 'GET',
     path: '/login',
-    handler: (request, reply) => {
+    handler: (request, h) => {
       if (request.auth.isAuthenticated) {
-        return reply.redirect('/');
+        return h.redirect('/');
       }
-      return view(request, reply, 'Login');
+      return view(request, h, 'Login');
     },
     config: {
       auth: {
@@ -57,11 +57,11 @@ module.exports = [
   {
     method: 'GET',
     path: '/logout',
-    handler: (request, reply) => reply.redirect('/login').unstate('token'),
+    handler: (request, h) => h.redirect('/login').unstate('token'),
   },
   {
     method: 'GET',
     path: '/change-password',
-    handler: (request, reply) => view(request, reply, 'ChangePassword'),
+    handler: (request, h) => view(request, h, 'ChangePassword'),
   },
 ];
