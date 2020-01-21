@@ -60,29 +60,31 @@ const plugins = [
 const _setAuthStrategy = () => {
   server.auth.strategy('jwt', 'jwt', {
     key: process.env.SECRET_KEY || config.auth.secretKey,
-    validate: (decoded, request, callback) => {
+    validate: (decoded, request, h) => {
       // Check token IP address
       const clientIP = util.getClientIp(request);
       if (clientIP !== decoded.ip) {
         logger.warn(`[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${clientIP}`);
-        return callback(new SSSError(SSSError.Types.AUTH_TOKEN_INVALID), false);
+        return h.unauthenticated(new SSSError(SSSError.Types.AUTH_TOKEN_INVALID));
       }
       // Check token expiration
       if (decoded.exp < new Date().getTime()) {
         logger.warn(`[Auth] This auth token is expired.: decoded.exp => ${decoded.exp}, now => ${new Date().getTime()}`);
-        return callback(new SSSError(SSSError.Types.AUTH_TOKEN_EXPIRED), false);
+        return h.unauthenticated(new SSSError(SSSError.Types.AUTH_TOKEN_EXPIRED));
       }
       return User.find({ username: decoded.username })
         .then((accounts) => {
           if (!accounts || accounts.length === 0) {
             logger.warn(`[Auth] This account is not exist.: ${decoded.username}`);
-            return callback(new SSSError(SSSError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }), false);
+            return h.unauthenticated(new SSSError(SSSError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }));
           }
-          return callback(null, true, accounts[0]);
+          const result = h.authenticated({ credentials: accounts[0] });
+          result.isValid = true;
+          return result;
         })
         .catch((e) => {
           logger.error(`[DB] DB error occurred: ${e.message}`);
-          callback(new SSSError(SSSError.Types.DB), false);
+          h.unauthenticated(new SSSError(SSSError.Types.DB));
         });
     },
     verifyOptions: { algorithms: ['HS256'] },
