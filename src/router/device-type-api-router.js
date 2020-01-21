@@ -14,21 +14,20 @@ module.exports = [
   {
     method: 'GET',
     path: `${config.deviceTypeApiPrefix}`,
-    handler: (request, h) => {
+    handler: (request, h) =>
       DeviceType.find().then((list) => {
         h.response({
           data: dateUtil.formatDates(list),
           totalCount: list.length,
         });
-      }).catch(err => h.response(err));
-    },
+      }).catch(err => h.response(err)),
   },
   {
     method: 'POST',
     path: `${config.deviceTypeApiPrefix}`,
-    handler: (request, h) => {
+    handler: async (request, h) => {
       const deviceType = Object.assign({}, request.payload);
-      DeviceType.find({ value: deviceType.value })
+      return DeviceType.find({ value: deviceType.value })
         .then((result) => {
           if (result && result.length > 0) {
             throw new SSSError(SSSError.Types.CONFLICT, { value: deviceType.value });
@@ -52,13 +51,13 @@ module.exports = [
   {
     method: 'PUT',
     path: `${config.deviceTypeApiPrefix}/{deviceTypeId}`,
-    handler: (request, h) => {
+    handler: async (request, h) => {
       const deviceType = Object.assign({}, request.payload);
       let unset;
       if (!deviceType.template) {
         unset = { template: 1 };
       }
-      DeviceType.find({ value: deviceType.value })
+      return DeviceType.find({ value: deviceType.value })
         .then((result) => {
           if (result && result.length > 0 && request.params.deviceTypeId !== result[0]._id) {
             throw new SSSError(SSSError.Types.CONFLICT, { value: deviceType.value });
@@ -85,11 +84,10 @@ module.exports = [
   {
     method: 'DELETE',
     path: `${config.deviceTypeApiPrefix}/{deviceTypeId}`,
-    handler: (request, h) => {
+    handler: (request, h) =>
       DeviceType.remove(request.params.deviceTypeId)
         .then(result => h.response(result))
-        .catch(err => h.response(err));
-    },
+        .catch(err => h.response(err)),
     config: {
       validate: {
         params: {

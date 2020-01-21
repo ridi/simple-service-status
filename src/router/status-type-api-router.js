@@ -14,21 +14,20 @@ module.exports = [
   {
     method: 'GET',
     path: `${config.statusTypeApiPrefix}`,
-    handler: (request, h) => {
+    handler: (request, h) =>
       StatusType.find().then((list) => {
         h.response({
           data: dateUtil.formatDates(list),
           totalCount: list.length,
         });
-      }).catch(err => h.response(err));
-    },
+      }).catch(err => h.response(err)),
   },
   {
     method: 'POST',
     path: `${config.statusTypeApiPrefix}`,
-    handler: (request, h) => {
+    handler: async (request, h) => {
       const statusType = Object.assign({}, request.payload);
-      StatusType.find({ value: statusType.value })
+      return StatusType.find({ value: statusType.value })
         .then((result) => {
           if (result && result.length > 0) {
             throw new SSSError(SSSError.Types.CONFLICT, { value: statusType.value });
@@ -52,14 +51,14 @@ module.exports = [
   {
     method: 'PUT',
     path: `${config.statusTypeApiPrefix}/{statusTypeId}`,
-    handler: (request, h) => {
+    handler: async (request, h) => {
       const statusType = Object.assign({}, request.payload);
       let unset;
       if (!statusType.template) {
         unset = { template: 1 };
         delete statusType.template;
       }
-      StatusType.find({ value: statusType.value })
+      return StatusType.find({ value: statusType.value })
         .then((result) => {
           if (result && result.length > 0 && request.params.statusTypeId !== result[0]._id) {
             throw new SSSError(SSSError.Types.CONFLICT, { value: statusType.value });
@@ -86,11 +85,10 @@ module.exports = [
   {
     method: 'DELETE',
     path: `${config.statusTypeApiPrefix}/{statusTypeId}`,
-    handler: (request, h) => {
+    handler: (request, h) =>
       StatusType.remove(request.params.statusTypeId)
         .then(result => h.response(result))
-        .catch(err => h.response(err));
-    },
+        .catch(err => h.response(err)),
     config: {
       validate: {
         params: {

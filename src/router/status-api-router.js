@@ -13,7 +13,7 @@ module.exports = [
   {
     method: 'GET',
     path: `${config.statusApiPrefix}`,
-    handler: (request, h) => {
+    handler: async (request, h) => {
       let filter = {};
       if (request.query.filter === 'current') { // 미래 포함
         filter = {
@@ -25,7 +25,7 @@ module.exports = [
       } else if (request.query.filter === 'expired') {
         filter = { endTime: { $lte: new Date() } };
       }
-      Promise.all([
+      return Promise.all([
         Status.find(filter, {
           isActivated: -1, startTime: 1, endTime: 1, createTime: 1,
         }, request.query.skip, request.query.limit),
@@ -50,15 +50,14 @@ module.exports = [
   {
     method: 'GET',
     path: `${config.statusApiPrefix}/check`,
-    handler: (request, h) => {
+    handler: (request, h) =>
       Status.findWithComparators(request.query.deviceType
         || '*', request.query.deviceVersion
         || '*', request.query.appVersion
         || '*', { startTime: 1 })
         .then(result => dateUtil.formatDates(result))
         .then(result => h.response({ data: result }))
-        .catch(err => h.response(err));
-    },
+        .catch(err => h.response(err)),
     config: {
       validate: {
         query: {
@@ -73,13 +72,13 @@ module.exports = [
   {
     method: 'POST',
     path: `${config.statusApiPrefix}`,
-    handler: (request, h) => {
+    handler: async (request, h) => {
       const status = Object.assign({}, request.payload);
       if (status.startTime && status.endTime) {
         status.startTime = new Date(Date.parse(status.startTime));
         status.endTime = new Date(Date.parse(status.endTime));
       }
-      Status.add(status)
+      return Status.add(status)
         .then(result => h.response(result))
         .catch(err => h.response(err));
     },
@@ -103,7 +102,7 @@ module.exports = [
   {
     method: 'PUT',
     path: `${config.statusApiPrefix}/{statusId}`,
-    handler: (request, h) => {
+    handler: async (request, h) => {
       const status = Object.assign({}, request.payload);
       let unset;
       if (!status.startTime && !status.endTime) {
@@ -113,7 +112,7 @@ module.exports = [
         status.endTime = (status.endTime) ? new Date(Date.parse(status.endTime)) : undefined;
       }
 
-      Status.update(request.params.statusId, status, unset)
+      return Status.update(request.params.statusId, status, unset)
         .then(result => h.response(result))
         .catch(err => h.response(err));
     },
@@ -140,11 +139,10 @@ module.exports = [
   {
     method: 'PUT',
     path: `${config.statusApiPrefix}/{statusId}/{action}`,
-    handler: (request, h) => {
+    handler: (request, h) =>
       Status.update(request.params.statusId, { isActivated: request.params.action === 'activate' })
         .then(result => h.response(result))
-        .catch(err => h.response(err));
-    },
+        .catch(err => h.response(err)),
     config: {
       validate: {
         params: {
@@ -157,11 +155,10 @@ module.exports = [
   {
     method: 'DELETE',
     path: `${config.statusApiPrefix}/{statusId}`,
-    handler: (request, h) => {
+    handler: (request, h) =>
       Status.remove(request.params.statusId)
         .then(result => h.response(result))
-        .catch(err => h.response(err));
-    },
+        .catch(err => h.response(err)),
     config: {
       validate: {
         params: {
