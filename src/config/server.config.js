@@ -15,6 +15,7 @@ const configs = {
     host: '0.0.0.0',
     port: DEV_SERVER_PORT,
     mongoDBUrl: 'mongodb://localhost',
+    mongoDBName: 'db',
   },
   auth: {
     secretKey: 'secretKey',
