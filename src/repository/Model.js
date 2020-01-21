@@ -67,7 +67,7 @@ class Model {
   }
 
   count(query) {
-    return this.runQuery(collection => collection.count(query || {}))
+    return this.runQuery(collection => collection.countDocuments(query || {}))
       .catch((error) => {
         logger.error(error);
         throw new SSSError(SSSError.Types.DB, {}, error);
