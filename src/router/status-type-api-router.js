@@ -17,7 +17,7 @@ module.exports = [
     handler: (request, h) => StatusType.find().then(list => h.response({
       data: dateUtil.formatDates(list),
       totalCount: list.length,
-    })).catch(err => h.response(err)),
+    })),
   },
   {
     method: 'POST',
@@ -32,8 +32,7 @@ module.exports = [
           return true;
         })
         .then(() => StatusType.add(statusType))
-        .then(result => h.response(result))
-        .catch(err => h.response(err));
+        .then(result => h.response(result));
     },
     config: {
       validate: {
@@ -63,8 +62,7 @@ module.exports = [
           return true;
         })
         .then(() => StatusType.update(request.params.statusTypeId, statusType, unset))
-        .then(result => h.response(result))
-        .catch(err => h.response(err));
+        .then(result => h.response(result));
     },
     config: {
       validate: {
@@ -83,8 +81,7 @@ module.exports = [
     method: 'DELETE',
     path: `${config.statusTypeApiPrefix}/{statusTypeId}`,
     handler: (request, h) => StatusType.remove(request.params.statusTypeId)
-      .then(result => h.response(result))
-      .catch(err => h.response(err)),
+      .then(result => h.response(result)),
     config: {
       validate: {
         params: {

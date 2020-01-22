@@ -33,7 +33,7 @@ module.exports = [
       ]).then(([list, totalCount]) => h.response({
         data: dateUtil.formatDates(list),
         totalCount,
-      })).catch(err => h.response(err));
+      }));
     },
     config: {
       validate: {
@@ -53,8 +53,7 @@ module.exports = [
       || '*', request.query.appVersion
       || '*', { startTime: 1 })
       .then(result => dateUtil.formatDates(result))
-      .then(result => h.response({ data: result }))
-      .catch(err => h.response(err)),
+      .then(result => h.response({ data: result })),
     config: {
       validate: {
         query: {
@@ -76,8 +75,7 @@ module.exports = [
         status.endTime = new Date(Date.parse(status.endTime));
       }
       return Status.add(status)
-        .then(result => h.response(result))
-        .catch(err => h.response(err));
+        .then(result => h.response(result));
     },
     config: {
       validate: {
@@ -110,8 +108,7 @@ module.exports = [
       }
 
       return Status.update(request.params.statusId, status, unset)
-        .then(result => h.response(result))
-        .catch(err => h.response(err));
+        .then(result => h.response(result));
     },
     config: {
       validate: {
@@ -138,9 +135,7 @@ module.exports = [
     path: `${config.statusApiPrefix}/{statusId}/{action}`,
     handler: (request, h) => Status.update(
       request.params.statusId, { isActivated: request.params.action === 'activate' },
-    )
-      .then(result => h.response(result))
-      .catch(err => h.response(err)),
+    ).then(result => h.response(result)),
     config: {
       validate: {
         params: {
@@ -154,8 +149,7 @@ module.exports = [
     method: 'DELETE',
     path: `${config.statusApiPrefix}/{statusId}`,
     handler: (request, h) => Status.remove(request.params.statusId)
-      .then(result => h.response(result))
-      .catch(err => h.response(err)),
+      .then(result => h.response(result)),
     config: {
       validate: {
         params: {

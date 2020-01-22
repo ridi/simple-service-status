@@ -20,17 +20,18 @@ module.exports = [
       const clientIP = util.getClientIp(request);
       if (process.env.ALLOWED_IP && !process.env.ALLOWED_IP.includes(clientIP)) {
         logger.warn(`[Auth] This client IP is not allowed.: ${clientIP}`);
-        return h.response(new SSSError(SSSError.Types.FORBIDDEN_IP_ADDRESS, { remoteAddress: clientIP }));
+        throw new SSSError(SSSError.Types.FORBIDDEN_IP_ADDRESS, { remoteAddress: clientIP });
       }
       if (!request.payload.username || !request.payload.password) {
-        return h.response(new SSSError(SSSError.Types.AUTH_MISSING_PARAMS));
+        throw new SSSError(SSSError.Types.AUTH_MISSING_PARAMS);
       }
       return User.find({ username: request.payload.username }).then((account) => {
         if (!account || account.length === 0 || !authUtil.comparePassword(request.payload, account[0].password)) {
-          return h.response(new SSSError(SSSError.Types.AUTH_INVALID_PARAMS));
+          throw new SSSError(SSSError.Types.AUTH_INVALID_PARAMS);
         }
         const token = authUtil.generateToken(Object.assign({}, account[0], { ip: clientIP }));
-        return h.state('token', token);
+        h.state('token', token);
+        return h.continue;
       });
     },
     config: {
@@ -41,8 +42,7 @@ module.exports = [
     method: 'PUT',
     path: `${config.apiPrefix}/passwords`,
     handler: (request, h) => User.updatePassword(request.auth.credentials.username, request.payload.password)
-      .then(result => h.response(result))
-      .catch(err => h.response(err)),
+      .then(result => h.response(result)),
     config: {
       validate: {
         payload: {

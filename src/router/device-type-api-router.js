@@ -32,8 +32,7 @@ module.exports = [
           return true;
         })
         .then(() => DeviceType.add(deviceType))
-        .then(result => h.response(result))
-        .catch(err => h.response(err));
+        .then(result => h.response(result));
     },
     config: {
       validate: {
@@ -62,8 +61,7 @@ module.exports = [
           return true;
         })
         .then(() => DeviceType.update(request.params.deviceTypeId, deviceType, unset))
-        .then(result => h.response(result))
-        .catch(err => h.response(err));
+        .then(result => h.response(result));
     },
     config: {
       validate: {
