@@ -1,16 +1,9 @@
 language: node_js
-node_js: '8'
-before_install: npm install greenkeeper-lockfile@1 --global
-before_script: greenkeeper-lockfile-update
+node_js: '12'
 script:
   - npm test
   - npm run lint
-after_script: greenkeeper-lockfile-upload
 services: mongodb
-branches:
-  only:
-  - master
-  - /^greenkeeper/.*$/
 deploy:
   provider: npm
   email: kyungmi.k@ridi.com
