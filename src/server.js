@@ -34,7 +34,7 @@ const util = require('./common/common-util');
 const logger = require('winston');
 
 const server = new Hapi.Server({
-  port: process.env.PORT || config.defaults.port
+  port: process.env.PORT || config.defaults.port,
 });
 
 server.state('token', {
@@ -45,7 +45,7 @@ server.state('token', {
 
 const plugins = [
   { plugin: vision },
-  { plugin: inert }, 
+  { plugin: inert },
   { plugin: HapiAuthJwt2 },
   { plugin: HapiErrorHandler, options: { apiPrefix: config.url.apiPrefix, errorView: 'Error' } },
   {

@@ -14,13 +14,10 @@ module.exports = [
   {
     method: 'GET',
     path: `${config.statusTypeApiPrefix}`,
-    handler: (request, h) =>
-      StatusType.find().then((list) =>
-        h.response({
-          data: dateUtil.formatDates(list),
-          totalCount: list.length,
-        })
-      ).catch(err => h.response(err)),
+    handler: (request, h) => StatusType.find().then(list => h.response({
+      data: dateUtil.formatDates(list),
+      totalCount: list.length,
+    })).catch(err => h.response(err)),
   },
   {
     method: 'POST',
@@ -85,10 +82,9 @@ module.exports = [
   {
     method: 'DELETE',
     path: `${config.statusTypeApiPrefix}/{statusTypeId}`,
-    handler: (request, h) =>
-      StatusType.remove(request.params.statusTypeId)
-        .then(result => h.response(result))
-        .catch(err => h.response(err)),
+    handler: (request, h) => StatusType.remove(request.params.statusTypeId)
+      .then(result => h.response(result))
+      .catch(err => h.response(err)),
     config: {
       validate: {
         params: {

@@ -14,13 +14,10 @@ module.exports = [
   {
     method: 'GET',
     path: `${config.deviceTypeApiPrefix}`,
-    handler: (request, h) =>
-      DeviceType.find().then((list) =>
-        h.response({
-          data: dateUtil.formatDates(list),
-          totalCount: list.length,
-        })
-      ).catch(err => h.response(err)),
+    handler: (request, h) => DeviceType.find().then(list => h.response({
+      data: dateUtil.formatDates(list),
+      totalCount: list.length,
+    })).catch(err => h.response(err)),
   },
   {
     method: 'POST',
@@ -84,10 +81,9 @@ module.exports = [
   {
     method: 'DELETE',
     path: `${config.deviceTypeApiPrefix}/{deviceTypeId}`,
-    handler: (request, h) =>
-      DeviceType.remove(request.params.deviceTypeId)
-        .then(result => h.response(result))
-        .catch(err => h.response(err)),
+    handler: (request, h) => DeviceType.remove(request.params.deviceTypeId)
+      .then(result => h.response(result))
+      .catch(err => h.response(err)),
     config: {
       validate: {
         params: {

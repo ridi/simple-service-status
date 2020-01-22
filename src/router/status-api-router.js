@@ -30,12 +30,10 @@ module.exports = [
           isActivated: -1, startTime: 1, endTime: 1, createTime: 1,
         }, request.query.skip, request.query.limit),
         Status.count(filter),
-      ]).then(([list, totalCount]) =>
-        h.response({
-          data: dateUtil.formatDates(list),
-          totalCount,
-        })
-      ).catch(err => h.response(err));
+      ]).then(([list, totalCount]) => h.response({
+        data: dateUtil.formatDates(list),
+        totalCount,
+      })).catch(err => h.response(err));
     },
     config: {
       validate: {
@@ -50,14 +48,13 @@ module.exports = [
   {
     method: 'GET',
     path: `${config.statusApiPrefix}/check`,
-    handler: (request, h) =>
-      Status.findWithComparators(request.query.deviceType
-        || '*', request.query.deviceVersion
-        || '*', request.query.appVersion
-        || '*', { startTime: 1 })
-        .then(result => dateUtil.formatDates(result))
-        .then(result => h.response({ data: result }))
-        .catch(err => h.response(err)),
+    handler: (request, h) => Status.findWithComparators(request.query.deviceType
+      || '*', request.query.deviceVersion
+      || '*', request.query.appVersion
+      || '*', { startTime: 1 })
+      .then(result => dateUtil.formatDates(result))
+      .then(result => h.response({ data: result }))
+      .catch(err => h.response(err)),
     config: {
       validate: {
         query: {
@@ -139,10 +136,9 @@ module.exports = [
   {
     method: 'PUT',
     path: `${config.statusApiPrefix}/{statusId}/{action}`,
-    handler: (request, h) =>
-      Status.update(request.params.statusId, { isActivated: request.params.action === 'activate' })
-        .then(result => h.response(result))
-        .catch(err => h.response(err)),
+    handler: (request, h) => Status.update(request.params.statusId, { isActivated: request.params.action === 'activate' })
+      .then(result => h.response(result))
+      .catch(err => h.response(err)),
     config: {
       validate: {
         params: {
@@ -155,10 +151,9 @@ module.exports = [
   {
     method: 'DELETE',
     path: `${config.statusApiPrefix}/{statusId}`,
-    handler: (request, h) =>
-      Status.remove(request.params.statusId)
-        .then(result => h.response(result))
-        .catch(err => h.response(err)),
+    handler: (request, h) => Status.remove(request.params.statusId)
+      .then(result => h.response(result))
+      .catch(err => h.response(err)),
     config: {
       validate: {
         params: {
