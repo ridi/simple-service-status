@@ -4,11 +4,11 @@
  * @since 1.0.0
  */
 
+import Hapi from '@hapi/hapi';
+
 require('dotenv').config();
 require('babel-register');
 require('babel-polyfill');
-
-import Hapi from '@hapi/hapi';
 
 const vision = require('@hapi/vision');
 const inert = require('@hapi/inert');
@@ -64,12 +64,16 @@ const _setAuthStrategy = () => {
       // Check token IP address
       const clientIP = util.getClientIp(request);
       if (clientIP !== decoded.ip) {
-        logger.warn(`[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${clientIP}`);
+        logger.warn(
+          `[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${clientIP}`,
+        );
         return h.unauthenticated(new SSSError(SSSError.Types.AUTH_TOKEN_INVALID));
       }
       // Check token expiration
       if (decoded.exp < new Date().getTime()) {
-        logger.warn(`[Auth] This auth token is expired.: decoded.exp => ${decoded.exp}, now => ${new Date().getTime()}`);
+        logger.warn(
+          `[Auth] This auth token is expired.: decoded.exp => ${decoded.exp}, now => ${new Date().getTime()}`,
+        );
         return h.unauthenticated(new SSSError(SSSError.Types.AUTH_TOKEN_EXPIRED));
       }
       return User.find({ username: decoded.username })

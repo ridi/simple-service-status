@@ -136,7 +136,9 @@ module.exports = [
   {
     method: 'PUT',
     path: `${config.statusApiPrefix}/{statusId}/{action}`,
-    handler: (request, h) => Status.update(request.params.statusId, { isActivated: request.params.action === 'activate' })
+    handler: (request, h) => Status.update(
+      request.params.statusId, { isActivated: request.params.action === 'activate' },
+    )
       .then(result => h.response(result))
       .catch(err => h.response(err)),
     config: {

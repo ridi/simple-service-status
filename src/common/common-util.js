@@ -33,10 +33,6 @@ exports.getClientIp = (request) => {
 
   // more obsure ones below
 
-  // x-cluster-client-ip
-  // (Rackspace LB and Riverbed's Stingray)
-  // http://www.rackspace.com/knowledge_center/article/controlling-access-to-linux-cloud-sites-based-on-the-client-ip-address
-  // https://splash.riverbed.com/docs/DOC-1926
   const clusterClientIp = request.headers['x-cluster-client-ip'];
   const forwardedAlt = request.headers['x-forwarded'];
   const forwardedFor = request.headers['forwarded-for'];
@@ -158,7 +154,9 @@ exports.stringifySemVersion = (parsedConditions) => {
 exports.camel2snake = (str) => {
   if (typeof str === 'string') {
     // ignore first occurrence of underscore(_) and capital
-    return str.replace(/^_/, '').replace(/^([A-Z])/, $1 => `${$1.toLowerCase()}`).replace(/([A-Z])/g, $1 => `_${$1.toLowerCase()}`);
+    return str.replace(/^_/, '')
+      .replace(/^([A-Z])/, $1 => `${$1.toLowerCase()}`)
+      .replace(/([A-Z])/g, $1 => `_${$1.toLowerCase()}`);
   }
   return str;
 };
@@ -174,7 +172,9 @@ exports.camel2snakeObject = (object) => {
   }
   if (object && typeof object === 'object') {
     const result = {};
-    Object.keys(object).forEach((key) => { result[exports.camel2snake(key)] = exports.camel2snakeObject(object[key]); });
+    Object.keys(object).forEach((key) => {
+      result[exports.camel2snake(key)] = exports.camel2snakeObject(object[key]);
+    });
     return result;
   }
   return object;
@@ -204,7 +204,9 @@ exports.snake2camelObject = (object) => {
   }
   if (object && typeof object === 'object') {
     const result = {};
-    Object.keys(object).forEach((key) => { result[exports.snake2camel(key)] = exports.snake2camelObject(object[key]); });
+    Object.keys(object).forEach((key) => {
+      result[exports.snake2camel(key)] = exports.snake2camelObject(object[key]);
+    });
     return result;
   }
   return object;
