@@ -30,25 +30,25 @@ const onSuccess = (request, h, options) => {
 
 const onApiError = (request, h, statusCode) => {
   const responseBody = generateErrorResponseBody(request);
-  return (() => {
-    switch (statusCode) {
-      case 400:
-        if (request.response.data && request.response.data.name === 'ValidationError') {
-          responseBody.code = SSSError.Types.BAD_REQUEST_INVALID.code;
-          responseBody.message = SSSError.Types.BAD_REQUEST_INVALID.message({ message: request.response.message });
-        }
-        return h.response(responseBody);
-      case 401:
-      case 403:
-        return h.response(responseBody).unstate('token');
-      case 500:
-        if (!responseBody.code) {
-          responseBody.code = SSSError.Types.SERVER.code;
-        }
-      default:
-        return h.response(responseBody);
-    }
-  })().code(statusCode).takeover();
+  switch (statusCode) {
+    case 400:
+      if (request.response.data && request.response.data.name === 'ValidationError') {
+        responseBody.code = SSSError.Types.BAD_REQUEST_INVALID.code;
+        responseBody.message = SSSError.Types.BAD_REQUEST_INVALID.message({ message: request.response.message });
+      }
+      break;
+    case 401:
+    case 403:
+      h.unstate('token');
+      break;
+    case 500:
+      if (!responseBody.code) {
+        responseBody.code = SSSError.Types.SERVER.code;
+      }
+      break;
+    default:
+  }
+  return h.response(responseBody).code(statusCode).takeover();
 };
 
 const onUIError = (request, h, options, statusCode) => {
