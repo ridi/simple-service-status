@@ -15,12 +15,12 @@ module.exports = [
     method: 'GET',
     path: `${config.statusTypeApiPrefix}`,
     handler: (request, h) =>
-      StatusType.find().then((list) => {
+      StatusType.find().then((list) =>
         h.response({
           data: dateUtil.formatDates(list),
           totalCount: list.length,
-        });
-      }).catch(err => h.response(err)),
+        })
+      ).catch(err => h.response(err)),
   },
   {
     method: 'POST',

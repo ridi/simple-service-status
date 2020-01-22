@@ -42,12 +42,7 @@ module.exports = [
   {
     method: 'GET',
     path: '/login',
-    handler: (request, h) => {
-      if (request.auth.isAuthenticated) {
-        return h.redirect('/');
-      }
-      return view(request, h, 'Login');
-    },
+    handler: (request, h) => request.auth.isAuthenticated ? h.redirect('/') : view(request, h, 'Login'),
     config: {
       auth: {
         mode: 'try',

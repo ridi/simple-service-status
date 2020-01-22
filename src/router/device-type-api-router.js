@@ -15,12 +15,12 @@ module.exports = [
     method: 'GET',
     path: `${config.deviceTypeApiPrefix}`,
     handler: (request, h) =>
-      DeviceType.find().then((list) => {
+      DeviceType.find().then((list) =>
         h.response({
           data: dateUtil.formatDates(list),
           totalCount: list.length,
-        });
-      }).catch(err => h.response(err)),
+        })
+      ).catch(err => h.response(err)),
   },
   {
     method: 'POST',
