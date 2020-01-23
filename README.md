@@ -1,7 +1,7 @@
 # Simple Service Status
 
 [![Build Status](https://travis-ci.com/ridi/simple-service-status.svg?branch=master)](https://travis-ci.com/ridi/simple-service-status)
-[![npm](https://img.shields.io/npm/v/simple-service-status.svg)](https://www.npmjs.com/package/simple-service-status)
+[![npm](https://img.shields.io/npm/v/@ridi/simple-service-status.svg)](https://www.npmjs.com/package/@ridi/simple-service-status)
 
 ## Overview
 

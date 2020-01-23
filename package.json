@@ -1,5 +1,5 @@
 {
-  "name": "simple-service-status",
+  "name": "@ridi/simple-service-status",
   "version": "1.4.0",
   "description": "A simple tool that supports management UI and query API for announcement service status designating specific version of app or platform",
   "main": "dist/index.js",
@@ -88,5 +88,12 @@
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1"
+  },
+  "bugs": {
+    "url": "https://github.com/ridi/simple-service-status/issues"
+  },
+  "homepage": "https://github.com/ridi/simple-service-status#readme",
+  "directories": {
+    "test": "tests"
   }
 }
