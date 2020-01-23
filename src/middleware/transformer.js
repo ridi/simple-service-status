@@ -10,32 +10,29 @@ const defaultOptions = Object.freeze({
   apiPrefix: '/api',
 });
 
-const register = (server, opts, next) => {
+const register = (server, opts) => {
   const options = Object.assign({}, defaultOptions, opts);
   /* eslint no-param-reassign: ["error", { "props": false }] */
-  server.ext('onPostAuth', (request, reply) => {
+  server.ext('onPostAuth', (request, h) => {
     if (request.query) {
       request.query = util.snake2camelObject(request.query);
     }
     if (request.payload) {
       request.payload = util.snake2camelObject(request.payload);
     }
-    return reply.continue();
+    return h.continue;
   });
 
-  server.ext('onPreResponse', (request, reply) => {
+  server.ext('onPreResponse', (request, h) => {
     if (request.path.includes(options.apiPrefix)) {
-      return reply(util.camel2snakeObject(request.response.source));
+      return h.response(util.camel2snakeObject(request.response.source));
     }
-    return reply.continue();
+    return h.continue;
   });
-
-  next();
 };
 
-register.attributes = {
+module.exports = {
+  register,
   name: 'hapi-transform',
   version: '1.0.0',
 };
-
-module.exports = register;

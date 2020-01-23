@@ -4,14 +4,14 @@
  * @since 1.0.0
  */
 
+import Hapi from '@hapi/hapi';
+
 require('dotenv').config();
 require('babel-register');
 require('babel-polyfill');
 
-import Hapi from 'hapi';
-
-const vision = require('vision');
-const inert = require('inert');
+const vision = require('@hapi/vision');
+const inert = require('@hapi/inert');
 const HapiAuthJwt2 = require('hapi-auth-jwt2');
 const HapiReactViews = require('hapi-react-views');
 const HapiErrorHandler = require('./middleware/error-handler');
@@ -33,8 +33,9 @@ const SSSError = require('./common/Error');
 const util = require('./common/common-util');
 const logger = require('winston');
 
-const server = new Hapi.Server();
-server.connection({ port: process.env.PORT || config.defaults.port });
+const server = new Hapi.Server({
+  port: process.env.PORT || config.defaults.port,
+});
 
 server.state('token', {
   ttl: config.auth.tokenTTL,
@@ -43,50 +44,55 @@ server.state('token', {
 });
 
 const plugins = [
-  { register: vision },
-  { register: inert },
-  { register: HapiAuthJwt2 },
-  { register: HapiErrorHandler, options: { apiPrefix: config.url.apiPrefix, errorView: 'Error' } },
+  { plugin: vision },
+  { plugin: inert },
+  { plugin: HapiAuthJwt2 },
+  { plugin: HapiErrorHandler, options: { apiPrefix: config.url.apiPrefix, errorView: 'Error' } },
   {
-    register: HapiAuthChecker,
+    plugin: HapiAuthChecker,
     options: {
       excludeUrlPatterns: [new RegExp(`^${config.url.apiPrefix}`), new RegExp('^/logout')],
     },
   },
-  { register: HapiTransformer, options: { apiPrefix: config.url.apiPrefix } },
+  { plugin: HapiTransformer, options: { apiPrefix: config.url.apiPrefix } },
 ];
 
 const _setAuthStrategy = () => {
   server.auth.strategy('jwt', 'jwt', {
     key: process.env.SECRET_KEY || config.auth.secretKey,
-    validateFunc: (decoded, request, callback) => {
+    validate: (decoded, request, h) => {
       // Check token IP address
       const clientIP = util.getClientIp(request);
       if (clientIP !== decoded.ip) {
-        logger.warn(`[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${clientIP}`);
-        return callback(new SSSError(SSSError.Types.AUTH_TOKEN_INVALID), false);
+        logger.warn(
+          `[Auth] This client IP is matched with token info.: decoded.ip => ${decoded.ip}, client IP => ${clientIP}`,
+        );
+        return h.unauthenticated(new SSSError(SSSError.Types.AUTH_TOKEN_INVALID));
       }
       // Check token expiration
       if (decoded.exp < new Date().getTime()) {
-        logger.warn(`[Auth] This auth token is expired.: decoded.exp => ${decoded.exp}, now => ${new Date().getTime()}`);
-        return callback(new SSSError(SSSError.Types.AUTH_TOKEN_EXPIRED), false);
+        logger.warn(
+          `[Auth] This auth token is expired.: decoded.exp => ${decoded.exp}, now => ${new Date().getTime()}`,
+        );
+        return h.unauthenticated(new SSSError(SSSError.Types.AUTH_TOKEN_EXPIRED));
       }
       return User.find({ username: decoded.username })
         .then((accounts) => {
           if (!accounts || accounts.length === 0) {
             logger.warn(`[Auth] This account is not exist.: ${decoded.username}`);
-            return callback(new SSSError(SSSError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }), false);
+            return h.unauthenticated(new SSSError(SSSError.Types.AUTH_USER_NOT_EXIST, { username: decoded.username }));
           }
-          return callback(null, true, accounts[0]);
+          const result = h.authenticated({ credentials: accounts[0] });
+          result.isValid = true;
+          return result;
         })
         .catch((e) => {
           logger.error(`[DB] DB error occurred: ${e.message}`);
-          callback(new SSSError(SSSError.Types.DB), false);
+          h.unauthenticated(new SSSError(SSSError.Types.DB));
         });
     },
     verifyOptions: { algorithms: ['HS256'] },
   });
-
   server.auth.default('jwt');
 };
 

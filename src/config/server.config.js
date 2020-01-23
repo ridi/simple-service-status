@@ -15,6 +15,7 @@ const configs = {
     host: '0.0.0.0',
     port: DEV_SERVER_PORT,
     mongoDBUrl: 'mongodb://localhost',
+    mongoDBName: 'db',
   },
   auth: {
     secretKey: 'secretKey',
@@ -30,7 +31,6 @@ const configs = {
     statusApiPrefix: `/${API_CONTEXT}/v${API_VERSION}/status`,
     statusTypeApiPrefix: `/${API_CONTEXT}/v${API_VERSION}/status-types`,
     deviceTypeApiPrefix: `/${API_CONTEXT}/v${API_VERSION}/device-types`,
-    loginUI: '/login',
   },
   build: {
     sourceDirectory: 'src',

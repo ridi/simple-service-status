@@ -17,10 +17,8 @@ const generateErrorResponseBody = request => ({
   success: false,
 });
 
-const getStatusCode = request => request.response.statusCode || request.response.output.statusCode;
-
 /* eslint no-param-reassign: ["error", { "props": false }] */
-const onSuccess = (request, reply, options) => {
+const onSuccess = (request, h, options) => {
   const { path, response } = request;
   if (path.includes(options.apiPrefix)) {
     const responseObj = response.source || {};
@@ -30,8 +28,7 @@ const onSuccess = (request, reply, options) => {
   return null;
 };
 
-const onApiError = (request, reply) => {
-  const statusCode = getStatusCode(request);
+const onApiError = (request, h, statusCode) => {
   const responseBody = generateErrorResponseBody(request);
   switch (statusCode) {
     case 400:
@@ -39,62 +36,52 @@ const onApiError = (request, reply) => {
         responseBody.code = SSSError.Types.BAD_REQUEST_INVALID.code;
         responseBody.message = SSSError.Types.BAD_REQUEST_INVALID.message({ message: request.response.message });
       }
-      return reply(responseBody).code(statusCode);
+      break;
     case 401:
     case 403:
-      return reply(responseBody).unstate('token').code(statusCode);
+      h.unstate('token');
+      break;
     case 500:
       if (!responseBody.code) {
         responseBody.code = SSSError.Types.SERVER.code;
       }
-      return reply(responseBody).code(statusCode);
+      break;
     default:
-      return reply(responseBody).code(statusCode);
   }
+  return h.response(responseBody).code(statusCode).takeover();
 };
 
-const onUIError = (request, reply, options) => {
-  const statusCode = getStatusCode(request);
+const onUIError = (request, h, options, statusCode) => {
   const responseBody = generateErrorResponseBody(request);
   switch (statusCode) {
     case 401:
     case 403:
-      return reply.redirect(`/login?redirect=${request.path || '/'}`).unstate('token');
+      return h.redirect(`/login?redirect=${request.path || '/'}`).unstate('token');
     case 404:
     case 500:
       responseBody.statusCode = statusCode;
-      return reply.view(options.errorView, responseBody).code(statusCode);
+      return h.view(options.errorView, responseBody).code(statusCode);
     default:
       return null;
   }
 };
 
-const onError = (request, reply, options) => {
+const onError = (request, h, options, statusCode) => {
   const isApi = request.path.includes(options.apiPrefix);
-  return isApi
-    ? onApiError(request, reply)
-    : onUIError(request, reply, options);
+  return isApi ? onApiError(request, h, statusCode) : onUIError(request, h, options, statusCode);
 };
 
-const register = (server, opts, next) => {
+const register = (server, opts) => {
   const options = Object.assign({}, defaultOptions, opts);
-  server.ext('onPreResponse', (request, reply) => {
+  server.ext('onPreResponse', (request, h) => {
     const statusCode = request.response.statusCode || request.response.output.statusCode;
-    const response = (statusCode === 200)
-      ? onSuccess(request, reply, options)
-      : onError(request, reply, options);
-
-    if (response) {
-      return response;
-    }
-    return reply.continue();
+    const response = (statusCode === 200) ? onSuccess(request, h, options) : onError(request, h, options, statusCode);
+    return response || h.continue;
   });
-  next();
 };
 
-register.attributes = {
+module.exports = {
+  register,
   name: 'hapi-error-handler',
   version: '1.0.0',
 };
-
-module.exports = register;

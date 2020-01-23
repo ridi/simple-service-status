@@ -14,21 +14,17 @@ module.exports = [
   {
     method: 'GET',
     path: `${config.statusTypeApiPrefix}`,
-    handler: (request, reply) => {
-      StatusType.find().then((list) => {
-        reply({
-          data: dateUtil.formatDates(list),
-          totalCount: list.length,
-        });
-      }).catch(err => reply(err));
-    },
+    handler: (request, h) => StatusType.find().then(list => h.response({
+      data: dateUtil.formatDates(list),
+      totalCount: list.length,
+    })),
   },
   {
     method: 'POST',
     path: `${config.statusTypeApiPrefix}`,
-    handler: (request, reply) => {
+    handler: async (request, h) => {
       const statusType = Object.assign({}, request.payload);
-      StatusType.find({ value: statusType.value })
+      return StatusType.find({ value: statusType.value })
         .then((result) => {
           if (result && result.length > 0) {
             throw new SSSError(SSSError.Types.CONFLICT, { value: statusType.value });
@@ -36,8 +32,7 @@ module.exports = [
           return true;
         })
         .then(() => StatusType.add(statusType))
-        .then(result => reply(result))
-        .catch(err => reply(err));
+        .then(result => h.response(result));
     },
     config: {
       validate: {
@@ -52,14 +47,14 @@ module.exports = [
   {
     method: 'PUT',
     path: `${config.statusTypeApiPrefix}/{statusTypeId}`,
-    handler: (request, reply) => {
+    handler: async (request, h) => {
       const statusType = Object.assign({}, request.payload);
       let unset;
       if (!statusType.template) {
         unset = { template: 1 };
         delete statusType.template;
       }
-      StatusType.find({ value: statusType.value })
+      return StatusType.find({ value: statusType.value })
         .then((result) => {
           if (result && result.length > 0 && request.params.statusTypeId !== result[0]._id) {
             throw new SSSError(SSSError.Types.CONFLICT, { value: statusType.value });
@@ -67,8 +62,7 @@ module.exports = [
           return true;
         })
         .then(() => StatusType.update(request.params.statusTypeId, statusType, unset))
-        .then(result => reply(result))
-        .catch(err => reply(err));
+        .then(result => h.response(result));
     },
     config: {
       validate: {
@@ -86,11 +80,8 @@ module.exports = [
   {
     method: 'DELETE',
     path: `${config.statusTypeApiPrefix}/{statusTypeId}`,
-    handler: (request, reply) => {
-      StatusType.remove(request.params.statusTypeId)
-        .then(result => reply(result))
-        .catch(err => reply(err));
-    },
+    handler: (request, h) => StatusType.remove(request.params.statusTypeId)
+      .then(result => h.response(result)),
     config: {
       validate: {
         params: {

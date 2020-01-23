@@ -10,7 +10,8 @@ const config = require('../config/server.config');
 const SSSError = require('../common/Error');
 
 const { MongoClient, ObjectID } = mongodb;
-const url = process.env.MONGODB_URI || config.defaults.mongoDBUrl;
+const dbUrl = process.env.MONGODB_URI || config.defaults.mongoDBUrl;
+const dbName = process.env.MONGODB_NAME || config.defaults.mongoDBName;
 const logger = require('winston');
 
 /**
@@ -35,10 +36,11 @@ class Model {
   runQuery(fn) {
     const self = this;
     return co(function* run() {
-      const db = yield MongoClient.connect(url);
+      const client = yield MongoClient.connect(dbUrl);
+      const db = client.db(dbName);
       const collection = db.collection(self.collection);
       const result = yield fn.call(self, collection);
-      yield db.close();
+      yield client.close();
       return result;
     }).catch((err) => {
       throw err;
@@ -65,7 +67,7 @@ class Model {
   }
 
   count(query) {
-    return this.runQuery(collection => collection.count(query || {}))
+    return this.runQuery(collection => collection.countDocuments(query || {}))
       .catch((error) => {
         logger.error(error);
         throw new SSSError(SSSError.Types.DB, {}, error);

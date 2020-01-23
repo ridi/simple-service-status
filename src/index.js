@@ -5,7 +5,7 @@ import { resolve } from 'path';
 import logger from 'winston';
 import Webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
-import H2O2 from 'h2o2';
+import H2O2 from '@hapi/h2o2';
 import server from './server';
 import webpackConfig from '../webpack.config';
 import config from './config/server.config';
@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'development') {
     }
     logger.log(`Webpack dev server listening at ${config.defaults.host}:${config.build.webpackServerPort}`);
 
-    server.addPlugin({ register: H2O2 });
+    server.addPlugin({ plugin: H2O2 });
 
     server.start([
       {
